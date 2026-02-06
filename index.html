@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SEO Meta Tags -->
-    <title>Cash Cleaner Online - Free ASMR Washing Simulator (Unblocked)</title>
-    <meta name="description" content="Play the viral Cash Cleaner game online for free. Satisfying ASMR money washing simulator. No download required. Unblocked for school/work.">
-    <meta name="keywords" content="cash cleaner, money washing game, asmr simulator, unblocked games, cash cleaner online, money cleaner, satisfying game, asmr game">
+    <title>Cash Cleaner Online - Realistic 3D Money Washing Simulator</title>
+    <meta name="description" content="Experience the ultimate ASMR money washing simulator. Clean dirty bills in a realistic 3D basement environment. Play Cash Cleaner Online for free now!">
+    <meta name="keywords" content="cash cleaner, money washing game, asmr simulator, unblocked games, cash cleaner online, money cleaner, satisfying game, asmr game, 3d cleaning simulator">
     <meta name="author" content="Cash Cleaner Online">
-    <meta property="og:title" content="Cash Cleaner Online - Free ASMR Washing Simulator">
-    <meta property="og:description" content="Experience the satisfying ASMR of cleaning dirty cash. Play now - no download needed!">
+    <link rel="canonical" href="https://cashcleaner.online/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    <meta property="og:title" content="Cash Cleaner Online - Realistic 3D Money Washing Simulator">
+    <meta property="og:description" content="Experience the ultimate ASMR money washing simulator. Clean dirty bills in a realistic 3D basement environment. Play for free now!">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cashcleaner.online/">
     
     <style>
         * {
@@ -252,6 +255,16 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
+        /* SEO H1 - Visually hidden but accessible */
+        #seo-h1 {
+            position: absolute;
+            left: -10000px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
         @media (max-width: 768px) {
             #content {
                 padding: 30px 15px;
@@ -288,6 +301,9 @@
     </style>
 </head>
 <body>
+    <!-- SEO H1 (visually hidden for accessibility) -->
+    <h1 id="seo-h1">Cash Cleaner Online - The Best 3D Cleaning Simulator</h1>
+
     <!-- Score Board -->
     <div id="score-board">
         <div class="label">CLEANED</div>
@@ -413,14 +429,12 @@
         // Mode & Tool system
         let currentMode = 'HAND'; // 'HAND' or 'TOOL'
         let currentTool = 'Eraser'; // 'Eraser' or 'Brush'
-        let toolRadius = { Eraser: 12, Brush: 28 };
+        let toolRadius = { Eraser: 20, Brush: 60 }; // Canvas brush sizes
         let ownedTools = ['Eraser'];
         const toolPrices = { Brush: 500 };
 
         // Cleaning state
         let isCleaning = false;
-        const maskResolution = 256;
-        let needsTextureUpdate = false;
 
         // Audio system
         let audioContext;
@@ -588,11 +602,11 @@
 
         // ===== Table =====
         function createTable() {
-            // Aged wood material with more roughness and scratches
+            // Deep aged oak wood material
             const tableMat = new THREE.MeshStandardMaterial({
-                color: 0x4a2f1a, // Darker, aged wood
-                roughness: 0.85,
-                metalness: 0.02,
+                color: 0x3d2817, // Deep aged oak
+                roughness: 0.88,
+                metalness: 0.05,
                 roughnessMap: createWoodRoughnessMap()
             });
 
@@ -741,136 +755,192 @@
             scene.add(neonLight);
         }
 
-        // ===== Money System =====
-        let billTexture = null;
+        // ===== Bill Class (Scratch Card System) =====
+        let billBaseTexture = null;
 
+        class Bill {
+            constructor(x, y, z) {
+                this.cleanProgress = 0;
+                this.isDirty = true;
+                this.value = 100;
+                this.baseY = y;
+                
+                // Create dirt canvas (512x256 for 2:1 ratio)
+                this.dirtCanvas = document.createElement('canvas');
+                this.dirtCanvas.width = 512;
+                this.dirtCanvas.height = 256;
+                this.dirtCtx = this.dirtCanvas.getContext('2d');
+                
+                // Fill with dirty brown noise
+                this.createDirtLayer();
+                
+                // Create dirt texture
+                this.dirtTexture = new THREE.CanvasTexture(this.dirtCanvas);
+                this.dirtTexture.needsUpdate = true;
+                
+                // Create geometry
+                const geometry = new THREE.PlaneGeometry(0.3, 0.15);
+                
+                // Create material with base texture and dirt overlay
+                const material = new THREE.MeshStandardMaterial({
+                    map: billBaseTexture,
+                    alphaMap: this.dirtTexture,
+                    transparent: true,
+                    roughness: 0.6,
+                    metalness: 0.1,
+                    side: THREE.DoubleSide
+                });
+                
+                // Create mesh
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.mesh.position.set(x, y, z);
+                this.mesh.rotation.set(-Math.PI / 2, Math.random() * Math.PI * 2, 0);
+                this.mesh.castShadow = true;
+                this.mesh.receiveShadow = true;
+                
+                // Link back to this Bill instance
+                this.mesh.userData.billInstance = this;
+            }
+            
+            createDirtLayer() {
+                const ctx = this.dirtCtx;
+                const w = this.dirtCanvas.width;
+                const h = this.dirtCanvas.height;
+                
+                // Fill with dark brown dirt
+                ctx.fillStyle = '#2a1a0f';
+                ctx.fillRect(0, 0, w, h);
+                
+                // Add noise/texture
+                const imageData = ctx.getImageData(0, 0, w, h);
+                const data = imageData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const noise = Math.random() * 60 - 30;
+                    data[i] = Math.max(0, Math.min(255, data[i] + noise));     // R
+                    data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise)); // G
+                    data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise)); // B
+                    data[i + 3] = 255; // Full opacity (dirty)
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+                
+                // Add some darker spots for extra dirt
+                for (let i = 0; i < 20; i++) {
+                    const x = Math.random() * w;
+                    const y = Math.random() * h;
+                    const radius = 20 + Math.random() * 40;
+                    
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                    gradient.addColorStop(0, 'rgba(20, 10, 5, 0.6)');
+                    gradient.addColorStop(1, 'rgba(20, 10, 5, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+                }
+            }
+            
+            // Erase dirt at UV coordinates
+            erase(uv, brushSize) {
+                const ctx = this.dirtCtx;
+                const x = uv.x * this.dirtCanvas.width;
+                const y = (1 - uv.y) * this.dirtCanvas.height;
+                
+                // Use destination-out to make transparent (scratch card effect)
+                ctx.globalCompositeOperation = 'destination-out';
+                
+                // Draw soft-edged circle
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+                gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.5)');
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, brushSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Reset composite operation
+                ctx.globalCompositeOperation = 'source-over';
+                
+                // Mark texture for update
+                this.dirtTexture.needsUpdate = true;
+            }
+            
+            // Calculate clean progress (percentage of transparent pixels)
+            calculateProgress() {
+                const imageData = this.dirtCtx.getImageData(
+                    0, 0, 
+                    this.dirtCanvas.width, 
+                    this.dirtCanvas.height
+                );
+                const data = imageData.data;
+                
+                let transparentPixels = 0;
+                const totalPixels = this.dirtCanvas.width * this.dirtCanvas.height;
+                
+                // Check alpha channel (every 4th value)
+                for (let i = 3; i < data.length; i += 4) {
+                    if (data[i] < 128) { // Mostly transparent
+                        transparentPixels++;
+                    }
+                }
+                
+                this.cleanProgress = transparentPixels / totalPixels;
+                return this.cleanProgress;
+            }
+            
+            // Clean up resources
+            dispose() {
+                if (this.mesh.geometry) this.mesh.geometry.dispose();
+                if (this.mesh.material) this.mesh.material.dispose();
+                if (this.dirtTexture) this.dirtTexture.dispose();
+                this.dirtCanvas = null;
+                this.dirtCtx = null;
+            }
+        }
+
+        // Load base bill texture
         function loadBillTexture() {
             const loader = new THREE.TextureLoader();
             
-            // Try to load dollar bill texture
             loader.load(
                 'https://upload.wikimedia.org/wikipedia/commons/7/7b/United_States_one_dollar_bill_obverse.jpg',
                 (texture) => {
                     console.log('Bill texture loaded successfully');
-                    billTexture = texture;
+                    billBaseTexture = texture;
                 },
                 undefined,
                 (error) => {
-                    console.warn('Failed to load bill texture, using fallback color', error);
-                    billTexture = null;
+                    console.warn('Failed to load bill texture, using fallback', error);
+                    // Create fallback green texture
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 512;
+                    canvas.height = 256;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#85bb65';
+                    ctx.fillRect(0, 0, 512, 256);
+                    billBaseTexture = new THREE.CanvasTexture(canvas);
                 }
             );
         }
 
-        // ===== Mask Canvas System =====
-        function createMaskCanvas() {
-            const canvas = document.createElement('canvas');
-            canvas.width = maskResolution;
-            canvas.height = maskResolution;
-            const ctx = canvas.getContext('2d');
-            // Start fully dirty (black = dirty)
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, maskResolution, maskResolution);
-            return { canvas, ctx };
-        }
-
-        function drawCleanBrush(ctx, x, y, size, intensity) {
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${intensity})`);
-            gradient.addColorStop(0.7, `rgba(255, 255, 255, ${intensity * 0.5})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(x - size, y - size, size * 2, size * 2);
-        }
-
-        function calculateCleanProgress(canvas) {
-            const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            let whitePixels = 0;
-            let totalPixels = canvas.width * canvas.height;
-            
-            for (let i = 0; i < data.length; i += 4) {
-                if (data[i] > 128) whitePixels++;
-            }
-            
-            return whitePixels / totalPixels;
-        }
-
+        // Spawn new bill from box
         function spawnBillFromBox() {
             if (boxMoneyCount <= 0) {
                 console.log('Box is empty!');
                 return;
             }
 
-            const billGeo = new THREE.PlaneGeometry(0.3, 0.15);
-            
-            // Create mask canvas for dirt
-            const maskData = createMaskCanvas();
-            const maskTexture = new THREE.CanvasTexture(maskData.canvas);
-            maskTexture.needsUpdate = true;
-
-            // Create material with shader for dirt effect
-            const billMat = new THREE.MeshStandardMaterial({
-                color: billTexture ? 0xffffff : 0x85bb65,
-                map: billTexture,
-                roughness: 0.6,
-                metalness: 0.1,
-                side: THREE.DoubleSide
-            });
-
-            // Custom shader for dirt masking
-            billMat.onBeforeCompile = (shader) => {
-                shader.uniforms.maskTexture = { value: maskTexture };
-                shader.uniforms.dirtColor = { value: new THREE.Color(0x3a2a1a) };
-                
-                shader.fragmentShader = shader.fragmentShader.replace(
-                    '#include <color_fragment>',
-                    `
-                    #include <color_fragment>
-                    uniform sampler2D maskTexture;
-                    uniform vec3 dirtColor;
-                    vec4 maskSample = texture2D(maskTexture, vUv);
-                    float cleanAmount = maskSample.r;
-                    diffuseColor.rgb = mix(dirtColor, diffuseColor.rgb, cleanAmount);
-                    `
-                );
-            };
-
-            const bill = new THREE.Mesh(billGeo, billMat);
-            
-            // Spawn near center of table
+            // Random position on table
             const randomX = (Math.random() - 0.5) * 1.5;
             const randomZ = (Math.random() - 0.5) * 1.0;
-            const randomYOffset = Math.random() * 0.01;
+            const randomY = 1.055 + Math.random() * 0.01;
             
-            bill.position.set(
-                randomX,
-                1.055 + randomYOffset,
-                randomZ
-            );
-            
-            bill.rotation.set(
-                -Math.PI / 2,
-                Math.random() * Math.PI * 2,
-                0
-            );
-            
-            bill.castShadow = true;
-            bill.receiveShadow = true;
-            
-            bill.userData = {
-                id: Date.now(),
-                baseY: bill.position.y,
-                cleanProgress: 0,
-                isDirty: true,
-                maskData: maskData,
-                maskTexture: maskTexture,
-                value: 100
-            };
-            
+            // Create new bill
+            const bill = new Bill(randomX, randomY, randomZ);
             bills.push(bill);
-            scene.add(bill);
+            scene.add(bill.mesh);
             
             boxMoneyCount--;
             updateUI();
@@ -895,54 +965,62 @@
                     cashBoxOnTable.material.emissiveIntensity = 0;
                 }
             } else if (currentMode === 'TOOL') {
-                // Check for bill hover (for cleaning)
-                const billIntersects = raycaster.intersectObjects(bills, false);
+                // Get bill meshes for raycasting
+                const billMeshes = bills.map(b => b.mesh);
+                const billIntersects = raycaster.intersectObjects(billMeshes, false);
                 
                 // Reset previously hovered bill
                 if (hoveredBill && (billIntersects.length === 0 || billIntersects[0].object !== hoveredBill)) {
-                    hoveredBill.position.y = hoveredBill.userData.baseY;
+                    const billInstance = hoveredBill.userData.billInstance;
+                    if (billInstance) {
+                        hoveredBill.position.y = billInstance.baseY;
+                    }
                     hoveredBill = null;
                 }
                 
                 // Apply hover effect to current bill
                 if (billIntersects.length > 0) {
-                    const bill = billIntersects[0].object;
-                    if (bill !== hoveredBill) {
-                        hoveredBill = bill;
+                    const billMesh = billIntersects[0].object;
+                    if (billMesh !== hoveredBill) {
+                        hoveredBill = billMesh;
                     }
                     
-                    // Subtle lift for cleaning target
-                    hoveredBill.position.y = hoveredBill.userData.baseY + 0.01;
+                    const billInstance = hoveredBill.userData.billInstance;
+                    if (billInstance) {
+                        // Subtle lift for cleaning target
+                        hoveredBill.position.y = billInstance.baseY + 0.01;
+                    }
                 }
             }
         }
 
         function cleanAtPoint(intersection) {
-            const bill = intersection.object;
+            const billMesh = intersection.object;
             const uv = intersection.uv;
-            const userData = bill.userData;
+            const billInstance = billMesh.userData.billInstance;
             
-            if (!uv || !userData.maskData) return;
+            if (!uv || !billInstance) return;
 
-            const x = Math.floor(uv.x * maskResolution);
-            const y = Math.floor((1 - uv.y) * maskResolution);
-            
+            // Get brush size based on current tool
             const brushSize = toolRadius[currentTool];
             
-            drawCleanBrush(userData.maskData.ctx, x, y, brushSize, 1.0);
-            needsTextureUpdate = true;
+            // Erase dirt at UV coordinates
+            billInstance.erase(uv, brushSize);
             
             // Update progress
-            userData.cleanProgress = calculateCleanProgress(userData.maskData.canvas);
+            billInstance.calculateProgress();
             
-            if (userData.cleanProgress >= 0.85 && userData.isDirty) {
-                userData.isDirty = false;
-                completeBillCleaning(bill);
+            // Check if cleaning is complete
+            if (billInstance.cleanProgress >= 0.95 && billInstance.isDirty) {
+                billInstance.isDirty = false;
+                completeBillCleaning(billInstance);
             }
         }
 
-        function completeBillCleaning(bill) {
-            if (!bill) return;
+        function completeBillCleaning(billInstance) {
+            if (!billInstance) return;
+            
+            const billMesh = billInstance.mesh;
             
             // Animate bill collection
             const duration = 300;
@@ -953,18 +1031,15 @@
                 const progress = Math.min(elapsed / duration, 1);
                 
                 const scale = 1 - progress;
-                bill.scale.set(scale, scale, scale);
-                bill.rotation.y += 0.2;
+                billMesh.scale.set(scale, scale, scale);
+                billMesh.rotation.y += 0.2;
                 
                 if (progress < 1) {
                     requestAnimationFrame(animateCollect);
                 } else {
-                    scene.remove(bill);
-                    bills = bills.filter(b => b !== bill);
-                    
-                    if (bill.geometry) bill.geometry.dispose();
-                    if (bill.material) bill.material.dispose();
-                    if (bill.userData.maskTexture) bill.userData.maskTexture.dispose();
+                    scene.remove(billMesh);
+                    bills = bills.filter(b => b !== billInstance);
+                    billInstance.dispose();
                     
                     console.log(`Bill cleaned! Remaining: ${bills.length}`);
                 }
@@ -972,7 +1047,7 @@
             
             animateCollect();
             
-            const value = bill.userData.value || 100;
+            const value = billInstance.value || 100;
             totalScore += value;
             cleanedCount++;
             updateUI();
@@ -1054,7 +1129,8 @@
             } else if (currentMode === 'TOOL') {
                 // Start cleaning
                 raycaster.setFromCamera(mouse, camera);
-                const billIntersects = raycaster.intersectObjects(bills, false);
+                const billMeshes = bills.map(b => b.mesh);
+                const billIntersects = raycaster.intersectObjects(billMeshes, false);
                 
                 if (billIntersects.length > 0) {
                     isCleaning = true;
@@ -1200,12 +1276,6 @@
                 document.getElementById('fps').textContent = frameCount;
                 frameCount = 0;
                 fpsTime = 0;
-            }
-
-            // Update mask textures (throttled)
-            if (needsTextureUpdate && selectedBill && selectedBill.userData.maskTexture) {
-                selectedBill.userData.maskTexture.needsUpdate = true;
-                needsTextureUpdate = false;
             }
 
             // Update interaction system
