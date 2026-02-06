@@ -24,26 +24,27 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: #ffffff;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
+            touch-action: pan-y;
         }
 
         #gameContainer {
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #header {
@@ -197,6 +198,50 @@
             height: 100%;
             pointer-events: none;
             z-index: 999;
+        }
+
+        #content {
+            width: 100%;
+            max-width: 900px;
+            padding: 60px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            margin: 0 auto;
+            line-height: 1.8;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        #content h2 {
+            color: #00ff88;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        #content h2:first-child {
+            margin-top: 0;
+        }
+
+        #content p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        @media (max-width: 768px) {
+            #content {
+                padding: 40px 15px;
+            }
+
+            #content h2 {
+                font-size: 22px;
+            }
+
+            #content p {
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -668,7 +713,33 @@
         init();
     </script>
 
-    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.9); padding: 15px; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.7); border-top: 1px solid rgba(0, 255, 136, 0.2); z-index: 50;">
+    <section id="content">
+        <h2>What is Cash Cleaner Online?</h2>
+        <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator that brings the viral ASMR satisfaction of power washing directly to your screen. The game recreates the oddly satisfying experience of using a high-pressure washer to clean dirty money, gold bars, and credit cards. Unlike traditional mobile apps that require downloads and installations, this web version is instantly accessible from any device with a browser.</p>
+        <p>The gameplay is elegantly simple yet deeply engaging. Players are presented with various valuable items covered in layers of realistic dirt and grime. Using your mouse or finger as a virtual pressure washer, you drag across the screen to blast away the accumulated muck. As you clean, water spray particles animate in real-time, creating a mesmerizing visual effect that mimics actual cleaning physics. The dirt erodes gradually under your cursor, revealing the pristine surface beneath.</p>
+        <p>What sets Cash Cleaner Online apart is its progressive reward system. Each successfully cleaned item grants you virtual earnings - from $100 for standard bills to $1000 for platinum cards. The game continuously generates new dirty items to maintain an endless loop of satisfaction. This creates what psychologists call a "flow state" - that perfect balance between challenge and reward that keeps players engaged for extended sessions. The visual feedback is immediate and gratifying, with confetti explosions and glowing animations celebrating each completed cleaning.</p>
+        <p>The game has gained massive popularity in online communities, schools, and workplaces because it's completely unblocked and requires no permissions. It's the perfect stress-relief tool during breaks, offering a few minutes of mindless zen without any learning curve or complex mechanics. The dark aesthetic makes the bright money pop visually, creating strong contrast that's both aesthetically pleasing and easy on the eyes during extended play sessions.</p>
+
+        <h2>Why Cash Cleaning Games Are So Satisfying</h2>
+        <p>The phenomenon of cleaning games taps into deep psychological mechanisms that explain why millions of players find them irresistibly satisfying. At its core, the appeal lies in our brain's reward system responding to visible progress and completion. When you see dirt disappearing under your cursor in real-time, your brain releases small doses of dopamine - the same neurotransmitter associated with achievement and pleasure. This is why power washing videos have garnered billions of views across social media platforms.</p>
+        <p>ASMR (Autonomous Sensory Meridian Response) plays a significant role in the appeal of cleaning simulators. While Cash Cleaner Online doesn't include sound, the visual ASMR effect is equally powerful. The gradual transformation from dirty to clean creates a sense of order emerging from chaos, which resonates with our innate desire for control and organization. This visual satisfaction is amplified by the particle effects that simulate water spray, triggering the same neural pathways activated by watching real cleaning processes.</p>
+        <p>From a cognitive psychology perspective, these games offer what researchers call "productive procrastination." They provide a sense of accomplishment without real-world consequences or stress. In today's high-pressure environment where complex tasks can feel overwhelming, the simple binary outcome of dirty-to-clean offers clarity and immediate gratification. Each swipe produces visible results, creating a micro-achievement loop that's incredibly addictive.</p>
+        <p>The repetitive nature of the cleaning motion also has meditative qualities. Similar to how coloring books have become popular stress-relief tools for adults, the rhythmic dragging motion required in Cash Cleaner Online creates a focused, almost trance-like state. This repetition can lower cortisol levels and reduce anxiety, making these games unexpectedly therapeutic. Players report feeling calmer and more centered after playing, which explains why cleaning simulators have become popular during work breaks and before sleep.</p>
+
+        <h2>How to Play Cash Cleaner Online</h2>
+        <p>Getting started with Cash Cleaner Online is incredibly straightforward - there's virtually no learning curve. Simply load the page and you'll immediately see a dirty bill displayed in the center of your screen. The dirt layer is represented by a dark, gritty overlay that completely obscures the clean money beneath.</p>
+        <p>On desktop computers, use your mouse to click and drag across the dirty surface. On mobile devices and tablets, use your finger to swipe across the screen. As you move your cursor or finger, the high-pressure washer effect kicks in, erasing the dirt layer and revealing the pristine surface underneath. The larger your movements, the faster you'll clean. The game tracks your progress in real-time via a progress bar at the top of the screen, showing the percentage of dirt removed.</p>
+        <p>Your goal is to reach 95% cleanliness. Once you hit this threshold, the game celebrates your achievement with a spectacular confetti explosion and displays your earned reward. After a brief celebration animation, a new dirty item automatically appears - either another dollar bill, a gold bar, or a platinum credit card. Each item type has slightly different textures and colors, keeping the visual experience fresh.</p>
+        <p>The beauty of Cash Cleaner Online is that there's no wrong way to play. Some players prefer methodical horizontal strokes, others use circular motions, and some just frantically scrub random areas. All approaches work equally well. The game is designed for instant satisfaction - you can complete a single cleaning cycle in under 60 seconds, making it perfect for quick breaks or extended relaxation sessions alike.</p>
+
+        <h2>Is Cash Cleaner Online Free?</h2>
+        <p>Yes, Cash Cleaner Online is completely free to play with absolutely no hidden costs or microtransactions. There's no premium version, no in-app purchases, no subscription fees, and no advertisements interrupting your gameplay. The game was designed as a pure entertainment experience without monetization mechanics that would detract from the core satisfaction loop.</p>
+        <p>You don't need to create an account, provide an email address, or download any software. Simply visit the website and start playing immediately. This accessibility is intentional - the goal is to provide instant stress relief without any barriers to entry. The game works on all modern browsers including Chrome, Firefox, Safari, and Edge, across all device types from smartphones to desktop computers.</p>
+        <p>Because the game runs entirely in your browser using HTML5 technology, there are no storage requirements on your device and no permissions needed. Your progress isn't saved between sessions, which is actually a feature rather than a limitation - it means each visit offers a fresh start without the pressure of maintaining streaks or achievements. This design philosophy keeps the experience pure and meditative, focused solely on the immediate satisfaction of cleaning rather than long-term progression systems that can create addictive patterns.</p>
+        <p>The game is also completely unblocked, meaning it works on school networks, office wifi, and other restricted internet connections that typically block gaming sites. This has made Cash Cleaner Online particularly popular among students looking for quick study breaks and office workers seeking momentary stress relief during busy workdays.</p>
+    </section>
+
+    <footer style="position: relative; bottom: auto; left: auto; right: auto; background: rgba(0, 0, 0, 0.9); padding: 15px; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.7); border-top: 1px solid rgba(0, 255, 136, 0.2); margin-top: 0;">
         <a href="/privacy.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">Privacy Policy</a> |
         <a href="/terms.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">Terms of Service</a> |
         <a href="/about.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">About Us</a> |
