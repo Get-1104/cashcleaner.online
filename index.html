@@ -109,6 +109,7 @@
         let mouseX = 0, mouseY = 0;
         const targetX = { value: 0 };
         const targetY = { value: 0 };
+        let isDragging = false;
         
         // Money bills array and interaction
         const bills = [];
@@ -261,6 +262,7 @@
         }
 
         function onMouseMove(event) {
+            if (!isDragging) return;
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
         }
@@ -307,11 +309,18 @@
         }
 
         function onMouseDown(event) {
+            isDragging = true;
             isMouseDown = true;
             onMouseClick(event);
         }
 
         function onMouseUp() {
+            isDragging = false;
+            isMouseDown = false;
+        }
+
+        function onPointerLeave() {
+            isDragging = false;
             isMouseDown = false;
         }
 
@@ -322,6 +331,7 @@
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('mouseleave', onPointerLeave);
             window.addEventListener('click', onMouseClick);
         }
 
