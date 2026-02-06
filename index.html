@@ -118,12 +118,12 @@
 
         function initScene() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a0a);
-            scene.fog = new THREE.Fog(0x0a0a0a, 5, 15);
+            scene.background = new THREE.Color(0x1a1a1a);
+            scene.fog = new THREE.Fog(0x1a1a1a, 8, 20);
 
             const aspect = window.innerWidth / window.innerHeight;
             camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100);
-            camera.position.set(0, 2.5, 6);
+            camera.position.set(0, 3, 6);
             camera.lookAt(0, 1, 0);
 
             const container = document.getElementById('game3d');
@@ -133,7 +133,7 @@
             renderer.physicallyCorrectLights = true;
             renderer.outputColorSpace = THREE.SRGBColorSpace;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 0.8;
+            renderer.toneMappingExposure = 1.6;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
@@ -141,9 +141,9 @@
             // Room
             const roomGeo = new THREE.BoxGeometry(12, 6, 12);
             const roomMat = new THREE.MeshStandardMaterial({
-                color: 0x3a3a3a,
+                color: 0x444444,
                 side: THREE.BackSide,
-                roughness: 0.9,
+                roughness: 0.85,
                 metalness: 0.0
             });
             const room = new THREE.Mesh(roomGeo, roomMat);
@@ -154,9 +154,9 @@
             // Floor
             const floorGeo = new THREE.PlaneGeometry(12, 12);
             const floorMat = new THREE.MeshStandardMaterial({
-                color: 0x2a2a2a,
-                roughness: 0.8,
-                metalness: 0.1
+                color: 0x3a3a3a,
+                roughness: 0.75,
+                metalness: 0.15
             });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
@@ -233,25 +233,31 @@
             }
 
             // Lights
-            const ambientLight = new THREE.AmbientLight(0x4466aa, 0.15);
+            const ambientLight = new THREE.AmbientLight(0x5577bb, 0.35);
             scene.add(ambientLight);
 
-            const hemiLight = new THREE.HemisphereLight(0x3344aa, 0xaa6644, 0.2);
+            const hemiLight = new THREE.HemisphereLight(0x4466bb, 0x332211, 0.4);
             scene.add(hemiLight);
 
-            const spotLight = new THREE.SpotLight(0xffffdd, 3);
-            spotLight.position.set(0, 5, 0);
-            spotLight.angle = Math.PI / 6;
-            spotLight.penumbra = 0.4;
+            const spotLight = new THREE.SpotLight(0xffffee, 100);
+            spotLight.position.set(0, 6, 2);
+            spotLight.target.position.set(0, 1, 0);
+            spotLight.angle = Math.PI / 5;
+            spotLight.penumbra = 0.3;
             spotLight.decay = 2;
-            spotLight.distance = 10;
+            spotLight.distance = 12;
             spotLight.castShadow = true;
             spotLight.shadow.mapSize.width = 2048;
             spotLight.shadow.mapSize.height = 2048;
             spotLight.shadow.camera.near = 1;
-            spotLight.shadow.camera.far = 10;
+            spotLight.shadow.camera.far = 12;
             scene.add(spotLight);
             scene.add(spotLight.target);
+
+            // Fill light
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
+            fillLight.position.set(-3, 3, 3);
+            scene.add(fillLight);
         }
 
         function onMouseMove(event) {
