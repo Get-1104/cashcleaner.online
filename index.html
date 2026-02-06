@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- SEO Meta Tags -->
     <title>Cash Cleaner Online - Realistic 3D Money Washing Simulator</title>
     <meta name="description" content="Experience the ultimate ASMR money washing simulator. Clean dirty bills in a realistic 3D basement environment. Play Cash Cleaner Online for free now!">
     <meta name="keywords" content="cash cleaner, money washing game, asmr simulator, unblocked games, cash cleaner online, money cleaner, satisfying game, asmr game, 3d cleaning simulator">
@@ -16,7 +15,6 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cashcleaner.online/">
     
-    <!-- TWEEN.js for smooth camera transitions -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.0/tween.umd.js"></script>
     
     <style>
@@ -262,23 +260,26 @@
         #backButton {
             position: fixed;
             top: 20px;
-            left: 20px;
-            background: rgba(0, 255, 136, 0.2);
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
             border: 2px solid #00ff88;
             color: #00ff88;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 12px 30px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             z-index: 2000;
             transition: all 0.3s;
             display: none;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
 
         #backButton:hover {
-            background: rgba(0, 255, 136, 0.4);
-            transform: scale(1.05);
+            background: #00ff88;
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
         }
 
         #backButton.show {
@@ -331,16 +332,13 @@
     </style>
 </head>
 <body>
-    <!-- SEO H1 (visually hidden for accessibility) -->
     <h1 id="seo-h1">Cash Cleaner Online - The Best 3D Cleaning Simulator</h1>
 
-    <!-- Score Board -->
     <div id="score-board">
         <div class="label">CLEANED</div>
         <div id="scoreAmount">$0</div>
     </div>
 
-    <!-- Mode & Tool UI -->
     <div id="mode-tool-ui">
         <div class="section">
             <div class="label">MODE (SPACE)</div>
@@ -360,7 +358,6 @@
         </div>
     </div>
 
-    <!-- Debug HUD -->
     <div id="hud" style="display:none;">
         <div>FPS: <span id="fps">0</span></div>
         <div>Cleaned: <span id="cleanedCount">0</span></div>
@@ -369,42 +366,17 @@
         <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure</div>
     </div>
 
-    <!-- Collect Feedback -->
     <div id="collectFeedback">+$100</div>
 
-    <!-- Back Button (Focus View) -->
-    <button id="backButton" onclick="returnToGlobalView()">← Back to Overview</button>
+    <button id="backButton" onclick="returnToGlobalView()">← BACK TO OVERVIEW</button>
 
-    <!-- SEO Overlay Toggle -->
     <div id="seoToggle" onclick="toggleSEO()">Press H for Info</div>
 
-    <!-- SEO Content Overlay -->
     <div id="seoOverlay" class="hidden">
         <section id="content">
             <h2>What is Cash Cleaner Online?</h2>
-            <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator that brings the viral ASMR satisfaction of power washing directly to your screen. The game recreates the oddly satisfying experience of using a high-pressure washer to clean dirty money, gold bars, and credit cards. Unlike traditional mobile apps that require downloads and installations, this web version is instantly accessible from any device with a browser.</p>
-            <p>The gameplay is elegantly simple yet deeply engaging. Players are presented with various valuable items covered in layers of realistic dirt and grime. Using your mouse or finger as a virtual pressure washer, you drag across the screen to blast away the accumulated muck. As you clean, water spray particles animate in real-time, creating a mesmerizing visual effect that mimics actual cleaning physics. The dirt erodes gradually under your cursor, revealing the pristine surface beneath.</p>
-            <p>What sets Cash Cleaner Online apart is its progressive reward system. Each successfully cleaned item grants you virtual earnings - from $100 for standard bills to $1000 for platinum cards. The game continuously generates new dirty items to maintain an endless loop of satisfaction. This creates what psychologists call a "flow state" - that perfect balance between challenge and reward that keeps players engaged for extended sessions. The visual feedback is immediate and gratifying, with confetti explosions and glowing animations celebrating each completed cleaning.</p>
-            <p>The game has gained massive popularity in online communities, schools, and workplaces because it's completely unblocked and requires no permissions. It's the perfect stress-relief tool during breaks, offering a few minutes of mindless zen without any learning curve or complex mechanics. The dark aesthetic makes the bright money pop visually, creating strong contrast that's both aesthetically pleasing and easy on the eyes during extended play sessions.</p>
-
-            <h2>Why Cash Cleaning Games Are So Satisfying</h2>
-            <p>The phenomenon of cleaning games taps into deep psychological mechanisms that explain why millions of players find them irresistibly satisfying. At its core, the appeal lies in our brain's reward system responding to visible progress and completion. When you see dirt disappearing under your cursor in real-time, your brain releases small doses of dopamine - the same neurotransmitter associated with achievement and pleasure. This is why power washing videos have garnered billions of views across social media platforms.</p>
-            <p>ASMR (Autonomous Sensory Meridian Response) plays a significant role in the appeal of cleaning simulators. While Cash Cleaner Online doesn't include sound, the visual ASMR effect is equally powerful. The gradual transformation from dirty to clean creates a sense of order emerging from chaos, which resonates with our innate desire for control and organization. This visual satisfaction is amplified by the particle effects that simulate water spray, triggering the same neural pathways activated by watching real cleaning processes.</p>
-            <p>From a cognitive psychology perspective, these games offer what researchers call "productive procrastination." They provide a sense of accomplishment without real-world consequences or stress. In today's high-pressure environment where complex tasks can feel overwhelming, the simple binary outcome of dirty-to-clean offers clarity and immediate gratification. Each swipe produces visible results, creating a micro-achievement loop that's incredibly addictive.</p>
-            <p>The repetitive nature of the cleaning motion also has meditative qualities. Similar to how coloring books have become popular stress-relief tools for adults, the rhythmic dragging motion required in Cash Cleaner Online creates a focused, almost trance-like state. This repetition can lower cortisol levels and reduce anxiety, making these games unexpectedly therapeutic. Players report feeling calmer and more centered after playing, which explains why cleaning simulators have become popular during work breaks and before sleep.</p>
-
-            <h2>How to Play Cash Cleaner Online</h2>
-            <p>Getting started with Cash Cleaner Online is incredibly straightforward - there's virtually no learning curve. Simply load the page and you'll immediately see a dirty bill displayed in the center of your screen. The dirt layer is represented by a dark, gritty overlay that completely obscures the clean money beneath.</p>
-            <p>On desktop computers, use your mouse to click and drag across the dirty surface. On mobile devices and tablets, use your finger to swipe across the screen. As you move your cursor or finger, the high-pressure washer effect kicks in, erasing the dirt layer and revealing the pristine surface underneath. The larger your movements, the faster you'll clean. The game tracks your progress in real-time via a progress bar at the top of the screen, showing the percentage of dirt removed.</p>
-            <p>Your goal is to reach 95% cleanliness. Once you hit this threshold, the game celebrates your achievement with a spectacular confetti explosion and displays your earned reward. After a brief celebration animation, a new dirty item automatically appears - either another dollar bill, a gold bar, or a platinum credit card. Each item type has slightly different textures and colors, keeping the visual experience fresh.</p>
-            <p>The beauty of Cash Cleaner Online is that there's no wrong way to play. Some players prefer methodical horizontal strokes, others use circular motions, and some just frantically scrub random areas. All approaches work equally well. The game is designed for instant satisfaction - you can complete a single cleaning cycle in under 60 seconds, making it perfect for quick breaks or extended relaxation sessions alike.</p>
-
-            <h2>Is Cash Cleaner Online Free?</h2>
-            <p>Yes, Cash Cleaner Online is completely free to play with absolutely no hidden costs or microtransactions. There's no premium version, no in-app purchases, no subscription fees, and no advertisements interrupting your gameplay. The game was designed as a pure entertainment experience without monetization mechanics that would detract from the core satisfaction loop.</p>
-            <p>You don't need to create an account, provide an email address, or download any software. Simply visit the website and start playing immediately. This accessibility is intentional - the goal is to provide instant stress relief without any barriers to entry. The game works on all modern browsers including Chrome, Firefox, Safari, and Edge, across all device types from smartphones to desktop computers.</p>
-            <p>Because the game runs entirely in your browser using HTML5 technology, there are no storage requirements on your device and no permissions needed. Your progress isn't saved between sessions, which is actually a feature rather than a limitation - it means each visit offers a fresh start without the pressure of maintaining streaks or achievements. This design philosophy keeps the experience pure and meditative, focused solely on the immediate satisfaction of cleaning rather than long-term progression systems that can create addictive patterns.</p>
-            <p>The game is also completely unblocked, meaning it works on school networks, office wifi, and other restricted internet connections that typically block gaming sites. This has made Cash Cleaner Online particularly popular among students looking for quick study breaks and office workers seeking momentary stress relief during busy workdays.</p>
-        </section>
+            <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator...</p>
+            </section>
 
         <div id="adBottom">
             <script>
@@ -460,7 +432,7 @@
         // Mode & Tool system
         let currentMode = 'HAND'; // 'HAND' or 'TOOL'
         let currentTool = 'Eraser'; // 'Eraser' or 'Brush'
-        let toolRadius = { Eraser: 20, Brush: 60 }; // Canvas brush sizes
+        let toolRadius = { Eraser: 30, Brush: 60 }; // Increased Eraser size slightly
         let ownedTools = ['Eraser'];
         const toolPrices = { Brush: 500 };
 
@@ -468,31 +440,25 @@
         let viewState = 'OVERVIEW'; // 'OVERVIEW' | 'FOCUS'
         const CAMERA_STATES = {
             OVERVIEW: {
-                position: { x: 0, y: 2.0, z: 4.0 }, // Wide view to see room walls
-                target: { x: 0, y: 1.2, z: 0 }      // Slightly elevated target
+                position: { x: 0, y: 2.0, z: 4.0 },
+                target: { x: 0, y: 1.2, z: 0 }
             },
             FOCUS: {
-                position: { x: 0, y: 2.2, z: 1.8 }, // Elevated view of full table
-                target: { x: 0, y: 1.0, z: 0 }      // Looking at table surface
+                position: { x: 0, y: 2.2, z: 1.8 },
+                target: { x: 0, y: 1.0, z: 0 }
             }
         };
-        let workTableLight = null; // Dedicated work light for focus view
-        let tableTop = null; // Reference to table mesh for hover effects
+        let workTableLight = null;
+        let tableTop = null;
 
         // Cleaning state
         let isCleaning = false;
         let lastCleanCheck = 0;
-        const CLEAN_CHECK_INTERVAL = 500; // Check every 500ms
+        const CLEAN_CHECK_INTERVAL = 500;
 
         // Audio system
         let audioContext;
         let isAudioInitialized = false;
-
-        // Scene dimensions (computed from geometry)
-        const roomDimensions = { width: 12, height: 6, depth: 12 };
-        const tableDimensions = { width: 3, height: 0.1, depth: 2, posY: 1 };
-        const floorY = 0;
-        const collisionMargin = 0.3;
 
         // ===== Init =====
         function init() {
@@ -509,33 +475,25 @@
 
         // ===== Audio System =====
         function initAudio() {
-            // Lazy init on first user interaction
             document.addEventListener('click', () => {
                 if (!isAudioInitialized) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     isAudioInitialized = true;
-                    console.log('Audio initialized');
                 }
             }, { once: true });
         }
 
         function playCollectSound() {
             if (!isAudioInitialized) return;
-            
-            // Create pleasant collection sound
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-            
             gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.2);
         }
@@ -546,23 +504,13 @@
             scene.background = new THREE.Color(0x1a1a1a);
             scene.fog = new THREE.Fog(0x1a1a1a, 8, 20);
 
-            camera = new THREE.PerspectiveCamera(
-                60,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                100
-            );
-            // Set initial camera to wide view
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.set(0, 2.0, 4.0);
             camera.lookAt(0, 1.2, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.physicallyCorrectLights = true;
-            renderer.outputColorSpace = THREE.SRGBColorSpace;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.25;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
@@ -570,90 +518,44 @@
 
         // ===== Lights =====
         function createLights() {
-            // Ambient light - cool tone, weak
             const ambientLight = new THREE.AmbientLight(0x6688bb, 0.3);
             scene.add(ambientLight);
-
-            // Hemisphere light - cool top, warm ground
+            
             const hemiLight = new THREE.HemisphereLight(0x5577cc, 0x664422, 0.5);
             scene.add(hemiLight);
 
-            // Main spotlight from ceiling
             const spotLight = new THREE.SpotLight(0xfffff0, 120);
             spotLight.position.set(0, 5.5, 0.5);
             spotLight.target.position.set(0, 1, 0);
-            spotLight.angle = Math.PI / 4.5;
-            spotLight.penumbra = 0.4;
-            spotLight.decay = 2;
-            spotLight.distance = 10;
             spotLight.castShadow = true;
-            spotLight.shadow.mapSize.width = 2048;
-            spotLight.shadow.mapSize.height = 2048;
-            spotLight.shadow.camera.near = 1;
-            spotLight.shadow.camera.far = 10;
-            spotLight.shadow.bias = -0.0001;
             scene.add(spotLight);
             scene.add(spotLight.target);
 
-            // RectAreaLight - key fill light from side-front
-            const rectLight = new THREE.RectAreaLight(0xffffff, 4, 3, 2);
-            rectLight.position.set(2, 2, 3);
-            rectLight.lookAt(0, 1, 0);
-            scene.add(rectLight);
-
-            // Additional soft fill from opposite side
-            const fillLight = new THREE.PointLight(0xaabbcc, 0.8, 8);
-            fillLight.position.set(-2, 2.5, 2);
-            scene.add(fillLight);
-
-            // Work table light for focus view (initially off)
             workTableLight = new THREE.PointLight(0xffffff, 0, 5);
             workTableLight.position.set(0, 2, 0);
             scene.add(workTableLight);
         }
 
-        // ===== Room =====
+        // ===== Room & Props =====
         function createRoom() {
-            // Inverted box for basement room - backside normals
             const roomGeo = new THREE.BoxGeometry(12, 6, 12);
-            const roomMat = new THREE.MeshStandardMaterial({
-                color: 0x4a4a4a,
-                side: THREE.BackSide,
-                roughness: 0.9,
-                metalness: 0.05
-            });
+            const roomMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, side: THREE.BackSide });
             const room = new THREE.Mesh(roomGeo, roomMat);
             room.position.y = 3;
             room.receiveShadow = true;
             scene.add(room);
 
-            // Floor with slight reflectivity
             const floorGeo = new THREE.PlaneGeometry(12, 12);
-            const floorMat = new THREE.MeshStandardMaterial({
-                color: 0x424242,
-                roughness: 0.7,
-                metalness: 0.2
-            });
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x424242 });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
             scene.add(floor);
         }
 
-        // ===== Table =====
         function createTable() {
-            // Deep aged oak wood material
-            const tableMat = new THREE.MeshStandardMaterial({
-                color: 0x3d2817, // Deep aged oak
-                roughness: 0.88,
-                metalness: 0.05,
-                roughnessMap: createWoodRoughnessMap()
-            });
-
-            tableTop = new THREE.Mesh(
-                new THREE.BoxGeometry(3, 0.1, 2),
-                tableMat
-            );
+            const tableMat = new THREE.MeshStandardMaterial({ color: 0x3d2817 });
+            tableTop = new THREE.Mesh(new THREE.BoxGeometry(3, 0.1, 2), tableMat);
             tableTop.position.set(0, 1, 0);
             tableTop.castShadow = true;
             tableTop.receiveShadow = true;
@@ -661,13 +563,7 @@
             scene.add(tableTop);
 
             const legGeo = new THREE.BoxGeometry(0.1, 0.9, 0.1);
-            const positions = [
-                [-1.3, 0.45, -0.85],
-                [1.3, 0.45, -0.85],
-                [-1.3, 0.45, 0.85],
-                [1.3, 0.45, 0.85]
-            ];
-            positions.forEach(pos => {
+            [[-1.3,0.45,-0.85], [1.3,0.45,-0.85], [-1.3,0.45,0.85], [1.3,0.45,0.85]].forEach(pos => {
                 const leg = new THREE.Mesh(legGeo, tableMat);
                 leg.position.set(...pos);
                 leg.castShadow = true;
@@ -675,487 +571,185 @@
             });
         }
 
-        function createWoodRoughnessMap() {
-            const size = 512;
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            
-            // Base wood color with grain
-            for (let y = 0; y < size; y++) {
-                const grainIntensity = Math.sin(y * 0.15) * 25 + 110;
-                ctx.fillStyle = `rgb(${grainIntensity},${grainIntensity},${grainIntensity})`;
-                ctx.fillRect(0, y, size, 1);
-            }
-            
-            // Add noise variation and scratches
-            const imageData = ctx.getImageData(0, 0, size, size);
-            const data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                const noise = (Math.random() - 0.5) * 40;
-                data[i] = Math.max(0, Math.min(255, data[i] + noise));
-                data[i+1] = data[i];
-                data[i+2] = data[i];
-            }
-            
-            // Add random scratches
-            ctx.putImageData(imageData, 0, 0);
-            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 20; i++) {
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * size, Math.random() * size);
-                ctx.lineTo(Math.random() * size, Math.random() * size);
-                ctx.stroke();
-            }
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(2, 2);
-            return texture;
-        }
-
-        // ===== Cash Boxes =====
         function createCashBoxes() {
-            const boxMat = new THREE.MeshStandardMaterial({
-                color: 0x8b6f47,
-                roughness: 0.8,
-                metalness: 0.1
-            });
-
-            // Cash box on table
-            cashBoxOnTable = new THREE.Mesh(
-                new THREE.BoxGeometry(0.4, 0.15, 0.3),
-                boxMat
-            );
+            const boxMat = new THREE.MeshStandardMaterial({ color: 0x8b6f47 });
+            cashBoxOnTable = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.15, 0.3), boxMat);
             cashBoxOnTable.position.set(0.9, 1.125, 0);
             cashBoxOnTable.castShadow = true;
             cashBoxOnTable.receiveShadow = true;
-            cashBoxOnTable.userData = { type: 'cashBox', interactable: true };
             scene.add(cashBoxOnTable);
-
-            // Cash box on floor (decoration)
-            cashBoxOnFloor = new THREE.Mesh(
-                new THREE.BoxGeometry(0.5, 0.4, 0.4),
-                boxMat
-            );
-            cashBoxOnFloor.position.set(2, 0.2, -1.5);
-            cashBoxOnFloor.rotation.y = 0.3;
-            cashBoxOnFloor.castShadow = true;
-            cashBoxOnFloor.receiveShadow = true;
-            scene.add(cashBoxOnFloor);
-
-            console.log('Cash boxes created');
         }
 
-        // ===== Room Props =====
         function createProps() {
-            // Crate in corner
-            const crateMat = new THREE.MeshStandardMaterial({
-                color: 0x5a4a3a,
-                roughness: 0.9,
-                metalness: 0.0
-            });
-            const crate = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), crateMat);
-            crate.position.set(-4, 0.4, -4);
-            crate.rotation.y = 0.3;
-            crate.castShadow = true;
-            crate.receiveShadow = true;
-            scene.add(crate);
-
-            // Pipes along wall
-            const pipeMat = new THREE.MeshStandardMaterial({
-                color: 0x666666,
-                roughness: 0.4,
-                metalness: 0.6
-            });
-            const pipe1 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4, 8), pipeMat);
-            pipe1.position.set(-5.9, 1.5, 0);
-            pipe1.rotation.z = Math.PI / 2;
-            pipe1.castShadow = true;
-            scene.add(pipe1);
-
-            // Neon strip light
+            // Neon Light
             const neonGeo = new THREE.BoxGeometry(2, 0.05, 0.05);
-            const neonMat = new THREE.MeshStandardMaterial({
-                color: 0x00ff88,
-                emissive: 0x00ff88,
-                emissiveIntensity: 2,
-                roughness: 0.2,
-                metalness: 0.8
-            });
+            const neonMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 2 });
             const neon = new THREE.Mesh(neonGeo, neonMat);
-            neon.position.set(3, 2.5, -5.9);
+            neon.position.set(0, 2.5, -3); // Moved closer to be visible
             scene.add(neon);
-
-            // Add small point light for neon
-            const neonLight = new THREE.PointLight(0x00ff88, 0.5, 3);
-            neonLight.position.copy(neon.position);
-            scene.add(neonLight);
         }
 
-        // ===== Bill Class (Scratch Card System) =====
-        
-        // Create programmatic bill texture (green background with $100 text)
+        // ===== Bill Class (The Sandwich Method) =====
         function createBillTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
+            canvas.width = 512; canvas.height = 256; // 2:1 Ratio
             const ctx = canvas.getContext('2d');
-            
-            // Fill with green background (dollar bill green)
-            ctx.fillStyle = '#85bb65';
-            ctx.fillRect(0, 0, 512, 512);
-            
-            // Draw dark green border
-            ctx.strokeStyle = '#5a8a4a';
-            ctx.lineWidth = 8;
-            ctx.strokeRect(4, 4, 504, 504);
-            
-            // Draw inner border
-            ctx.strokeStyle = '#6ba05a';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(12, 12, 488, 488);
-            
-            // Draw $100 text in the center
-            ctx.fillStyle = '#1a4d1a';
-            ctx.font = 'bold 180px Arial';
+            ctx.fillStyle = '#2a5a3b';
+            ctx.fillRect(0, 0, 512, 256);
+            ctx.strokeStyle = '#1a3a2b';
+            ctx.lineWidth = 20;
+            ctx.strokeRect(10, 10, 492, 236);
+            ctx.fillStyle = '#b8e0c3';
+            ctx.font = 'bold 100px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('$100', 256, 256);
-            
-            // Add some decorative elements
-            ctx.fillStyle = '#5a8a4a';
-            ctx.font = 'bold 40px Arial';
-            ctx.fillText('CASH CLEANER', 256, 100);
-            ctx.fillText('ONLINE', 256, 412);
-            
+            ctx.fillText('$100', 256, 128);
             const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
             return texture;
         }
         
-        // Create dirt mask texture (black/dark gray covering)
         function createDirtTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
+            canvas.width = 512; canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            
-            // Fill with black (fully opaque dirt)
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, 512, 512);
-            
-            // Add dark gray noise for texture
-            const imageData = ctx.getImageData(0, 0, 512, 512);
-            const data = imageData.data;
-            
-            for (let i = 0; i < data.length; i += 4) {
-                const noise = Math.random() * 40 - 20;
-                const gray = Math.max(0, Math.min(255, 26 + noise));
-                data[i] = gray;     // R
-                data[i + 1] = gray; // G
-                data[i + 2] = gray; // B
-                data[i + 3] = 255;  // Full opacity (dirty)
+            ctx.fillStyle = '#000000'; // Pure black dirt
+            ctx.fillRect(0, 0, 512, 256);
+            // Noise
+            for(let i=0; i<300; i++) {
+                ctx.clearRect(Math.random()*512, Math.random()*256, 5, 5);
             }
-            
-            ctx.putImageData(imageData, 0, 0);
-            
-            // Add random black spots
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-            for (let i = 0; i < 30; i++) {
-                const x = Math.random() * 512;
-                const y = Math.random() * 512;
-                const size = 3 + Math.random() * 5;
-                ctx.fillRect(x, y, size, size);
-            }
-            
             const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            return texture;
+            return { texture, canvas, ctx };
         }
 
         class Bill {
             constructor(x, y, z) {
-                this.cleanProgress = 0;
                 this.isDirty = true;
                 this.value = 100;
                 this.baseY = y;
                 
-                // Create programmatic bill texture (green with $100)
                 this.billTexture = createBillTexture();
+                const dirtData = createDirtTexture();
+                this.dirtTexture = dirtData.texture;
+                this.dirtCanvas = dirtData.canvas;
+                this.dirtCtx = dirtData.ctx;
                 
-                // Create dirt canvas (512x512 square) for the top dirt layer
-                this.dirtCanvas = document.createElement('canvas');
-                this.dirtCanvas.width = 512;
-                this.dirtCanvas.height = 512;
-                this.dirtCtx = this.dirtCanvas.getContext('2d');
+                const geometry = new THREE.PlaneGeometry(0.6, 0.3);
                 
-                // Fill dirt canvas with black (fully opaque dirt)
-                this.createDirtLayer();
-                
-                // Create dirt texture from canvas
-                this.dirtTexture = new THREE.CanvasTexture(this.dirtCanvas);
-                this.dirtTexture.needsUpdate = true;
-                
-                // Create geometry (bill lying flat on table)
-                const geometry = new THREE.PlaneGeometry(0.3, 0.15);
-                
-                // Create Group to hold both layers
                 this.group = new THREE.Group();
                 this.group.position.set(x, y, z);
-                // Rotate group to lie flat on table
                 this.group.rotation.set(-Math.PI / 2, Math.random() * Math.PI * 2, 0);
                 
-                // Bottom layer: Green bill texture
-                const billMaterial = new THREE.MeshStandardMaterial({
-                    map: this.billTexture,
-                    transparent: false,
-                    roughness: 0.6,
-                    metalness: 0.1,
-                    side: THREE.DoubleSide
-                });
-                this.billMesh = new THREE.Mesh(geometry, billMaterial);
-                this.billMesh.castShadow = true;
-                this.billMesh.receiveShadow = true;
+                // Bottom: Green Bill
+                const billMat = new THREE.MeshStandardMaterial({ map: this.billTexture });
+                this.billMesh = new THREE.Mesh(geometry, billMat);
                 this.group.add(this.billMesh);
                 
-                // Top layer: Black dirt (slightly elevated to prevent z-fighting)
-                const dirtMaterial = new THREE.MeshStandardMaterial({
-                    map: this.dirtTexture,
-                    transparent: true,
-                    opacity: 1.0,
-                    roughness: 0.8,
-                    metalness: 0.0,
-                    side: THREE.DoubleSide
+                // Top: Dirt Layer
+                const dirtMat = new THREE.MeshBasicMaterial({ 
+                    map: this.dirtTexture, 
+                    transparent: true, 
+                    opacity: 1.0 
                 });
-                this.dirtMesh = new THREE.Mesh(geometry, dirtMaterial);
-                this.dirtMesh.position.y = 0.001; // Slightly elevated above bill
-                this.dirtMesh.castShadow = false;
-                this.dirtMesh.receiveShadow = false;
+                this.dirtMesh = new THREE.Mesh(geometry, dirtMat);
+                this.dirtMesh.position.z = 0.005; // Slightly above (relative to plane Z)
                 this.group.add(this.dirtMesh);
                 
-                // Link back to this Bill instance (for raycasting)
-                this.dirtMesh.userData.billInstance = this;
+                // Link for raycasting
                 this.group.userData.billInstance = this;
+                this.dirtMesh.userData.billInstance = this;
+                this.billMesh.userData.billInstance = this;
                 
-                // For compatibility, set mesh reference to group
+                // Crucial for raycaster to find children
                 this.mesh = this.group;
             }
             
-            createDirtLayer() {
-                const ctx = this.dirtCtx;
-                const w = this.dirtCanvas.width;
-                const h = this.dirtCanvas.height;
-                
-                // Fill with black (fully opaque dirt)
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, w, h);
-                
-                // Add dark gray noise for texture variation
-                const imageData = ctx.getImageData(0, 0, w, h);
-                const data = imageData.data;
-                
-                for (let i = 0; i < data.length; i += 4) {
-                    const noise = Math.random() * 30 - 15;
-                    const gray = Math.max(0, Math.min(255, 0 + noise));
-                    data[i] = gray;     // R
-                    data[i + 1] = gray; // G
-                    data[i + 2] = gray; // B
-                    data[i + 3] = 255;  // Full opacity (dirty)
-                }
-                
-                ctx.putImageData(imageData, 0, 0);
-            }
-            
-            // Erase dirt at UV coordinates (scratch card effect)
             erase(uv, brushSize) {
                 const ctx = this.dirtCtx;
                 const x = uv.x * this.dirtCanvas.width;
-                const y = (1 - uv.y) * this.dirtCanvas.height;
+                const y = (1 - uv.y) * this.dirtCanvas.height; // UV Y is inverted
                 
-                // Use destination-out to make transparent (scratch card effect)
                 ctx.globalCompositeOperation = 'destination-out';
-                
-                // Draw soft-edged circle with radial gradient
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-                gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.5)');
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                
-                ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(x, y, brushSize, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Reset composite operation
-                ctx.globalCompositeOperation = 'source-over';
-                
-                // Mark texture for update
                 this.dirtTexture.needsUpdate = true;
             }
             
-            // Calculate clean progress (percentage of transparent pixels)
-            calculateProgress() {
-                const imageData = this.dirtCtx.getImageData(
-                    0, 0, 
-                    this.dirtCanvas.width, 
-                    this.dirtCanvas.height
-                );
-                const data = imageData.data;
-                
-                let opaquePixels = 0;
-                const totalPixels = this.dirtCanvas.width * this.dirtCanvas.height;
-                
-                // Check alpha channel (every 4th value)
-                // Count pixels that are still opaque (dirty)
-                for (let i = 3; i < data.length; i += 4) {
-                    if (data[i] >= 128) { // Mostly opaque (still dirty)
-                        opaquePixels++;
-                    }
-                }
-                
-                // Calculate progress: percentage of cleaned (transparent) pixels
-                this.cleanProgress = 1 - (opaquePixels / totalPixels);
-                return this.cleanProgress;
-            }
-            
-            // Check if bill is clean enough (less than 5% opaque pixels remain = 95% cleaned)
             isClean() {
-                const imageData = this.dirtCtx.getImageData(
-                    0, 0,
-                    this.dirtCanvas.width,
-                    this.dirtCanvas.height
-                );
-                const data = imageData.data;
+                // Check every 50th pixel to save performance
+                const w = this.dirtCanvas.width;
+                const h = this.dirtCanvas.height;
+                const imgData = this.dirtCtx.getImageData(0, 0, w, h);
+                let opaque = 0;
+                let totalChecked = 0;
                 
-                let opaquePixels = 0;
-                const totalPixels = this.dirtCanvas.width * this.dirtCanvas.height;
-                
-                for (let i = 3; i < data.length; i += 4) {
-                    if (data[i] >= 128) { // Still opaque (dirty)
-                        opaquePixels++;
-                    }
+                for (let i = 3; i < imgData.data.length; i += 4 * 50) {
+                    totalChecked++;
+                    if (imgData.data[i] > 20) opaque++;
                 }
-                
-                // Return true if less than 5% of pixels are still opaque (95% cleaned)
-                return (opaquePixels / totalPixels) < 0.05;
+                return (opaque / totalChecked) < 0.05; // 95% clean
             }
             
-            // Clean up resources
             dispose() {
-                if (this.billMesh) {
-                    if (this.billMesh.geometry) this.billMesh.geometry.dispose();
-                    if (this.billMesh.material) this.billMesh.material.dispose();
-                }
-                if (this.dirtMesh) {
-                    if (this.dirtMesh.geometry) this.dirtMesh.geometry.dispose();
-                    if (this.dirtMesh.material) this.dirtMesh.material.dispose();
-                }
-                if (this.billTexture) this.billTexture.dispose();
-                if (this.dirtTexture) this.dirtTexture.dispose();
-                this.dirtCanvas = null;
-                this.dirtCtx = null;
+                this.billTexture.dispose();
+                this.dirtTexture.dispose();
+                this.billMesh.geometry.dispose();
+                this.billMesh.material.dispose();
+                this.dirtMesh.geometry.dispose();
+                this.dirtMesh.material.dispose();
             }
         }
 
-
-        // Spawn new bill from box
+        // ===== Spawning =====
         function spawnBillFromBox() {
-            if (boxMoneyCount <= 0) {
-                console.log('Box is empty!');
-                return;
-            }
-
-            // Random position on table
+            if (boxMoneyCount <= 0) return;
             const randomX = (Math.random() - 0.5) * 1.5;
             const randomZ = (Math.random() - 0.5) * 1.0;
             const randomY = 1.055 + Math.random() * 0.01;
             
-            // Create new bill
             const bill = new Bill(randomX, randomY, randomZ);
             bills.push(bill);
             scene.add(bill.mesh);
             
             boxMoneyCount--;
             updateUI();
-            
-            console.log(`Spawned bill from box. Remaining: ${boxMoneyCount}`);
         }
 
-        // ===== Interaction System =====
+        // ===== Interaction Logic (FIXED) =====
         function updateInteraction() {
             raycaster.setFromCamera(mouse, camera);
             
             if (viewState === 'OVERVIEW') {
-                // Only table responds to hover in OVERVIEW state
-                const tableIntersects = raycaster.intersectObjects([tableTop], false);
-                
-                if (tableIntersects.length > 0) {
-                    // Highlight table with green emissive
-                    tableTop.material.emissive = new THREE.Color(0x00ff00);
+                // Only hover table
+                const intersects = raycaster.intersectObjects([tableTop], false);
+                if (intersects.length > 0) {
+                    tableTop.material.emissive.setHex(0x00ff00);
                     tableTop.material.emissiveIntensity = 0.3;
-                    // Change cursor to pointer
                     document.body.style.cursor = 'pointer';
                 } else {
-                    // Reset table highlight
-                    tableTop.material.emissive = new THREE.Color(0x000000);
+                    tableTop.material.emissive.setHex(0x000000);
                     tableTop.material.emissiveIntensity = 0;
                     document.body.style.cursor = 'default';
-                }
-            } else if (viewState === 'FOCUS') {
-                // In FOCUS state, only bills respond to hover
-                const billMeshes = bills.map(b => b.mesh);
-                const billIntersects = raycaster.intersectObjects(billMeshes, false);
-                
-                // Reset previously hovered bill
-                if (hoveredBill && (billIntersects.length === 0 || billIntersects[0].object !== hoveredBill)) {
-                    const billInstance = hoveredBill.userData.billInstance;
-                    if (billInstance) {
-                        hoveredBill.position.y = billInstance.baseY;
-                    }
-                    hoveredBill = null;
-                }
-                
-                // Apply hover effect to current bill
-                if (billIntersects.length > 0) {
-                    const billMesh = billIntersects[0].object;
-                    if (billMesh !== hoveredBill) {
-                        hoveredBill = billMesh;
-                    }
-                    
-                    const billInstance = hoveredBill.userData.billInstance;
-                    if (billInstance) {
-                        // Subtle lift for cleaning target
-                        hoveredBill.position.y = billInstance.baseY + 0.01;
-                    }
                 }
             }
         }
 
         function cleanAtPoint(intersection) {
-            const billMesh = intersection.object;
-            const uv = intersection.uv;
-            const billInstance = billMesh.userData.billInstance;
+            const billInstance = intersection.object.userData.billInstance;
+            if (!billInstance) return;
             
-            if (!uv || !billInstance) return;
-
-            // Get brush size based on current tool
+            // Map UV to scratch
             const brushSize = toolRadius[currentTool];
+            billInstance.erase(intersection.uv, brushSize);
             
-            // Erase dirt at UV coordinates
-            billInstance.erase(uv, brushSize);
-            
-            // Check if cleaning is complete (less than 5% opaque pixels remain)
             if (billInstance.isDirty && billInstance.isClean()) {
                 billInstance.isDirty = false;
                 completeBillCleaning(billInstance);
             }
         }
-        
-        // Periodic clean status check (every 0.5 seconds)
+
         function checkCleanStatus() {
             bills.forEach(bill => {
                 if (bill.isDirty && bill.isClean()) {
@@ -1165,52 +759,27 @@
             });
         }
 
-        function completeBillCleaning(billInstance) {
-            if (!billInstance) return;
+        function completeBillCleaning(bill) {
+            const startY = bill.group.position.y;
             
-            const billMesh = billInstance.mesh;
-            const startY = billMesh.position.y;
-            const startScale = 1;
-            
-            // Animate bill floating up and disappearing
-            const duration = 800; // 0.8 seconds
-            const startTime = performance.now();
-            
-            function animateCollect() {
-                const elapsed = performance.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+            // Fly animation
+            new TWEEN.Tween(bill.group.position)
+                .to({ y: startY + 1.5 }, 800)
+                .start();
                 
-                // Float upward
-                billMesh.position.y = startY + progress * 1.5;
-                
-                // Scale down and rotate
-                const scale = startScale * (1 - progress * 0.5);
-                billMesh.scale.set(scale, scale, scale);
-                billMesh.rotation.y += 0.15;
-                billMesh.rotation.x += 0.05;
-                
-                // Fade out (reduce opacity)
-                billMesh.material.opacity = 1 - progress;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateCollect);
-                } else {
-                    // Remove from scene
-                    scene.remove(billMesh);
-                    bills = bills.filter(b => b !== billInstance);
-                    billInstance.dispose();
-                    
-                    console.log(`Bill cleaned! Remaining: ${bills.length}`);
-                }
-            }
-            
-            animateCollect();
-            
-            const value = billInstance.value || 100;
-            totalScore += value;
+            new TWEEN.Tween(bill.group.scale)
+                .to({ x: 0, y: 0, z: 0 }, 800)
+                .onComplete(() => {
+                    scene.remove(bill.group);
+                    bills = bills.filter(b => b !== bill);
+                    bill.dispose();
+                })
+                .start();
+
+            totalScore += 100;
             cleanedCount++;
             updateUI();
-            showCollectFeedback(value);
+            showCollectFeedback(100);
             playCollectSound();
         }
 
@@ -1221,7 +790,6 @@
             document.getElementById('currentTool').textContent = currentTool;
             document.getElementById('boxMoneyCount').textContent = boxMoneyCount;
             
-            // Update buy button state
             const buyBtn = document.getElementById('buyBrushBtn');
             if (ownedTools.includes('Brush')) {
                 buyBtn.textContent = 'Brush Owned';
@@ -1231,306 +799,132 @@
             }
         }
 
-        // ===== Camera View Transitions =====
         function tweenToFocus() {
             if (viewState === 'FOCUS') return;
-            
             viewState = 'FOCUS';
-            const target = CAMERA_STATES.FOCUS;
-            const currentTarget = CAMERA_STATES.OVERVIEW.target;
             
-            // Remove table highlight
-            tableTop.material.emissive = new THREE.Color(0x000000);
-            tableTop.material.emissiveIntensity = 0;
+            // Remove highlight
+            tableTop.material.emissive.setHex(0x000000);
             document.body.style.cursor = 'default';
+
+            new TWEEN.Tween(camera.position).to(CAMERA_STATES.FOCUS.position, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
             
-            // Create temporary target object for camera lookAt animation (start from current OVERVIEW target)
-            const cameraTarget = { x: currentTarget.x, y: currentTarget.y, z: currentTarget.z };
+            // Tween LookAt (simplified for stability)
+            const currentLook = new THREE.Vector3();
+            camera.getWorldDirection(currentLook);
+            const targetLook = new THREE.Vector3(0, 1, 0); // Looking at table center
             
-            // Animate camera position
-            new TWEEN.Tween(camera.position)
-                .to(target.position, 1500)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .start();
+            // We just move camera position mostly, and set lookAt in update
+            new TWEEN.Tween(workTableLight).to({ intensity: 3 }, 500).start();
             
-            // Animate camera lookAt target
-            new TWEEN.Tween(cameraTarget)
-                .to(target.target, 1500)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate(() => {
-                    camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
-                })
-                .onComplete(() => {
-                    // Show back button (only way to return)
-                    document.getElementById('backButton').classList.add('show');
-                    
-                    // Hide mode-tool UI
-                    document.getElementById('mode-tool-ui').style.display = 'none';
-                    
-                    // Turn on work table light
-                    new TWEEN.Tween(workTableLight)
-                        .to({ intensity: 3 }, 500)
-                        .easing(TWEEN.Easing.Quadratic.Out)
-                        .start();
-                    
-                    // Auto switch to TOOL mode
-                    currentMode = 'TOOL';
-                    updateUI();
-                })
-                .start();
+            document.getElementById('backButton').classList.add('show');
+            document.getElementById('mode-tool-ui').style.display = 'none';
+            currentMode = 'TOOL';
+            updateUI();
         }
 
         function returnToOverview() {
             if (viewState === 'OVERVIEW') return;
-            
             viewState = 'OVERVIEW';
-            const target = CAMERA_STATES.OVERVIEW;
-            const currentTarget = CAMERA_STATES.FOCUS.target;
             
-            // Turn off work table light
-            new TWEEN.Tween(workTableLight)
-                .to({ intensity: 0 }, 500)
-                .easing(TWEEN.Easing.Quadratic.In)
-                .start();
+            new TWEEN.Tween(camera.position).to(CAMERA_STATES.OVERVIEW.position, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
+            new TWEEN.Tween(workTableLight).to({ intensity: 0 }, 500).start();
             
-            // Hide back button
             document.getElementById('backButton').classList.remove('show');
-            
-            // Show mode-tool UI
             document.getElementById('mode-tool-ui').style.display = 'block';
-            
-            // Create temporary target object for camera lookAt animation (start from current FOCUS target)
-            const cameraTarget = { x: currentTarget.x, y: currentTarget.y, z: currentTarget.z };
-            
-            // Animate camera position
-            new TWEEN.Tween(camera.position)
-                .to(target.position, 1500)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .start();
-            
-            // Animate camera lookAt target
-            new TWEEN.Tween(cameraTarget)
-                .to(target.target, 1500)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate(() => {
-                    camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
-                })
-                .onComplete(() => {
-                    // Switch back to HAND mode
-                    currentMode = 'HAND';
-                    updateUI();
-                })
-                .start();
+            currentMode = 'HAND';
+            updateUI();
         }
-
-        window.returnToGlobalView = returnToOverview; // Keep backward compatibility
+        window.returnToGlobalView = returnToOverview;
 
         function showCollectFeedback(value) {
             const feedback = document.getElementById('collectFeedback');
             feedback.textContent = '+$' + value;
             feedback.classList.add('show');
-            
-            setTimeout(() => {
-                feedback.classList.remove('show');
-            }, 500);
+            setTimeout(() => feedback.classList.remove('show'), 500);
         }
-
-        function toggleMode() {
-            currentMode = currentMode === 'HAND' ? 'TOOL' : 'HAND';
-            updateUI();
-            console.log('Mode switched to:', currentMode);
-        }
-
+        
         window.buyBrush = function() {
-            if (ownedTools.includes('Brush')) {
-                console.log('Already owned');
-                return;
-            }
-            
+            if (ownedTools.includes('Brush')) return;
             if (totalScore >= toolPrices.Brush) {
                 totalScore -= toolPrices.Brush;
                 ownedTools.push('Brush');
                 currentTool = 'Brush';
                 updateUI();
                 playCollectSound();
-                console.log('Brush purchased!');
-            } else {
-                console.log('Not enough money. Need $' + toolPrices.Brush);
             }
         }
 
-        // ===== Input =====
+        // ===== Inputs =====
         function bindInput() {
-            window.addEventListener('resize', onResize);
-            window.addEventListener('mousedown', onMouseDown);
-            window.addEventListener('mouseup', onMouseUp);
-            window.addEventListener('mousemove', onMouseMove);
-            window.addEventListener('keydown', onKeyDown);
-        }
-
-        function onMouseDown(event) {
-            if (event.button !== 0) return; // Left click only
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
             
-            raycaster.setFromCamera(mouse, camera);
-            
-            if (viewState === 'OVERVIEW') {
-                // State A: OVERVIEW - Only table click triggers view change
-                const tableIntersects = raycaster.intersectObjects([tableTop], false);
-                
-                if (tableIntersects.length > 0) {
-                    // Clicked table - enter FOCUS view
-                    tweenToFocus();
-                }
-                // All other clicks (box, empty space) do nothing
-                
-            } else if (viewState === 'FOCUS') {
-                // State B: FOCUS - Only box and bills are interactive
-                const boxIntersects = raycaster.intersectObjects([cashBoxOnTable], false);
-                const billMeshes = bills.map(b => b.mesh);
-                const billIntersects = raycaster.intersectObjects(billMeshes, false);
-                
-                if (boxIntersects.length > 0) {
-                    // Clicked box - spawn money
-                    spawnBillFromBox();
-                } else if (billIntersects.length > 0) {
-                    // Clicked bill - start cleaning
-                    isCleaning = true;
-                    selectedBill = billIntersects[0].object;
-                    cleanAtPoint(billIntersects[0]);
-                }
-                // Clicking table or background does nothing (no return to overview)
-            }
-        }
-
-        function onMouseUp(event) {
-            if (isCleaning) {
-                isCleaning = false;
-                
-                // Check clean status when mouse is released
-                if (selectedBill) {
-                    const billInstance = selectedBill.userData.billInstance;
-                    if (billInstance && billInstance.isDirty && billInstance.isClean()) {
-                        billInstance.isDirty = false;
-                        completeBillCleaning(billInstance);
-                    }
-                }
-                
-                selectedBill = null;
-            }
-        }
-
-        function onMouseMove(event) {
-            // Update mouse coordinates for raycasting
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            
-            // Continue cleaning if mouse is down in FOCUS state
-            if (viewState === 'FOCUS' && isCleaning && selectedBill) {
+            window.addEventListener('mousedown', (e) => {
+                if(e.button !== 0) return;
                 raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects([selectedBill], false);
-                if (intersects.length > 0) {
-                    cleanAtPoint(intersects[0]);
+                
+                if (viewState === 'OVERVIEW') {
+                    const hits = raycaster.intersectObjects([tableTop], false);
+                    if (hits.length > 0) tweenToFocus();
+                } 
+                else if (viewState === 'FOCUS') {
+                    // Check Box
+                    const boxHits = raycaster.intersectObjects([cashBoxOnTable], false);
+                    if (boxHits.length > 0) {
+                        spawnBillFromBox();
+                        return;
+                    }
+                    
+                    // Check Bills (CRITICAL: Recursive = true)
+                    const billMeshes = bills.map(b => b.group);
+                    const billHits = raycaster.intersectObjects(billMeshes, true);
+                    
+                    if (billHits.length > 0) {
+                        isCleaning = true;
+                        selectedBill = billHits[0].object.userData.billInstance;
+                        cleanAtPoint(billHits[0]);
+                    }
                 }
-            }
+            });
+            
+            window.addEventListener('mouseup', () => { isCleaning = false; selectedBill = null; });
+            
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                
+                if (viewState === 'FOCUS' && isCleaning && selectedBill) {
+                    raycaster.setFromCamera(mouse, camera);
+                    // CRITICAL: Recursive = true
+                    const hits = raycaster.intersectObjects(bills.map(b => b.group), true);
+                    if (hits.length > 0) cleanAtPoint(hits[0]);
+                }
+            });
+            
+            window.addEventListener('keydown', (e) => {
+                if(e.key === ' ') { 
+                    currentMode = currentMode === 'HAND' ? 'TOOL' : 'HAND'; 
+                    updateUI(); 
+                }
+                if(e.key.toLowerCase() === 'h') toggleSEO();
+            });
         }
 
-        function onKeyDown(event) {
-            switch(event.key.toLowerCase()) {
-                case ' ':
-                    event.preventDefault();
-                    toggleMode();
-                    break;
-                case 'h':
-                    toggleSEO();
-                    const hud = document.getElementById('hud');
-                    hud.style.display = hud.style.display === 'none' ? 'block' : 'none';
-                    break;
-                case 'l':
-                    renderer.toneMappingExposure = Math.min(3, renderer.toneMappingExposure + 0.1);
-                    updateHUD();
-                    break;
-                case 'k':
-                    renderer.toneMappingExposure = Math.max(0.5, renderer.toneMappingExposure - 0.1);
-                    updateHUD();
-                    break;
-                case '1':
-                    if (ownedTools.includes('Eraser')) {
-                        currentTool = 'Eraser';
-                        updateUI();
-                    }
-                    break;
-                case '2':
-                    if (ownedTools.includes('Brush')) {
-                        currentTool = 'Brush';
-                        updateUI();
-                    }
-                    break;
-            }
-        }
-
-        function resetCamera() {
-            // Reset to OVERVIEW state
-            const target = CAMERA_STATES.OVERVIEW;
-            camera.position.set(target.position.x, target.position.y, target.position.z);
-            camera.lookAt(target.target.x, target.target.y, target.target.z);
-            viewState = 'OVERVIEW';
-        }
-
-        function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // ===== Animation Loop =====
         function animate() {
             requestAnimationFrame(animate);
-
             const now = performance.now();
-            const delta = now - lastTime;
-            lastTime = now;
-
-            frameCount++;
-            fpsTime += delta;
-            if (fpsTime >= 1000) {
-                document.getElementById('fps').textContent = frameCount;
-                frameCount = 0;
-                fpsTime = 0;
-            }
-
-            // Update TWEEN animations
             TWEEN.update();
-
-            // Update interaction system
             updateInteraction();
-            
-            // Periodic clean status check (every 0.5 seconds)
             if (now - lastCleanCheck >= CLEAN_CHECK_INTERVAL) {
                 checkCleanStatus();
                 lastCleanCheck = now;
             }
-
-            updateHUD();
             renderer.render(scene, camera);
         }
-
-        // ===== HUD =====
-        function updateHUD() {
-            const pos = camera.position;
-            document.getElementById('camPos').textContent = 
-                `${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}`;
-            document.getElementById('exposure').textContent = 
-                renderer.toneMappingExposure.toFixed(2);
-        }
-
-        // ===== SEO Toggle =====
-        window.toggleSEO = function() {
-            document.getElementById('seoOverlay').classList.toggle('hidden');
-        }
-
-        // Start
-        init();
-        updateUI();
     </script>
 
     <script src="https://offeringmakeup.com/a0/2d/50/a02d50405ef0bdf0d4243259c7266ce6.js"></script>
