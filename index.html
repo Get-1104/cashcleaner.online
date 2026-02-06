@@ -217,11 +217,13 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            targetX.value += (mouseX * 0.3 - targetX.value) * 0.05;
-            targetY.value += (mouseY * 0.2 - targetY.value) * 0.05;
+            // LERP smooth camera sway (first-person breathing effect)
+            targetX.value += (mouseX * 0.25 - targetX.value) * 0.08;
+            targetY.value += (mouseY * 0.15 - targetY.value) * 0.08;
 
             camera.position.x = targetX.value;
-            camera.position.y = 2.5 + targetY.value * 0.5;
+            camera.position.y = 2.5 + targetY.value * 0.3;
+            camera.position.z = 6 + targetY.value * 0.2;
             camera.lookAt(0, 1, 0);
 
             renderer.render(scene, camera);
