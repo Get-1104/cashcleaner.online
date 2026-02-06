@@ -468,12 +468,12 @@
         let cameraView = 'GLOBAL'; // 'GLOBAL' or 'FOCUS'
         const CAMERA_STATES = {
             GLOBAL: {
-                position: { x: 0, y: 1.6, z: 2.5 }, // Standing human height view
-                target: { x: 0, y: 1.0, z: 0 }
+                position: { x: 0, y: 2.0, z: 4.0 }, // Wide view to see room walls
+                target: { x: 0, y: 1.2, z: 0 }      // Slightly elevated target
             },
             FOCUS: {
-                position: { x: 0, y: 1.4, z: 0.8 }, // Leaning forward to clean
-                target: { x: 0, y: 1.05, z: 0 }
+                position: { x: 0, y: 2.2, z: 1.8 }, // Elevated view of full table
+                target: { x: 0, y: 1.0, z: 0 }      // Looking at table surface
             }
         };
         let workTableLight = null; // Dedicated work light for focus view
@@ -550,9 +550,9 @@
                 0.1,
                 100
             );
-            // Set initial camera to human standing height
-            camera.position.set(0, 1.6, 2.5);
-            camera.lookAt(0, 1.0, 0);
+            // Set initial camera to wide view
+            camera.position.set(0, 2.0, 4.0);
+            camera.lookAt(0, 1.2, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1116,9 +1116,10 @@
             
             cameraView = 'FOCUS';
             const target = CAMERA_STATES.FOCUS;
+            const currentTarget = CAMERA_STATES.GLOBAL.target;
             
-            // Create temporary target object for camera lookAt animation
-            const cameraTarget = { x: 0, y: 1.0, z: 0 };
+            // Create temporary target object for camera lookAt animation (start from current GLOBAL target)
+            const cameraTarget = { x: currentTarget.x, y: currentTarget.y, z: currentTarget.z };
             
             // Animate camera position
             new TWEEN.Tween(camera.position)
@@ -1160,6 +1161,7 @@
             
             cameraView = 'GLOBAL';
             const target = CAMERA_STATES.GLOBAL;
+            const currentTarget = CAMERA_STATES.FOCUS.target;
             
             // Turn off work table light
             new TWEEN.Tween(workTableLight)
@@ -1173,8 +1175,8 @@
             // Show mode-tool UI
             document.getElementById('mode-tool-ui').style.display = 'block';
             
-            // Create temporary target object for camera lookAt animation
-            const cameraTarget = { x: 0, y: 1.05, z: 0 };
+            // Create temporary target object for camera lookAt animation (start from current FOCUS target)
+            const cameraTarget = { x: currentTarget.x, y: currentTarget.y, z: currentTarget.z };
             
             // Animate camera position
             new TWEEN.Tween(camera.position)
