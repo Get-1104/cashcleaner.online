@@ -16,6 +16,9 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cashcleaner.online/">
     
+    <!-- TWEEN.js for smooth camera transitions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.0/tween.umd.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -255,6 +258,33 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
+        /* Back Button (Focus View) */
+        #backButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 2000;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        #backButton:hover {
+            background: rgba(0, 255, 136, 0.4);
+            transform: scale(1.05);
+        }
+
+        #backButton.show {
+            display: block;
+        }
+
         /* SEO H1 - Visually hidden but accessible */
         #seo-h1 {
             position: absolute;
@@ -341,6 +371,9 @@
 
     <!-- Collect Feedback -->
     <div id="collectFeedback">+$100</div>
+
+    <!-- Back Button (Focus View) -->
+    <button id="backButton" onclick="returnToGlobalView()">← Back to Overview</button>
 
     <!-- SEO Overlay Toggle -->
     <div id="seoToggle" onclick="toggleSEO()">Press H for Info</div>
@@ -432,6 +465,20 @@
         let toolRadius = { Eraser: 20, Brush: 60 }; // Canvas brush sizes
         let ownedTools = ['Eraser'];
         const toolPrices = { Brush: 500 };
+
+        // Camera View States
+        let cameraView = 'GLOBAL'; // 'GLOBAL' or 'FOCUS'
+        const CAMERA_STATES = {
+            GLOBAL: {
+                position: { x: 0, y: 4, z: 5 },
+                target: { x: 0, y: 1.1, z: 0 }
+            },
+            FOCUS: {
+                position: { x: 0, y: 2.5, z: 0 },
+                target: { x: 0, y: 1.05, z: 0 }
+            }
+        };
+        let workTableLight = null; // Dedicated work light for focus view
 
         // Cleaning state
         let isCleaning = false;
@@ -570,6 +617,11 @@
             const fillLight = new THREE.PointLight(0xaabbcc, 0.8, 8);
             fillLight.position.set(-2, 2.5, 2);
             scene.add(fillLight);
+
+            // Work table light for focus view (initially off)
+            workTableLight = new THREE.PointLight(0xffffff, 0, 5);
+            workTableLight.position.set(0, 2, 0);
+            scene.add(workTableLight);
         }
 
         // ===== Room =====
@@ -1072,6 +1124,98 @@
             }
         }
 
+        // ===== Camera View Transitions =====
+        function switchToFocusView() {
+            if (cameraView === 'FOCUS') return;
+            
+            cameraView = 'FOCUS';
+            const target = CAMERA_STATES.FOCUS;
+            
+            // Disable orbit controls during transition
+            controls.enabled = false;
+            
+            // Animate camera position
+            new TWEEN.Tween(camera.position)
+                .to(target.position, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .start();
+            
+            // Animate camera target
+            new TWEEN.Tween(controls.target)
+                .to(target.target, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => {
+                    controls.update();
+                })
+                .onComplete(() => {
+                    // Keep controls disabled in focus view
+                    controls.enabled = false;
+                    
+                    // Show back button
+                    document.getElementById('backButton').classList.add('show');
+                    
+                    // Hide mode-tool UI
+                    document.getElementById('mode-tool-ui').style.display = 'none';
+                    
+                    // Turn on work table light
+                    new TWEEN.Tween(workTableLight)
+                        .to({ intensity: 3 }, 500)
+                        .easing(TWEEN.Easing.Quadratic.Out)
+                        .start();
+                    
+                    // Auto switch to TOOL mode
+                    if (currentMode !== 'TOOL') {
+                        currentMode = 'TOOL';
+                        updateUI();
+                    }
+                })
+                .start();
+        }
+
+        function returnToGlobalView() {
+            if (cameraView === 'GLOBAL') return;
+            
+            cameraView = 'GLOBAL';
+            const target = CAMERA_STATES.GLOBAL;
+            
+            // Turn off work table light
+            new TWEEN.Tween(workTableLight)
+                .to({ intensity: 0 }, 500)
+                .easing(TWEEN.Easing.Quadratic.In)
+                .start();
+            
+            // Hide back button
+            document.getElementById('backButton').classList.remove('show');
+            
+            // Show mode-tool UI
+            document.getElementById('mode-tool-ui').style.display = 'block';
+            
+            // Animate camera position
+            new TWEEN.Tween(camera.position)
+                .to(target.position, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .start();
+            
+            // Animate camera target
+            new TWEEN.Tween(controls.target)
+                .to(target.target, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => {
+                    controls.update();
+                })
+                .onComplete(() => {
+                    // Re-enable orbit controls
+                    controls.enabled = true;
+                    
+                    // Switch back to HAND mode
+                    currentMode = 'HAND';
+                    updateUI();
+                })
+                .start();
+        }
+
+        window.returnToGlobalView = returnToGlobalView;
+
         function showCollectFeedback(value) {
             const feedback = document.getElementById('collectFeedback');
             feedback.textContent = '+$' + value;
@@ -1119,15 +1263,24 @@
             if (event.button !== 0) return; // Left click only
             
             if (currentMode === 'HAND') {
-                // Try to take money from box
                 raycaster.setFromCamera(mouse, camera);
                 const boxIntersects = raycaster.intersectObjects([cashBoxOnTable], false);
                 
                 if (boxIntersects.length > 0) {
-                    spawnBillFromBox();
+                    if (cameraView === 'GLOBAL') {
+                        // Switch to focus view first
+                        switchToFocusView();
+                        // Spawn bill after camera transition
+                        setTimeout(() => {
+                            spawnBillFromBox();
+                        }, 1500);
+                    } else {
+                        // Already in focus view, just spawn
+                        spawnBillFromBox();
+                    }
                 }
             } else if (currentMode === 'TOOL') {
-                // Start cleaning
+                // Start cleaning (only works in focus view)
                 raycaster.setFromCamera(mouse, camera);
                 const billMeshes = bills.map(b => b.mesh);
                 const billIntersects = raycaster.intersectObjects(billMeshes, false);
@@ -1136,7 +1289,7 @@
                     isCleaning = true;
                     selectedBill = billIntersects[0].object;
                     cleanAtPoint(billIntersects[0]);
-                    controls.enabled = false; // Disable orbit while cleaning
+                    // No need to disable controls - already disabled in focus view
                 }
             }
         }
@@ -1277,6 +1430,9 @@
                 frameCount = 0;
                 fpsTime = 0;
             }
+
+            // Update TWEEN animations
+            TWEEN.update();
 
             // Update interaction system
             updateInteraction();
