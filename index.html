@@ -337,24 +337,7 @@
         let fpsTime = 0;
 
         // Camera control state
-        let mouseX = 0, mouseY = 0;
         let isDragging = false;
-        let currentCameraMode = 'overview';
-        let targetCamPos = new THREE.Vector3(0, 4, 5);
-        let targetCamLookAt = new THREE.Vector3(0, 1, 0);
-        let camTransitionSpeed = 0.05;
-
-        // Camera presets
-        const cameraPresets = {
-            overview: {
-                position: new THREE.Vector3(0, 4, 5),
-                lookAt: new THREE.Vector3(0, 1, 0)
-            },
-            close: {
-                position: new THREE.Vector3(0, 2, 3),
-                lookAt: new THREE.Vector3(0, 1.05, 0)
-            }
-        };
 
         // Cleaning system state
         let isCleaning = false;
@@ -372,6 +355,12 @@
         let cleaningSound;
         let cleaningSoundGain;
         let isAudioInitialized = false;
+
+        // Scene dimensions (computed from geometry)
+        const roomDimensions = { width: 12, height: 6, depth: 12 };
+        const tableDimensions = { width: 3, height: 0.1, depth: 2, posY: 1 };
+        const floorY = 0;
+        const collisionMargin = 0.3;
 
         // ===== Init =====
         function init() {
@@ -473,8 +462,8 @@
                 0.1,
                 100
             );
-            camera.position.copy(cameraPresets.overview.position);
-            camera.lookAt(cameraPresets.overview.lookAt);
+            camera.position.set(0, 4, 5);
+            camera.lookAt(0, 1.1, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -489,15 +478,16 @@
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.1;
+            controls.dampingFactor = 0.08;
             controls.enablePan = false;
-            controls.minDistance = 2;
-            controls.maxDistance = 7;
-            controls.minPolarAngle = Math.PI * 0.2;
+            controls.rotateSpeed = 0.9;
+            controls.zoomSpeed = 0.9;
+            controls.minDistance = 2.6;
+            controls.maxDistance = 7.0;
+            controls.minPolarAngle = Math.PI * 0.18;
             controls.maxPolarAngle = Math.PI * 0.48;
-            controls.rotateSpeed = 0.8;
-            controls.target.copy(cameraPresets.overview.lookAt);
-            controls.enabled = false; // Disabled by default, enabled on mouse down
+            controls.target.set(0, 1.1, 0);
+            controls.update();
         }
 
         // ===== Lights =====
@@ -911,14 +901,15 @@
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects(bills);
                 
-                if (intersects.length > 0 && !event.shiftKey) {
+                if (intersects.length > 0) {
                     isCleaning = true;
                     currentBill = intersects[0].object;
                     cleanAtPoint(intersects[0]);
                     startCleaningSound();
+                    // Disable orbit while cleaning
+                    controls.enabled = false;
                 } else {
                     isDragging = true;
-                    controls.enabled = true;
                 }
             }
         }
@@ -930,21 +921,67 @@
             isCleaning = false;
             currentBill = null;
             isDragging = false;
-            controls.enabled = false;
+            controls.enabled = true; // Re-enable orbit
         }
 
         function onMouseMove(event) {
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-
             // Continue cleaning if mouse is down
             if (isCleaning && currentBill) {
-                mouse.x = mouseX;
-                mouse.y = mouseY;
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects([currentBill]);
                 if (intersects.length > 0) {
                     cleanAtPoint(intersects[0]);
+                }
+            }
+        }
+
+        // ===== Camera Clamping =====
+        function clampCamera() {
+            const pos = camera.position;
+            
+            // 1. Floor constraint
+            if (pos.y < floorY + collisionMargin) {
+                pos.y = floorY + collisionMargin;
+            }
+            
+            // 2. Room boundary constraints
+            const roomHalfX = roomDimensions.width / 2 - collisionMargin;
+            const roomHalfZ = roomDimensions.depth / 2 - collisionMargin;
+            
+            pos.x = THREE.MathUtils.clamp(pos.x, -roomHalfX, roomHalfX);
+            pos.z = THREE.MathUtils.clamp(pos.z, -roomHalfZ, roomHalfZ);
+            
+            // 3. Table collision (Box3 check)
+            const tableBox = new THREE.Box3(
+                new THREE.Vector3(
+                    -tableDimensions.width / 2 - collisionMargin,
+                    tableDimensions.posY - tableDimensions.height / 2 - collisionMargin,
+                    -tableDimensions.depth / 2 - collisionMargin
+                ),
+                new THREE.Vector3(
+                    tableDimensions.width / 2 + collisionMargin,
+                    tableDimensions.posY + tableDimensions.height / 2 + collisionMargin,
+                    tableDimensions.depth / 2 + collisionMargin
+                )
+            );
+            
+            if (tableBox.containsPoint(pos)) {
+                // Push camera out from table center
+                const tableCenter = new THREE.Vector3(0, tableDimensions.posY, 0);
+                const pushDir = pos.clone().sub(tableCenter).normalize();
+                
+                // Find closest point on box boundary
+                const closestPoint = tableBox.clampPoint(pos, new THREE.Vector3());
+                const pushDistance = collisionMargin * 1.5;
+                
+                pos.copy(closestPoint).add(pushDir.multiplyScalar(pushDistance));
+                
+                // Update controls distance if needed
+                const distToTarget = pos.distanceTo(controls.target);
+                if (distToTarget < controls.minDistance) {
+                    controls.minDistance = distToTarget + 0.1;
                 }
             }
         }
@@ -999,9 +1036,6 @@
                 case 'r':
                     resetCamera();
                     break;
-                case 'b':
-                    toggleCameraMode();
-                    break;
                 case '[':
                     brushSize = Math.max(10, brushSize - 5);
                     updateHUD();
@@ -1020,19 +1054,9 @@
         }
 
         function resetCamera() {
-            const preset = cameraPresets[currentCameraMode];
-            targetCamPos.copy(preset.position);
-            targetCamLookAt.copy(preset.lookAt);
-            controls.target.copy(preset.lookAt);
-        }
-
-        function toggleCameraMode() {
-            currentCameraMode = currentCameraMode === 'overview' ? 'close' : 'overview';
-            const preset = cameraPresets[currentCameraMode];
-            targetCamPos.copy(preset.position);
-            targetCamLookAt.copy(preset.lookAt);
-            controls.target.copy(preset.lookAt);
-            console.log(`Camera mode: ${currentCameraMode}`);
+            camera.position.set(0, 4, 5);
+            controls.target.set(0, 1.1, 0);
+            controls.update();
         }
 
         function onResize() {
@@ -1063,20 +1087,8 @@
                 needsTextureUpdate = false;
             }
 
-            // Camera position lerp transition
-            if (!isDragging && !isCleaning) {
-                camera.position.lerp(targetCamPos, camTransitionSpeed);
-                
-                // Mouse sway effect (subtle offset)
-                const swayStrength = 0.03;
-                const swayX = mouseX * swayStrength;
-                const swayY = mouseY * swayStrength * 0.5;
-                
-                camera.position.x += swayX;
-                camera.position.y += swayY;
-            }
-
             controls.update();
+            clampCamera(); // Prevent camera clipping through objects
             updateHUD();
             renderer.render(scene, camera);
         }
