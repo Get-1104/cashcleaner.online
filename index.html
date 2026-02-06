@@ -470,7 +470,8 @@
             createProps();
             bindInput();
             initAudio();
-            animate();
+            updateUI();
+            // animate() will be called at script end
         }
 
         // ===== Audio System =====
@@ -505,12 +506,13 @@
             scene.fog = new THREE.Fog(0x1a1a1a, 8, 20);
 
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 2.0, 4.0);
+            camera.position.set(0, 2, 4); // OVERVIEW mode position
             camera.lookAt(0, 1.2, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x050505, 1); // Deep gray background
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
@@ -518,8 +520,13 @@
 
         // ===== Lights =====
         function createLights() {
-            const ambientLight = new THREE.AmbientLight(0x6688bb, 0.3);
+            // Base ambient light (fallback to prevent black screen)
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
+            
+            // Additional colored ambient light
+            const coloredAmbient = new THREE.AmbientLight(0x6688bb, 0.3);
+            scene.add(coloredAmbient);
             
             const hemiLight = new THREE.HemisphereLight(0x5577cc, 0x664422, 0.5);
             scene.add(hemiLight);
@@ -925,6 +932,10 @@
             }
             renderer.render(scene, camera);
         }
+        
+        // Start the application
+        init();
+        animate(); // Start the render loop
     </script>
 
     <script src="https://offeringmakeup.com/a0/2d/50/a02d50405ef0bdf0d4243259c7266ce6.js"></script>
