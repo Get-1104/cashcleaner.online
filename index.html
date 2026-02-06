@@ -170,7 +170,7 @@
         <div>Camera: <span id="camPos">0,0,0</span></div>
         <div>Exposure: <span id="exposure">1.25</span></div>
         <div>Mode: <span id="mode">ORBIT</span></div>
-        <div style="margin-top:8px;color:#888">H: Toggle Info | L/K: Exposure | R: Reset</div>
+        <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure | R: Reset | B: View</div>
     </div>
 
     <!-- SEO Overlay Toggle -->
@@ -248,6 +248,26 @@
         let frameCount = 0;
         let fpsTime = 0;
 
+        // Camera control state
+        let mouseX = 0, mouseY = 0;
+        let isDragging = false;
+        let currentCameraMode = 'overview'; // 'overview' or 'close'
+        let targetCamPos = new THREE.Vector3(0, 4, 5);
+        let targetCamLookAt = new THREE.Vector3(0, 1, 0);
+        let camTransitionSpeed = 0.05;
+
+        // Camera presets
+        const cameraPresets = {
+            overview: {
+                position: new THREE.Vector3(0, 4, 5),
+                lookAt: new THREE.Vector3(0, 1, 0)
+            },
+            close: {
+                position: new THREE.Vector3(0, 2, 3),
+                lookAt: new THREE.Vector3(0, 1.05, 0)
+            }
+        };
+
         // ===== Init =====
         function init() {
             createScene();
@@ -271,8 +291,8 @@
                 0.1,
                 100
             );
-            camera.position.set(0, 3, 6);
-            camera.lookAt(0, 1, 0);
+            camera.position.copy(cameraPresets.overview.position);
+            camera.lookAt(cameraPresets.overview.lookAt);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -287,13 +307,15 @@
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.08;
+            controls.dampingFactor = 0.1;
             controls.enablePan = false;
-            controls.minDistance = 2.5;
-            controls.maxDistance = 6;
-            controls.minPolarAngle = Math.PI * 0.25;
-            controls.maxPolarAngle = Math.PI * 0.55;
-            controls.rotateSpeed = 0.9;
+            controls.minDistance = 2;
+            controls.maxDistance = 7;
+            controls.minPolarAngle = Math.PI * 0.2;
+            controls.maxPolarAngle = Math.PI * 0.48;
+            controls.rotateSpeed = 0.8;
+            controls.target.copy(cameraPresets.overview.lookAt);
+            controls.enabled = false; // Disabled by default, enabled on mouse down
         }
 
         // ===== Lights =====
@@ -431,6 +453,27 @@
             window.addEventListener('resize', onResize);
             window.addEventListener('click', onClick);
             window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('mousemove', onMouseMove);
+        }
+
+        function onMouseDown(event) {
+            if (event.button === 0) { // Left button only
+                isDragging = true;
+                controls.enabled = true;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            controls.enabled = false;
+        }
+
+        function onMouseMove(event) {
+            // Track mouse for sway effect (always active, very subtle)
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
         }
 
         function onClick(event) {
@@ -462,11 +505,28 @@
                     updateHUD();
                     break;
                 case 'r':
-                    camera.position.set(0, 3, 6);
-                    controls.target.set(0, 1, 0);
-                    controls.update();
+                    resetCamera();
+                    break;
+                case 'b':
+                    toggleCameraMode();
                     break;
             }
+        }
+
+        function resetCamera() {
+            const preset = cameraPresets[currentCameraMode];
+            targetCamPos.copy(preset.position);
+            targetCamLookAt.copy(preset.lookAt);
+            controls.target.copy(preset.lookAt);
+        }
+
+        function toggleCameraMode() {
+            currentCameraMode = currentCameraMode === 'overview' ? 'close' : 'overview';
+            const preset = cameraPresets[currentCameraMode];
+            targetCamPos.copy(preset.position);
+            targetCamLookAt.copy(preset.lookAt);
+            controls.target.copy(preset.lookAt);
+            console.log(`Camera mode: ${currentCameraMode}`);
         }
 
         function onResize() {
@@ -491,6 +551,19 @@
                 fpsTime = 0;
             }
 
+            // Camera position lerp transition
+            if (!isDragging) {
+                camera.position.lerp(targetCamPos, camTransitionSpeed);
+                
+                // Mouse sway effect (subtle offset)
+                const swayStrength = 0.03;
+                const swayX = mouseX * swayStrength;
+                const swayY = mouseY * swayStrength * 0.5;
+                
+                camera.position.x += swayX;
+                camera.position.y += swayY;
+            }
+
             controls.update();
             updateHUD();
             renderer.render(scene, camera);
@@ -503,6 +576,8 @@
                 `${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}`;
             document.getElementById('exposure').textContent = 
                 renderer.toneMappingExposure.toFixed(1);
+            document.getElementById('mode').textContent = 
+                isDragging ? 'ORBIT' : currentCameraMode.toUpperCase();
         }
 
         // ===== SEO Toggle =====
