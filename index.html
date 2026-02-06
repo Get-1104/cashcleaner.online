@@ -515,17 +515,79 @@
             });
         }
 
+        // ===== Mask Canvas System =====
+        function createMaskCanvas() {
+            const canvas = document.createElement('canvas');
+            canvas.width = maskResolution;
+            canvas.height = maskResolution;
+            const ctx = canvas.getContext('2d');
+            // Start fully dirty (black = dirty)
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, maskResolution, maskResolution);
+            return { canvas, ctx };
+        }
+
+        function drawCleanBrush(ctx, x, y, size, intensity) {
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${intensity})`);
+            gradient.addColorStop(0.7, `rgba(255, 255, 255, ${intensity * 0.5})`);
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x - size, y - size, size * 2, size * 2);
+        }
+
+        function calculateCleanProgress(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let whitePixels = 0;
+            let totalPixels = canvas.width * canvas.height;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] > 128) whitePixels++; // White threshold
+            }
+            
+            return whitePixels / totalPixels;
+        }
+
         // ===== Money =====
         function createMoney() {
-            const billGeo = new THREE.BoxGeometry(0.15, 0.003, 0.065);
-            const billColors = [0x85c97f, 0x7abf73, 0x9acd92, 0xa8a8a8, 0xb5b5b5];
+            const billGeo = new THREE.PlaneGeometry(0.15, 0.065);
+            const billColors = [0x85c97f, 0x7abf73, 0x9acd92];
 
             for (let i = 0; i < 80; i++) {
+                const baseColor = billColors[Math.floor(Math.random() * billColors.length)];
+                
+                // Create mask canvas
+                const maskData = createMaskCanvas();
+                const maskTexture = new THREE.CanvasTexture(maskData.canvas);
+                maskTexture.needsUpdate = true;
+
+                // Create material with custom shader
                 const billMat = new THREE.MeshStandardMaterial({
-                    color: billColors[Math.floor(Math.random() * billColors.length)],
+                    color: baseColor,
                     roughness: 0.5,
-                    metalness: 0.1
+                    metalness: 0.1,
+                    side: THREE.DoubleSide
                 });
+
+                // Custom onBeforeCompile for dirt masking
+                billMat.onBeforeCompile = (shader) => {
+                    shader.uniforms.maskTexture = { value: maskTexture };
+                    shader.uniforms.dirtColor = { value: new THREE.Color(0x3a2a1a) };
+                    
+                    shader.fragmentShader = shader.fragmentShader.replace(
+                        '#include <color_fragment>',
+                        `
+                        #include <color_fragment>
+                        uniform sampler2D maskTexture;
+                        uniform vec3 dirtColor;
+                        vec4 maskSample = texture2D(maskTexture, vUv);
+                        float cleanAmount = maskSample.r;
+                        diffuseColor.rgb = mix(dirtColor, diffuseColor.rgb, cleanAmount);
+                        `
+                    );
+                };
 
                 const bill = new THREE.Mesh(billGeo, billMat);
                 bill.position.set(
@@ -540,7 +602,13 @@
                 );
                 bill.castShadow = true;
                 bill.receiveShadow = true;
-                bill.userData = { id: i, cleanProgress: 0, isDirty: true };
+                bill.userData = {
+                    id: i,
+                    cleanProgress: 0,
+                    isDirty: true,
+                    maskData: maskData,
+                    maskTexture: maskTexture
+                };
                 bills.push(bill);
                 scene.add(bill);
             }
@@ -551,45 +619,102 @@
             window.addEventListener('resize', onResize);
             window.addEventListener('click', onClick);
             window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
             window.addEventListener('mousemove', onMouseMove);
         }
 
+        function updateCleaningUI(progress) {
+            const percent = Math.floor(progress * 100);
+            document.getElementById('progressText').textContent = percent + '%';
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showCleanedNotice() {
+            const notice = document.getElementById('cleanedNotice');
+            notice.classList.add('show');
+            setTimeout(() => notice.classList.remove('show'), 2000);
+            console.log('Bill cleaned!');
+        }
+
         function onMouseDown(event) {
-            if (event.button === 0) { // Left button only
-                isDragging = true;
-                controls.enabled = true;
+            if (event.button === 0) {
+                // Check if clicked on a bill for cleaning
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(bills);
+                
+                if (intersects.length > 0 && !event.shiftKey) {
+                    isCleaning = true;
+                    currentBill = intersects[0].object;
+                    cleanAtPoint(intersects[0]);
+                } else {
+                    isDragging = true;
+                    controls.enabled = true;
+                }
             }
         }
 
         function onMouseUp() {
+            isCleaning = false;
+            currentBill = null;
             isDragging = false;
             controls.enabled = false;
         }
 
         function onMouseMove(event) {
-            // Track mouse for sway effect (always active, very subtle)
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
 
-        function onClick(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(bills);
-            if (intersects.length > 0) {
-                const bill = intersects[0].object;
-                bill.userData.cleanProgress += 0.1;
-                if (bill.userData.cleanProgress >= 1) {
-                    bill.userData.isDirty = false;
+            // Continue cleaning if mouse is down
+            if (isCleaning && currentBill) {
+                mouse.x = mouseX;
+                mouse.y = mouseY;
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects([currentBill]);
+                if (intersects.length > 0) {
+                    cleanAtPoint(intersects[0]);
                 }
-                console.log(`Bill ${bill.userData.id}: ${(bill.userData.cleanProgress * 100).toFixed(0)}%`);
             }
         }
 
+        function cleanAtPoint(intersection) {
+            const bill = intersection.object;
+            const uv = intersection.uv;
+            const userData = bill.userData;
+            
+            if (!uv || !userData.maskData) return;
+
+            const x = Math.floor(uv.x * maskResolution);
+            const y = Math.floor((1 - uv.y) * maskResolution);
+            
+            const effectiveBrushSize = isFineBrush ? brushSize * 0.5 : brushSize;
+            const effectiveIntensity = isFineBrush ? brushIntensity * 0.6 : brushIntensity;
+            
+            drawCleanBrush(userData.maskData.ctx, x, y, effectiveBrushSize, effectiveIntensity);
+            needsTextureUpdate = true;
+            
+            // Update progress
+            userData.cleanProgress = calculateCleanProgress(userData.maskData.canvas);
+            updateCleaningUI(userData.cleanProgress);
+            
+            if (userData.cleanProgress >= 0.85 && userData.isDirty) {
+                userData.isDirty = false;
+                showCleanedNotice();
+            }
+        }
+
+        function onClick(event) {
+            // Keep for compatibility
+        }
+
         function onKeyDown(event) {
+            if (event.key === 'Shift') {
+                isFineBrush = true;
+            }
+            
             switch(event.key.toLowerCase()) {
                 case 'h':
                     toggleSEO();
@@ -608,6 +733,20 @@
                 case 'b':
                     toggleCameraMode();
                     break;
+                case '[':
+                    brushSize = Math.max(10, brushSize - 5);
+                    updateHUD();
+                    break;
+                case ']':
+                    brushSize = Math.min(50, brushSize + 5);
+                    updateHUD();
+                    break;
+            }
+        }
+
+        function onKeyUp(event) {
+            if (event.key === 'Shift') {
+                isFineBrush = false;
             }
         }
 
@@ -649,8 +788,14 @@
                 fpsTime = 0;
             }
 
+            // Update mask textures (throttled)
+            if (needsTextureUpdate && currentBill) {
+                currentBill.userData.maskTexture.needsUpdate = true;
+                needsTextureUpdate = false;
+            }
+
             // Camera position lerp transition
-            if (!isDragging) {
+            if (!isDragging && !isCleaning) {
                 camera.position.lerp(targetCamPos, camTransitionSpeed);
                 
                 // Mouse sway effect (subtle offset)
@@ -676,6 +821,8 @@
                 renderer.toneMappingExposure.toFixed(1);
             document.getElementById('mode').textContent = 
                 isDragging ? 'ORBIT' : currentCameraMode.toUpperCase();
+            document.getElementById('brushSize').textContent = 
+                isFineBrush ? Math.floor(brushSize * 0.5) : brushSize;
         }
 
         // ===== SEO Toggle =====
