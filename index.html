@@ -187,6 +187,36 @@
                 scene.add(leg);
             });
 
+            // Money stack on table
+            const billGeo = new THREE.BoxGeometry(0.15, 0.003, 0.065);
+            const billColors = [0x85c97f, 0x7abf73, 0x9acd92, 0xa8a8a8, 0xb5b5b5];
+            
+            for (let i = 0; i < 80; i++) {
+                const billMat = new THREE.MeshStandardMaterial({
+                    color: billColors[Math.floor(Math.random() * billColors.length)],
+                    roughness: 0.5,
+                    metalness: 0.1
+                });
+                
+                const bill = new THREE.Mesh(billGeo, billMat);
+                
+                // Random position on table
+                const spreadX = (Math.random() - 0.5) * 2.4;
+                const spreadZ = (Math.random() - 0.5) * 1.6;
+                const layerY = 1.05 + Math.random() * 0.15;
+                
+                bill.position.set(spreadX, layerY, spreadZ);
+                
+                // Random rotation
+                bill.rotation.x = (Math.random() - 0.5) * 0.2;
+                bill.rotation.y = Math.random() * Math.PI * 2;
+                bill.rotation.z = (Math.random() - 0.5) * 0.3;
+                
+                bill.castShadow = true;
+                bill.receiveShadow = true;
+                scene.add(bill);
+            }
+
             // Lights
             const ambientLight = new THREE.AmbientLight(0x4466aa, 0.15);
             scene.add(ambientLight);
