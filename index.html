@@ -109,6 +109,12 @@
         let mouseX = 0, mouseY = 0;
         const targetX = { value: 0 };
         const targetY = { value: 0 };
+        
+        // Money bills array and interaction
+        const bills = [];
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let isMouseDown = false;
 
         function initScene() {
             scene = new THREE.Scene();
@@ -214,6 +220,15 @@
                 
                 bill.castShadow = true;
                 bill.receiveShadow = true;
+                
+                // Reserve state for cleaning effect
+                bill.userData = {
+                    id: i,
+                    cleanProgress: 0,
+                    isDirty: true
+                };
+                
+                bills.push(bill);
                 scene.add(bill);
             }
 
@@ -265,11 +280,43 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        // Mouse interaction for cleaning
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(bills);
+
+            if (intersects.length > 0) {
+                const clickedBill = intersects[0].object;
+                clickedBill.userData.cleanProgress += 0.1;
+                
+                if (clickedBill.userData.cleanProgress >= 1) {
+                    clickedBill.userData.isDirty = false;
+                }
+                
+                console.log(`Bill ID: ${clickedBill.userData.id}, Progress: ${clickedBill.userData.cleanProgress.toFixed(2)}`);
+            }
+        }
+
+        function onMouseDown(event) {
+            isMouseDown = true;
+            onMouseClick(event);
+        }
+
+        function onMouseUp() {
+            isMouseDown = false;
+        }
+
         function init() {
             initScene();
             animate();
             window.addEventListener('resize', handleResize);
             window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('click', onMouseClick);
         }
 
         init();
