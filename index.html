@@ -366,7 +366,7 @@
         <div>Cleaned: <span id="cleanedCount">0</span></div>
         <div>Camera: <span id="camPos">0,0,0</span></div>
         <div>Exposure: <span id="exposure">1.25</span></div>
-        <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure | R: Reset Cam</div>
+        <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure</div>
     </div>
 
     <!-- Collect Feedback -->
@@ -438,11 +438,9 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
         // ===== Global State =====
-        let scene, camera, renderer, controls;
+        let scene, camera, renderer;
         let bills = [];
         let cashBoxOnTable = null;
         let cashBoxOnFloor = null;
@@ -470,11 +468,11 @@
         let cameraView = 'GLOBAL'; // 'GLOBAL' or 'FOCUS'
         const CAMERA_STATES = {
             GLOBAL: {
-                position: { x: 0, y: 4, z: 5 },
-                target: { x: 0, y: 1.1, z: 0 }
+                position: { x: 0, y: 1.6, z: 2.5 }, // Standing human height view
+                target: { x: 0, y: 1.0, z: 0 }
             },
             FOCUS: {
-                position: { x: 0, y: 2.5, z: 0 },
+                position: { x: 0, y: 1.4, z: 0.8 }, // Leaning forward to clean
                 target: { x: 0, y: 1.05, z: 0 }
             }
         };
@@ -552,8 +550,9 @@
                 0.1,
                 100
             );
-            camera.position.set(0, 4, 5);
-            camera.lookAt(0, 1.1, 0);
+            // Set initial camera to human standing height
+            camera.position.set(0, 1.6, 2.5);
+            camera.lookAt(0, 1.0, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -565,19 +564,6 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
-
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.08;
-            controls.enablePan = false;
-            controls.rotateSpeed = 0.9;
-            controls.zoomSpeed = 0.9;
-            controls.minDistance = 2.6;
-            controls.maxDistance = 7.0;
-            controls.minPolarAngle = Math.PI * 0.18;
-            controls.maxPolarAngle = Math.PI * 0.48;
-            controls.target.set(0, 1.1, 0);
-            controls.update();
         }
 
         // ===== Lights =====
@@ -1131,8 +1117,8 @@
             cameraView = 'FOCUS';
             const target = CAMERA_STATES.FOCUS;
             
-            // Disable orbit controls during transition
-            controls.enabled = false;
+            // Create temporary target object for camera lookAt animation
+            const cameraTarget = { x: 0, y: 1.0, z: 0 };
             
             // Animate camera position
             new TWEEN.Tween(camera.position)
@@ -1140,17 +1126,14 @@
                 .easing(TWEEN.Easing.Cubic.InOut)
                 .start();
             
-            // Animate camera target
-            new TWEEN.Tween(controls.target)
+            // Animate camera lookAt target
+            new TWEEN.Tween(cameraTarget)
                 .to(target.target, 1500)
                 .easing(TWEEN.Easing.Cubic.InOut)
                 .onUpdate(() => {
-                    controls.update();
+                    camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
                 })
                 .onComplete(() => {
-                    // Keep controls disabled in focus view
-                    controls.enabled = false;
-                    
                     // Show back button
                     document.getElementById('backButton').classList.add('show');
                     
@@ -1190,23 +1173,23 @@
             // Show mode-tool UI
             document.getElementById('mode-tool-ui').style.display = 'block';
             
+            // Create temporary target object for camera lookAt animation
+            const cameraTarget = { x: 0, y: 1.05, z: 0 };
+            
             // Animate camera position
             new TWEEN.Tween(camera.position)
                 .to(target.position, 1500)
                 .easing(TWEEN.Easing.Cubic.InOut)
                 .start();
             
-            // Animate camera target
-            new TWEEN.Tween(controls.target)
+            // Animate camera lookAt target
+            new TWEEN.Tween(cameraTarget)
                 .to(target.target, 1500)
                 .easing(TWEEN.Easing.Cubic.InOut)
                 .onUpdate(() => {
-                    controls.update();
+                    camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
                 })
                 .onComplete(() => {
-                    // Re-enable orbit controls
-                    controls.enabled = true;
-                    
                     // Switch back to HAND mode
                     currentMode = 'HAND';
                     updateUI();
@@ -1289,7 +1272,9 @@
                     isCleaning = true;
                     selectedBill = billIntersects[0].object;
                     cleanAtPoint(billIntersects[0]);
-                    // No need to disable controls - already disabled in focus view
+                } else if (cameraView === 'FOCUS') {
+                    // Click on non-interactive area in focus view - return to global view
+                    returnToGlobalView();
                 }
             }
         }
@@ -1298,7 +1283,6 @@
             if (isCleaning) {
                 isCleaning = false;
                 selectedBill = null;
-                controls.enabled = true;
             }
         }
 
@@ -1313,55 +1297,6 @@
                 const intersects = raycaster.intersectObjects([selectedBill], false);
                 if (intersects.length > 0) {
                     cleanAtPoint(intersects[0]);
-                }
-            }
-        }
-
-        // ===== Camera Clamping =====
-        function clampCamera() {
-            const pos = camera.position;
-            
-            // 1. Floor constraint
-            if (pos.y < floorY + collisionMargin) {
-                pos.y = floorY + collisionMargin;
-            }
-            
-            // 2. Room boundary constraints
-            const roomHalfX = roomDimensions.width / 2 - collisionMargin;
-            const roomHalfZ = roomDimensions.depth / 2 - collisionMargin;
-            
-            pos.x = THREE.MathUtils.clamp(pos.x, -roomHalfX, roomHalfX);
-            pos.z = THREE.MathUtils.clamp(pos.z, -roomHalfZ, roomHalfZ);
-            
-            // 3. Table collision (Box3 check)
-            const tableBox = new THREE.Box3(
-                new THREE.Vector3(
-                    -tableDimensions.width / 2 - collisionMargin,
-                    tableDimensions.posY - tableDimensions.height / 2 - collisionMargin,
-                    -tableDimensions.depth / 2 - collisionMargin
-                ),
-                new THREE.Vector3(
-                    tableDimensions.width / 2 + collisionMargin,
-                    tableDimensions.posY + tableDimensions.height / 2 + collisionMargin,
-                    tableDimensions.depth / 2 + collisionMargin
-                )
-            );
-            
-            if (tableBox.containsPoint(pos)) {
-                // Push camera out from table center
-                const tableCenter = new THREE.Vector3(0, tableDimensions.posY, 0);
-                const pushDir = pos.clone().sub(tableCenter).normalize();
-                
-                // Find closest point on box boundary
-                const closestPoint = tableBox.clampPoint(pos, new THREE.Vector3());
-                const pushDistance = collisionMargin * 1.5;
-                
-                pos.copy(closestPoint).add(pushDir.multiplyScalar(pushDistance));
-                
-                // Update controls distance if needed
-                const distToTarget = pos.distanceTo(controls.target);
-                if (distToTarget < controls.minDistance) {
-                    controls.minDistance = distToTarget + 0.1;
                 }
             }
         }
@@ -1384,9 +1319,6 @@
                 case 'k':
                     renderer.toneMappingExposure = Math.max(0.5, renderer.toneMappingExposure - 0.1);
                     updateHUD();
-                    break;
-                case 'r':
-                    resetCamera();
                     break;
                 case '1':
                     if (ownedTools.includes('Eraser')) {
@@ -1437,8 +1369,6 @@
             // Update interaction system
             updateInteraction();
 
-            controls.update();
-            clampCamera(); // Prevent camera clipping through objects
             updateHUD();
             renderer.render(scene, camera);
         }
