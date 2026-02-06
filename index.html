@@ -168,7 +168,7 @@
     <div id="hud">
         <div>FPS: <span id="fps">0</span></div>
         <div>Camera: <span id="camPos">0,0,0</span></div>
-        <div>Exposure: <span id="exposure">1.6</span></div>
+        <div>Exposure: <span id="exposure">1.25</span></div>
         <div>Mode: <span id="mode">ORBIT</span></div>
         <div style="margin-top:8px;color:#888">H: Toggle Info | L/K: Exposure | R: Reset</div>
     </div>
@@ -237,6 +237,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
         // ===== Global State =====
         let scene, camera, renderer, controls;
@@ -279,7 +280,7 @@
             renderer.physicallyCorrectLights = true;
             renderer.outputColorSpace = THREE.SRGBColorSpace;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.6;
+            renderer.toneMappingExposure = 1.25;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
@@ -297,51 +298,64 @@
 
         // ===== Lights =====
         function createLights() {
-            const ambientLight = new THREE.AmbientLight(0x5577bb, 0.35);
+            // Ambient light - cool tone, weak
+            const ambientLight = new THREE.AmbientLight(0x6688bb, 0.3);
             scene.add(ambientLight);
 
-            const hemiLight = new THREE.HemisphereLight(0x4466bb, 0x332211, 0.4);
+            // Hemisphere light - cool top, warm ground
+            const hemiLight = new THREE.HemisphereLight(0x5577cc, 0x664422, 0.5);
             scene.add(hemiLight);
 
-            const spotLight = new THREE.SpotLight(0xffffee, 100);
-            spotLight.position.set(0, 6, 2);
+            // Main spotlight from ceiling
+            const spotLight = new THREE.SpotLight(0xfffff0, 120);
+            spotLight.position.set(0, 5.5, 0.5);
             spotLight.target.position.set(0, 1, 0);
-            spotLight.angle = Math.PI / 5;
-            spotLight.penumbra = 0.3;
+            spotLight.angle = Math.PI / 4.5;
+            spotLight.penumbra = 0.4;
             spotLight.decay = 2;
-            spotLight.distance = 12;
+            spotLight.distance = 10;
             spotLight.castShadow = true;
             spotLight.shadow.mapSize.width = 2048;
             spotLight.shadow.mapSize.height = 2048;
             spotLight.shadow.camera.near = 1;
-            spotLight.shadow.camera.far = 12;
+            spotLight.shadow.camera.far = 10;
+            spotLight.shadow.bias = -0.0001;
             scene.add(spotLight);
             scene.add(spotLight.target);
 
-            const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
-            fillLight.position.set(-3, 3, 3);
+            // RectAreaLight - key fill light from side-front
+            const rectLight = new THREE.RectAreaLight(0xffffff, 4, 3, 2);
+            rectLight.position.set(2, 2, 3);
+            rectLight.lookAt(0, 1, 0);
+            scene.add(rectLight);
+
+            // Additional soft fill from opposite side
+            const fillLight = new THREE.PointLight(0xaabbcc, 0.8, 8);
+            fillLight.position.set(-2, 2.5, 2);
             scene.add(fillLight);
         }
 
         // ===== Room =====
         function createRoom() {
+            // Inverted box for basement room - backside normals
             const roomGeo = new THREE.BoxGeometry(12, 6, 12);
             const roomMat = new THREE.MeshStandardMaterial({
-                color: 0x444444,
+                color: 0x4a4a4a,
                 side: THREE.BackSide,
-                roughness: 0.85,
-                metalness: 0.0
+                roughness: 0.9,
+                metalness: 0.05
             });
             const room = new THREE.Mesh(roomGeo, roomMat);
             room.position.y = 3;
             room.receiveShadow = true;
             scene.add(room);
 
+            // Floor with slight reflectivity
             const floorGeo = new THREE.PlaneGeometry(12, 12);
             const floorMat = new THREE.MeshStandardMaterial({
-                color: 0x3a3a3a,
-                roughness: 0.75,
-                metalness: 0.15
+                color: 0x424242,
+                roughness: 0.7,
+                metalness: 0.2
             });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
