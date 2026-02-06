@@ -22,46 +22,91 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            color: #ffffff;
-            overflow-x: hidden;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* Fullscreen Canvas */
+        canvas {
+            position: fixed;
+            inset: 0;
+            display: block;
+        }
+
+        /* Debug HUD */
+        #hud {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ff88;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 4px;
+            z-index: 1000;
+            user-select: none;
+        }
+
+        #hud div {
+            margin: 2px 0;
+        }
+
+        /* SEO Overlay */
+        #seoOverlay {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 50vh;
             overflow-y: auto;
-            width: 100vw;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            z-index: 900;
+            transition: transform 0.3s ease;
         }
 
-        #game3d {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            display: block;
+        #seoOverlay.hidden {
+            transform: translateY(100%);
         }
 
-        #game3d canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        #seoToggle {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 901;
+            user-select: none;
+        }
+
+        #seoToggle:hover {
+            background: rgba(0, 255, 136, 0.3);
         }
 
         #content {
             width: 100%;
             max-width: 900px;
-            padding: 60px 20px;
-            background: rgba(0, 0, 0, 0.6);
+            padding: 40px 20px;
             margin: 0 auto;
             line-height: 1.8;
             user-select: text;
-            -webkit-user-select: text;
         }
 
         #content h2 {
             color: #00ff88;
-            font-size: 28px;
-            margin-top: 40px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
 
@@ -71,28 +116,114 @@
 
         #content p {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 15px;
+            margin-bottom: 15px;
             text-align: justify;
+        }
+
+        #adBottom {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            border-top: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        footer a {
+            color: #00ff88;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
             #content {
-                padding: 40px 15px;
+                padding: 30px 15px;
             }
-
             #content h2 {
-                font-size: 22px;
+                font-size: 20px;
             }
-
             #content p {
-                font-size: 15px;
+                font-size: 14px;
+            }
+            #hud {
+                font-size: 10px;
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="game3d"></div>
+    <!-- Debug HUD -->
+    <div id="hud">
+        <div>FPS: <span id="fps">0</span></div>
+        <div>Camera: <span id="camPos">0,0,0</span></div>
+        <div>Exposure: <span id="exposure">1.6</span></div>
+        <div>Mode: <span id="mode">ORBIT</span></div>
+        <div style="margin-top:8px;color:#888">H: Toggle Info | L/K: Exposure | R: Reset</div>
+    </div>
+
+    <!-- SEO Overlay Toggle -->
+    <div id="seoToggle" onclick="toggleSEO()">Press H for Info</div>
+
+    <!-- SEO Content Overlay -->
+    <div id="seoOverlay" class="hidden">
+        <section id="content">
+            <h2>What is Cash Cleaner Online?</h2>
+            <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator that brings the viral ASMR satisfaction of power washing directly to your screen. The game recreates the oddly satisfying experience of using a high-pressure washer to clean dirty money, gold bars, and credit cards. Unlike traditional mobile apps that require downloads and installations, this web version is instantly accessible from any device with a browser.</p>
+            <p>The gameplay is elegantly simple yet deeply engaging. Players are presented with various valuable items covered in layers of realistic dirt and grime. Using your mouse or finger as a virtual pressure washer, you drag across the screen to blast away the accumulated muck. As you clean, water spray particles animate in real-time, creating a mesmerizing visual effect that mimics actual cleaning physics. The dirt erodes gradually under your cursor, revealing the pristine surface beneath.</p>
+            <p>What sets Cash Cleaner Online apart is its progressive reward system. Each successfully cleaned item grants you virtual earnings - from $100 for standard bills to $1000 for platinum cards. The game continuously generates new dirty items to maintain an endless loop of satisfaction. This creates what psychologists call a "flow state" - that perfect balance between challenge and reward that keeps players engaged for extended sessions. The visual feedback is immediate and gratifying, with confetti explosions and glowing animations celebrating each completed cleaning.</p>
+            <p>The game has gained massive popularity in online communities, schools, and workplaces because it's completely unblocked and requires no permissions. It's the perfect stress-relief tool during breaks, offering a few minutes of mindless zen without any learning curve or complex mechanics. The dark aesthetic makes the bright money pop visually, creating strong contrast that's both aesthetically pleasing and easy on the eyes during extended play sessions.</p>
+
+            <h2>Why Cash Cleaning Games Are So Satisfying</h2>
+            <p>The phenomenon of cleaning games taps into deep psychological mechanisms that explain why millions of players find them irresistibly satisfying. At its core, the appeal lies in our brain's reward system responding to visible progress and completion. When you see dirt disappearing under your cursor in real-time, your brain releases small doses of dopamine - the same neurotransmitter associated with achievement and pleasure. This is why power washing videos have garnered billions of views across social media platforms.</p>
+            <p>ASMR (Autonomous Sensory Meridian Response) plays a significant role in the appeal of cleaning simulators. While Cash Cleaner Online doesn't include sound, the visual ASMR effect is equally powerful. The gradual transformation from dirty to clean creates a sense of order emerging from chaos, which resonates with our innate desire for control and organization. This visual satisfaction is amplified by the particle effects that simulate water spray, triggering the same neural pathways activated by watching real cleaning processes.</p>
+            <p>From a cognitive psychology perspective, these games offer what researchers call "productive procrastination." They provide a sense of accomplishment without real-world consequences or stress. In today's high-pressure environment where complex tasks can feel overwhelming, the simple binary outcome of dirty-to-clean offers clarity and immediate gratification. Each swipe produces visible results, creating a micro-achievement loop that's incredibly addictive.</p>
+            <p>The repetitive nature of the cleaning motion also has meditative qualities. Similar to how coloring books have become popular stress-relief tools for adults, the rhythmic dragging motion required in Cash Cleaner Online creates a focused, almost trance-like state. This repetition can lower cortisol levels and reduce anxiety, making these games unexpectedly therapeutic. Players report feeling calmer and more centered after playing, which explains why cleaning simulators have become popular during work breaks and before sleep.</p>
+
+            <h2>How to Play Cash Cleaner Online</h2>
+            <p>Getting started with Cash Cleaner Online is incredibly straightforward - there's virtually no learning curve. Simply load the page and you'll immediately see a dirty bill displayed in the center of your screen. The dirt layer is represented by a dark, gritty overlay that completely obscures the clean money beneath.</p>
+            <p>On desktop computers, use your mouse to click and drag across the dirty surface. On mobile devices and tablets, use your finger to swipe across the screen. As you move your cursor or finger, the high-pressure washer effect kicks in, erasing the dirt layer and revealing the pristine surface underneath. The larger your movements, the faster you'll clean. The game tracks your progress in real-time via a progress bar at the top of the screen, showing the percentage of dirt removed.</p>
+            <p>Your goal is to reach 95% cleanliness. Once you hit this threshold, the game celebrates your achievement with a spectacular confetti explosion and displays your earned reward. After a brief celebration animation, a new dirty item automatically appears - either another dollar bill, a gold bar, or a platinum credit card. Each item type has slightly different textures and colors, keeping the visual experience fresh.</p>
+            <p>The beauty of Cash Cleaner Online is that there's no wrong way to play. Some players prefer methodical horizontal strokes, others use circular motions, and some just frantically scrub random areas. All approaches work equally well. The game is designed for instant satisfaction - you can complete a single cleaning cycle in under 60 seconds, making it perfect for quick breaks or extended relaxation sessions alike.</p>
+
+            <h2>Is Cash Cleaner Online Free?</h2>
+            <p>Yes, Cash Cleaner Online is completely free to play with absolutely no hidden costs or microtransactions. There's no premium version, no in-app purchases, no subscription fees, and no advertisements interrupting your gameplay. The game was designed as a pure entertainment experience without monetization mechanics that would detract from the core satisfaction loop.</p>
+            <p>You don't need to create an account, provide an email address, or download any software. Simply visit the website and start playing immediately. This accessibility is intentional - the goal is to provide instant stress relief without any barriers to entry. The game works on all modern browsers including Chrome, Firefox, Safari, and Edge, across all device types from smartphones to desktop computers.</p>
+            <p>Because the game runs entirely in your browser using HTML5 technology, there are no storage requirements on your device and no permissions needed. Your progress isn't saved between sessions, which is actually a feature rather than a limitation - it means each visit offers a fresh start without the pressure of maintaining streaks or achievements. This design philosophy keeps the experience pure and meditative, focused solely on the immediate satisfaction of cleaning rather than long-term progression systems that can create addictive patterns.</p>
+            <p>The game is also completely unblocked, meaning it works on school networks, office wifi, and other restricted internet connections that typically block gaming sites. This has made Cash Cleaner Online particularly popular among students looking for quick study breaks and office workers seeking momentary stress relief during busy workdays.</p>
+        </section>
+
+        <div id="adBottom">
+            <script>
+              atOptions = {
+                'key' : 'ec8c5f314722aa8c54e18afcf25d60c7',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+              };
+            </script>
+            <script src="https://offeringmakeup.com/ec8c5f314722aa8c54e18afcf25d60c7/invoke.js"></script>
+        </div>
+
+        <footer>
+            <a href="/privacy.html">Privacy Policy</a> |
+            <a href="/terms.html">Terms of Service</a> |
+            <a href="/about.html">About Us</a> |
+            <a href="/contact.html">Contact</a>
+        </footer>
+    </div>
 
     <script type="importmap">
     {
@@ -107,25 +238,41 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+        // ===== Global State =====
         let scene, camera, renderer, controls;
-        
-        // Money bills array and interaction
-        const bills = [];
+        let bills = [];
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-        let isMouseDown = false;
+        let lastTime = performance.now();
+        let frameCount = 0;
+        let fpsTime = 0;
 
-        function initScene() {
+        // ===== Init =====
+        function init() {
+            createScene();
+            createLights();
+            createRoom();
+            createTable();
+            createMoney();
+            bindInput();
+            animate();
+        }
+
+        // ===== Scene Setup =====
+        function createScene() {
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x1a1a1a);
             scene.fog = new THREE.Fog(0x1a1a1a, 8, 20);
 
-            const aspect = window.innerWidth / window.innerHeight;
-            camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100);
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                100
+            );
             camera.position.set(0, 3, 6);
             camera.lookAt(0, 1, 0);
 
-            const container = document.getElementById('game3d');
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
@@ -135,103 +282,21 @@
             renderer.toneMappingExposure = 1.6;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            container.appendChild(renderer.domElement);
+            document.body.appendChild(renderer.domElement);
 
-            // Room
-            const roomGeo = new THREE.BoxGeometry(12, 6, 12);
-            const roomMat = new THREE.MeshStandardMaterial({
-                color: 0x444444,
-                side: THREE.BackSide,
-                roughness: 0.85,
-                metalness: 0.0
-            });
-            const room = new THREE.Mesh(roomGeo, roomMat);
-            room.position.y = 3;
-            room.receiveShadow = true;
-            scene.add(room);
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+            controls.enablePan = false;
+            controls.minDistance = 2.5;
+            controls.maxDistance = 6;
+            controls.minPolarAngle = Math.PI * 0.25;
+            controls.maxPolarAngle = Math.PI * 0.55;
+            controls.rotateSpeed = 0.9;
+        }
 
-            // Floor
-            const floorGeo = new THREE.PlaneGeometry(12, 12);
-            const floorMat = new THREE.MeshStandardMaterial({
-                color: 0x3a3a3a,
-                roughness: 0.75,
-                metalness: 0.15
-            });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            floor.receiveShadow = true;
-            scene.add(floor);
-
-            // Table
-            const tableMat = new THREE.MeshStandardMaterial({
-                color: 0x4a3020,
-                roughness: 0.6,
-                metalness: 0.1
-            });
-            
-            // Table top
-            const tableTopGeo = new THREE.BoxGeometry(3, 0.1, 2);
-            const tableTop = new THREE.Mesh(tableTopGeo, tableMat);
-            tableTop.position.set(0, 1, 0);
-            tableTop.castShadow = true;
-            tableTop.receiveShadow = true;
-            scene.add(tableTop);
-
-            // Table legs
-            const legGeo = new THREE.BoxGeometry(0.1, 0.9, 0.1);
-            const positions = [
-                [-1.3, 0.45, -0.85],
-                [1.3, 0.45, -0.85],
-                [-1.3, 0.45, 0.85],
-                [1.3, 0.45, 0.85]
-            ];
-            positions.forEach(pos => {
-                const leg = new THREE.Mesh(legGeo, tableMat);
-                leg.position.set(...pos);
-                leg.castShadow = true;
-                scene.add(leg);
-            });
-
-            // Money stack on table
-            const billGeo = new THREE.BoxGeometry(0.15, 0.003, 0.065);
-            const billColors = [0x85c97f, 0x7abf73, 0x9acd92, 0xa8a8a8, 0xb5b5b5];
-            
-            for (let i = 0; i < 80; i++) {
-                const billMat = new THREE.MeshStandardMaterial({
-                    color: billColors[Math.floor(Math.random() * billColors.length)],
-                    roughness: 0.5,
-                    metalness: 0.1
-                });
-                
-                const bill = new THREE.Mesh(billGeo, billMat);
-                
-                // Random position on table
-                const spreadX = (Math.random() - 0.5) * 2.4;
-                const spreadZ = (Math.random() - 0.5) * 1.6;
-                const layerY = 1.05 + Math.random() * 0.15;
-                
-                bill.position.set(spreadX, layerY, spreadZ);
-                
-                // Random rotation
-                bill.rotation.x = (Math.random() - 0.5) * 0.2;
-                bill.rotation.y = Math.random() * Math.PI * 2;
-                bill.rotation.z = (Math.random() - 0.5) * 0.3;
-                
-                bill.castShadow = true;
-                bill.receiveShadow = true;
-                
-                // Reserve state for cleaning effect
-                bill.userData = {
-                    id: i,
-                    cleanProgress: 0,
-                    isDirty: true
-                };
-                
-                bills.push(bill);
-                scene.add(bill);
-            }
-
-            // Lights
+        // ===== Lights =====
+        function createLights() {
             const ambientLight = new THREE.AmbientLight(0x5577bb, 0.35);
             scene.add(ambientLight);
 
@@ -253,123 +318,187 @@
             scene.add(spotLight);
             scene.add(spotLight.target);
 
-            // Fill light
             const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
             fillLight.position.set(-3, 3, 3);
             scene.add(fillLight);
-
-            // OrbitControls
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.08;
-            controls.enablePan = false;
-            controls.minDistance = 2.5;
-            controls.maxDistance = 6;
-            controls.minPolarAngle = Math.PI * 0.25;
-            controls.maxPolarAngle = Math.PI * 0.55;
-            controls.rotateSpeed = 0.9;
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
+        // ===== Room =====
+        function createRoom() {
+            const roomGeo = new THREE.BoxGeometry(12, 6, 12);
+            const roomMat = new THREE.MeshStandardMaterial({
+                color: 0x444444,
+                side: THREE.BackSide,
+                roughness: 0.85,
+                metalness: 0.0
+            });
+            const room = new THREE.Mesh(roomGeo, roomMat);
+            room.position.y = 3;
+            room.receiveShadow = true;
+            scene.add(room);
 
-            controls.update();
-
-            renderer.render(scene, camera);
+            const floorGeo = new THREE.PlaneGeometry(12, 12);
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: 0x3a3a3a,
+                roughness: 0.75,
+                metalness: 0.15
+            });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            scene.add(floor);
         }
 
-        function handleResize() {
+        // ===== Table =====
+        function createTable() {
+            const tableMat = new THREE.MeshStandardMaterial({
+                color: 0x4a3020,
+                roughness: 0.6,
+                metalness: 0.1
+            });
+
+            const tableTop = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 0.1, 2),
+                tableMat
+            );
+            tableTop.position.set(0, 1, 0);
+            tableTop.castShadow = true;
+            tableTop.receiveShadow = true;
+            scene.add(tableTop);
+
+            const legGeo = new THREE.BoxGeometry(0.1, 0.9, 0.1);
+            const positions = [
+                [-1.3, 0.45, -0.85],
+                [1.3, 0.45, -0.85],
+                [-1.3, 0.45, 0.85],
+                [1.3, 0.45, 0.85]
+            ];
+            positions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeo, tableMat);
+                leg.position.set(...pos);
+                leg.castShadow = true;
+                scene.add(leg);
+            });
+        }
+
+        // ===== Money =====
+        function createMoney() {
+            const billGeo = new THREE.BoxGeometry(0.15, 0.003, 0.065);
+            const billColors = [0x85c97f, 0x7abf73, 0x9acd92, 0xa8a8a8, 0xb5b5b5];
+
+            for (let i = 0; i < 80; i++) {
+                const billMat = new THREE.MeshStandardMaterial({
+                    color: billColors[Math.floor(Math.random() * billColors.length)],
+                    roughness: 0.5,
+                    metalness: 0.1
+                });
+
+                const bill = new THREE.Mesh(billGeo, billMat);
+                bill.position.set(
+                    (Math.random() - 0.5) * 2.4,
+                    1.05 + Math.random() * 0.15,
+                    (Math.random() - 0.5) * 1.6
+                );
+                bill.rotation.set(
+                    (Math.random() - 0.5) * 0.2,
+                    Math.random() * Math.PI * 2,
+                    (Math.random() - 0.5) * 0.3
+                );
+                bill.castShadow = true;
+                bill.receiveShadow = true;
+                bill.userData = { id: i, cleanProgress: 0, isDirty: true };
+                bills.push(bill);
+                scene.add(bill);
+            }
+        }
+
+        // ===== Input =====
+        function bindInput() {
+            window.addEventListener('resize', onResize);
+            window.addEventListener('click', onClick);
+            window.addEventListener('keydown', onKeyDown);
+        }
+
+        function onClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(bills);
+            if (intersects.length > 0) {
+                const bill = intersects[0].object;
+                bill.userData.cleanProgress += 0.1;
+                if (bill.userData.cleanProgress >= 1) {
+                    bill.userData.isDirty = false;
+                }
+                console.log(`Bill ${bill.userData.id}: ${(bill.userData.cleanProgress * 100).toFixed(0)}%`);
+            }
+        }
+
+        function onKeyDown(event) {
+            switch(event.key.toLowerCase()) {
+                case 'h':
+                    toggleSEO();
+                    break;
+                case 'l':
+                    renderer.toneMappingExposure = Math.min(3, renderer.toneMappingExposure + 0.1);
+                    updateHUD();
+                    break;
+                case 'k':
+                    renderer.toneMappingExposure = Math.max(0.5, renderer.toneMappingExposure - 0.1);
+                    updateHUD();
+                    break;
+                case 'r':
+                    camera.position.set(0, 3, 6);
+                    controls.target.set(0, 1, 0);
+                    controls.update();
+                    break;
+            }
+        }
+
+        function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Mouse interaction for cleaning
-        function onMouseClick(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        // ===== Animation Loop =====
+        function animate() {
+            requestAnimationFrame(animate);
 
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(bills);
+            const now = performance.now();
+            const delta = now - lastTime;
+            lastTime = now;
 
-            if (intersects.length > 0) {
-                const clickedBill = intersects[0].object;
-                clickedBill.userData.cleanProgress += 0.1;
-                
-                if (clickedBill.userData.cleanProgress >= 1) {
-                    clickedBill.userData.isDirty = false;
-                }
-                
-                console.log(`Bill ID: ${clickedBill.userData.id}, Progress: ${clickedBill.userData.cleanProgress.toFixed(2)}`);
+            frameCount++;
+            fpsTime += delta;
+            if (fpsTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+                frameCount = 0;
+                fpsTime = 0;
             }
+
+            controls.update();
+            updateHUD();
+            renderer.render(scene, camera);
         }
 
-        function onMouseDown(event) {
-            isMouseDown = true;
-            onMouseClick(event);
+        // ===== HUD =====
+        function updateHUD() {
+            const pos = camera.position;
+            document.getElementById('camPos').textContent = 
+                `${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}`;
+            document.getElementById('exposure').textContent = 
+                renderer.toneMappingExposure.toFixed(1);
         }
 
-        function onMouseUp() {
-            isMouseDown = false;
+        // ===== SEO Toggle =====
+        window.toggleSEO = function() {
+            document.getElementById('seoOverlay').classList.toggle('hidden');
         }
 
-        function init() {
-            initScene();
-            animate();
-            window.addEventListener('resize', handleResize);
-            window.addEventListener('mousedown', onMouseDown);
-            window.addEventListener('mouseup', onMouseUp);
-            window.addEventListener('click', onMouseClick);
-        }
-
+        // Start
         init();
     </script>
-
-    <section id="content">
-        <h2>What is Cash Cleaner Online?</h2>
-        <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator that brings the viral ASMR satisfaction of power washing directly to your screen. The game recreates the oddly satisfying experience of using a high-pressure washer to clean dirty money, gold bars, and credit cards. Unlike traditional mobile apps that require downloads and installations, this web version is instantly accessible from any device with a browser.</p>
-        <p>The gameplay is elegantly simple yet deeply engaging. Players are presented with various valuable items covered in layers of realistic dirt and grime. Using your mouse or finger as a virtual pressure washer, you drag across the screen to blast away the accumulated muck. As you clean, water spray particles animate in real-time, creating a mesmerizing visual effect that mimics actual cleaning physics. The dirt erodes gradually under your cursor, revealing the pristine surface beneath.</p>
-        <p>What sets Cash Cleaner Online apart is its progressive reward system. Each successfully cleaned item grants you virtual earnings - from $100 for standard bills to $1000 for platinum cards. The game continuously generates new dirty items to maintain an endless loop of satisfaction. This creates what psychologists call a "flow state" - that perfect balance between challenge and reward that keeps players engaged for extended sessions. The visual feedback is immediate and gratifying, with confetti explosions and glowing animations celebrating each completed cleaning.</p>
-        <p>The game has gained massive popularity in online communities, schools, and workplaces because it's completely unblocked and requires no permissions. It's the perfect stress-relief tool during breaks, offering a few minutes of mindless zen without any learning curve or complex mechanics. The dark aesthetic makes the bright money pop visually, creating strong contrast that's both aesthetically pleasing and easy on the eyes during extended play sessions.</p>
-
-        <h2>Why Cash Cleaning Games Are So Satisfying</h2>
-        <p>The phenomenon of cleaning games taps into deep psychological mechanisms that explain why millions of players find them irresistibly satisfying. At its core, the appeal lies in our brain's reward system responding to visible progress and completion. When you see dirt disappearing under your cursor in real-time, your brain releases small doses of dopamine - the same neurotransmitter associated with achievement and pleasure. This is why power washing videos have garnered billions of views across social media platforms.</p>
-        <p>ASMR (Autonomous Sensory Meridian Response) plays a significant role in the appeal of cleaning simulators. While Cash Cleaner Online doesn't include sound, the visual ASMR effect is equally powerful. The gradual transformation from dirty to clean creates a sense of order emerging from chaos, which resonates with our innate desire for control and organization. This visual satisfaction is amplified by the particle effects that simulate water spray, triggering the same neural pathways activated by watching real cleaning processes.</p>
-        <p>From a cognitive psychology perspective, these games offer what researchers call "productive procrastination." They provide a sense of accomplishment without real-world consequences or stress. In today's high-pressure environment where complex tasks can feel overwhelming, the simple binary outcome of dirty-to-clean offers clarity and immediate gratification. Each swipe produces visible results, creating a micro-achievement loop that's incredibly addictive.</p>
-        <p>The repetitive nature of the cleaning motion also has meditative qualities. Similar to how coloring books have become popular stress-relief tools for adults, the rhythmic dragging motion required in Cash Cleaner Online creates a focused, almost trance-like state. This repetition can lower cortisol levels and reduce anxiety, making these games unexpectedly therapeutic. Players report feeling calmer and more centered after playing, which explains why cleaning simulators have become popular during work breaks and before sleep.</p>
-
-        <h2>How to Play Cash Cleaner Online</h2>
-        <p>Getting started with Cash Cleaner Online is incredibly straightforward - there's virtually no learning curve. Simply load the page and you'll immediately see a dirty bill displayed in the center of your screen. The dirt layer is represented by a dark, gritty overlay that completely obscures the clean money beneath.</p>
-        <p>On desktop computers, use your mouse to click and drag across the dirty surface. On mobile devices and tablets, use your finger to swipe across the screen. As you move your cursor or finger, the high-pressure washer effect kicks in, erasing the dirt layer and revealing the pristine surface underneath. The larger your movements, the faster you'll clean. The game tracks your progress in real-time via a progress bar at the top of the screen, showing the percentage of dirt removed.</p>
-        <p>Your goal is to reach 95% cleanliness. Once you hit this threshold, the game celebrates your achievement with a spectacular confetti explosion and displays your earned reward. After a brief celebration animation, a new dirty item automatically appears - either another dollar bill, a gold bar, or a platinum credit card. Each item type has slightly different textures and colors, keeping the visual experience fresh.</p>
-        <p>The beauty of Cash Cleaner Online is that there's no wrong way to play. Some players prefer methodical horizontal strokes, others use circular motions, and some just frantically scrub random areas. All approaches work equally well. The game is designed for instant satisfaction - you can complete a single cleaning cycle in under 60 seconds, making it perfect for quick breaks or extended relaxation sessions alike.</p>
-
-        <h2>Is Cash Cleaner Online Free?</h2>
-        <p>Yes, Cash Cleaner Online is completely free to play with absolutely no hidden costs or microtransactions. There's no premium version, no in-app purchases, no subscription fees, and no advertisements interrupting your gameplay. The game was designed as a pure entertainment experience without monetization mechanics that would detract from the core satisfaction loop.</p>
-        <p>You don't need to create an account, provide an email address, or download any software. Simply visit the website and start playing immediately. This accessibility is intentional - the goal is to provide instant stress relief without any barriers to entry. The game works on all modern browsers including Chrome, Firefox, Safari, and Edge, across all device types from smartphones to desktop computers.</p>
-        <p>Because the game runs entirely in your browser using HTML5 technology, there are no storage requirements on your device and no permissions needed. Your progress isn't saved between sessions, which is actually a feature rather than a limitation - it means each visit offers a fresh start without the pressure of maintaining streaks or achievements. This design philosophy keeps the experience pure and meditative, focused solely on the immediate satisfaction of cleaning rather than long-term progression systems that can create addictive patterns.</p>
-        <p>The game is also completely unblocked, meaning it works on school networks, office wifi, and other restricted internet connections that typically block gaming sites. This has made Cash Cleaner Online particularly popular among students looking for quick study breaks and office workers seeking momentary stress relief during busy workdays.</p>
-    </section>
-
-    <div id="ad-bottom" style="text-align: center; padding: 30px 0; background: rgba(0, 0, 0, 0.8);">
-<script>
-  atOptions = {
-    'key' : 'ec8c5f314722aa8c54e18afcf25d60c7',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://offeringmakeup.com/ec8c5f314722aa8c54e18afcf25d60c7/invoke.js"></script>
-    </div>
-
-    <footer style="position: relative; bottom: auto; left: auto; right: auto; background: rgba(0, 0, 0, 0.9); padding: 15px; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.7); border-top: 1px solid rgba(0, 255, 136, 0.2); margin-top: 0;">
-        <a href="/privacy.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">Privacy Policy</a> |
-        <a href="/terms.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">Terms of Service</a> |
-        <a href="/about.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">About Us</a> |
-        <a href="/contact.html" style="color: #00ff88; text-decoration: none; margin: 0 10px;">Contact</a>
-    </footer>
 
     <script src="https://offeringmakeup.com/a0/2d/50/a02d50405ef0bdf0d4243259c7266ce6.js"></script>
 </body>
