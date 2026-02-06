@@ -917,11 +917,11 @@
         function onMouseUp() {
             if (isCleaning) {
                 stopCleaningSound();
+                controls.enabled = true; // Re-enable orbit after cleaning
             }
             isCleaning = false;
             currentBill = null;
             isDragging = false;
-            controls.enabled = true; // Re-enable orbit
         }
 
         function onMouseMove(event) {
