@@ -207,9 +207,12 @@
                 font-size: 10px;
                 padding: 8px;
             }
-            #cleaningUI {
-                width: 140px;
-                padding: 10px;
+            #score-board {
+                font-size: 18px;
+                padding: 12px 20px;
+            }
+            #score-board .label {
+                font-size: 12px;
             }
         }
     </style>
@@ -303,7 +306,7 @@
         let scene, camera, renderer, controls;
         let bills = [];
         const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        const mouse = new THREE.Vector2(-999, -999); // Initialize off-screen
         let lastTime = performance.now();
         let frameCount = 0;
         let fpsTime = 0;
@@ -330,7 +333,7 @@
             createRoom();
             createTable();
             createProps();
-            createMoney();
+            loadBillTexture();
             bindInput();
             initAudio();
             animate();
@@ -342,73 +345,31 @@
             document.addEventListener('click', () => {
                 if (!isAudioInitialized) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    cleaningSoundGain = audioContext.createGain();
-                    cleaningSoundGain.gain.value = 0;
-                    cleaningSoundGain.connect(audioContext.destination);
                     isAudioInitialized = true;
                     console.log('Audio initialized');
                 }
             }, { once: true });
         }
 
-        function startCleaningSound() {
+        function playCollectSound() {
             if (!isAudioInitialized) return;
             
-            // Create white noise for scrubbing sound
-            const bufferSize = audioContext.sampleRate * 0.5;
-            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-            const data = buffer.getChannelData(0);
-            
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * 0.1;
-            }
-            
-            cleaningSound = audioContext.createBufferSource();
-            cleaningSound.buffer = buffer;
-            cleaningSound.loop = true;
-            
-            // Filter for more natural sound
-            const filter = audioContext.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 3000;
-            
-            cleaningSound.connect(filter);
-            filter.connect(cleaningSoundGain);
-            cleaningSound.start();
-            
-            // Fade in
-            cleaningSoundGain.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.1);
-        }
-
-        function stopCleaningSound() {
-            if (!cleaningSoundGain) return;
-            
-            // Fade out
-            cleaningSoundGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.2);
-            
-            if (cleaningSound) {
-                setTimeout(() => {
-                    try { cleaningSound.stop(); } catch(e) {}
-                    cleaningSound = null;
-                }, 250);
-            }
-        }
-
-        function playCompleteSound() {
-            if (!isAudioInitialized) return;
-            
+            // Create pleasant collection sound
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
-            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            
             oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.3);
+            oscillator.stop(audioContext.currentTime + 0.2);
         }
 
         // ===== Scene Setup =====
@@ -630,103 +591,172 @@
             scene.add(neonLight);
         }
 
-        // ===== Mask Canvas System =====
-        function createMaskCanvas() {
-            const canvas = document.createElement('canvas');
-            canvas.width = maskResolution;
-            canvas.height = maskResolution;
-            const ctx = canvas.getContext('2d');
-            // Start fully dirty (black = dirty)
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, maskResolution, maskResolution);
-            return { canvas, ctx };
-        }
+        // ===== Money System =====
+        let billTexture = null;
 
-        function drawCleanBrush(ctx, x, y, size, intensity) {
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${intensity})`);
-            gradient.addColorStop(0.7, `rgba(255, 255, 255, ${intensity * 0.5})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(x - size, y - size, size * 2, size * 2);
-        }
-
-        function calculateCleanProgress(canvas) {
-            const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            let whitePixels = 0;
-            let totalPixels = canvas.width * canvas.height;
+        function loadBillTexture() {
+            const loader = new THREE.TextureLoader();
             
-            for (let i = 0; i < data.length; i += 4) {
-                if (data[i] > 128) whitePixels++; // White threshold
-            }
-            
-            return whitePixels / totalPixels;
+            // Try to load dollar bill texture
+            loader.load(
+                'https://upload.wikimedia.org/wikipedia/commons/7/7b/United_States_one_dollar_bill_obverse.jpg',
+                (texture) => {
+                    console.log('Bill texture loaded successfully');
+                    billTexture = texture;
+                    createMoney();
+                },
+                undefined,
+                (error) => {
+                    console.warn('Failed to load bill texture, using fallback color', error);
+                    billTexture = null; // Use fallback color
+                    createMoney();
+                }
+            );
         }
 
-        // ===== Money =====
         function createMoney() {
-            const billGeo = new THREE.PlaneGeometry(0.15, 0.065);
-            const billColors = [0x85c97f, 0x7abf73, 0x9acd92];
+            const billGeo = new THREE.PlaneGeometry(0.3, 0.15); // 2:1 ratio
+            const billCount = 50;
 
-            for (let i = 0; i < 80; i++) {
-                const baseColor = billColors[Math.floor(Math.random() * billColors.length)];
-                
-                // Create mask canvas
-                const maskData = createMaskCanvas();
-                const maskTexture = new THREE.CanvasTexture(maskData.canvas);
-                maskTexture.needsUpdate = true;
-
-                // Create material with custom shader
+            for (let i = 0; i < billCount; i++) {
+                // Create material with texture or fallback color
                 const billMat = new THREE.MeshStandardMaterial({
-                    color: baseColor,
-                    roughness: 0.5,
+                    color: billTexture ? 0xffffff : 0x85bb65, // White if textured, green fallback
+                    map: billTexture,
+                    roughness: 0.6,
                     metalness: 0.1,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    emissive: 0x000000,
+                    emissiveIntensity: 0
                 });
 
-                // Custom onBeforeCompile for dirt masking
-                billMat.onBeforeCompile = (shader) => {
-                    shader.uniforms.maskTexture = { value: maskTexture };
-                    shader.uniforms.dirtColor = { value: new THREE.Color(0x3a2a1a) };
-                    
-                    shader.fragmentShader = shader.fragmentShader.replace(
-                        '#include <color_fragment>',
-                        `
-                        #include <color_fragment>
-                        uniform sampler2D maskTexture;
-                        uniform vec3 dirtColor;
-                        vec4 maskSample = texture2D(maskTexture, vUv);
-                        float cleanAmount = maskSample.r;
-                        diffuseColor.rgb = mix(dirtColor, diffuseColor.rgb, cleanAmount);
-                        `
-                    );
-                };
-
                 const bill = new THREE.Mesh(billGeo, billMat);
+                
+                // Random placement on table surface
+                const randomX = (Math.random() - 0.5) * 2.4;
+                const randomZ = (Math.random() - 0.5) * 1.6;
+                const randomYOffset = Math.random() * 0.01; // Prevent Z-fighting
+                
                 bill.position.set(
-                    (Math.random() - 0.5) * 2.4,
-                    1.05 + Math.random() * 0.15,
-                    (Math.random() - 0.5) * 1.6
+                    randomX,
+                    1.055 + randomYOffset,
+                    randomZ
                 );
+                
+                // Rotate to lay flat on table, with random rotation around Y axis
                 bill.rotation.set(
-                    (Math.random() - 0.5) * 0.2,
-                    Math.random() * Math.PI * 2,
-                    (Math.random() - 0.5) * 0.3
+                    -Math.PI / 2, // Lay flat on XZ plane
+                    Math.random() * Math.PI * 2, // Random rotation around Y (up) axis
+                    0
                 );
+                
                 bill.castShadow = true;
                 bill.receiveShadow = true;
+                
+                // Store original state for interaction
                 bill.userData = {
                     id: i,
-                    cleanProgress: 0,
-                    isDirty: true,
-                    maskData: maskData,
-                    maskTexture: maskTexture
+                    baseY: bill.position.y,
+                    baseEmissive: 0,
+                    isHovered: false,
+                    value: 100
                 };
+                
                 bills.push(bill);
                 scene.add(bill);
             }
+            
+            console.log(`Created ${billCount} bills on table`);
+        }
+
+        // ===== Interaction System =====
+        function updateInteraction() {
+            // Cast ray from camera through mouse position
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(bills, false);
+            
+            // Reset previously hovered bill
+            if (hoveredBill && (intersects.length === 0 || intersects[0].object !== hoveredBill)) {
+                hoveredBill.position.y = hoveredBill.userData.baseY;
+                hoveredBill.material.emissive.setHex(0x000000);
+                hoveredBill.material.emissiveIntensity = 0;
+                hoveredBill.userData.isHovered = false;
+                hoveredBill = null;
+            }
+            
+            // Apply hover effect to current bill
+            if (intersects.length > 0) {
+                const bill = intersects[0].object;
+                if (bill !== hoveredBill) {
+                    hoveredBill = bill;
+                    hoveredBill.userData.isHovered = true;
+                }
+                
+                // Hover effects
+                hoveredBill.position.y = hoveredBill.userData.baseY + 0.02; // Lift up
+                hoveredBill.material.emissive.setHex(0x00ff88); // Glow green
+                hoveredBill.material.emissiveIntensity = 0.3;
+            }
+        }
+
+        function collectBill(bill) {
+            if (!bill) return;
+            
+            // Animate bill collection
+            const startScale = { x: 1, y: 1, z: 1 };
+            const duration = 300;
+            const startTime = performance.now();
+            
+            function animateCollect() {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Scale down animation
+                const scale = 1 - progress;
+                bill.scale.set(scale, scale, scale);
+                
+                // Spin animation
+                bill.rotation.z += 0.2;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateCollect);
+                } else {
+                    // Remove from scene and array
+                    scene.remove(bill);
+                    bills = bills.filter(b => b !== bill);
+                    
+                    // Dispose resources
+                    if (bill.geometry) bill.geometry.dispose();
+                    if (bill.material) bill.material.dispose();
+                    
+                    console.log(`Bill collected! Remaining: ${bills.length}`);
+                }
+            }
+            
+            animateCollect();
+            
+            // Update score
+            const value = bill.userData.value || 100;
+            totalScore += value;
+            collectedCount++;
+            updateScoreBoard();
+            showCollectFeedback(value);
+            playCollectSound();
+        }
+
+        function updateScoreBoard() {
+            document.getElementById('scoreAmount').textContent = '$' + totalScore;
+            document.getElementById('collectedCount').textContent = collectedCount;
+        }
+
+        function showCollectFeedback(value) {
+            const feedback = document.getElementById('collectFeedback');
+            feedback.textContent = '+$' + value;
+            feedback.classList.add('show');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 500);
         }
 
         // ===== Input =====
@@ -734,168 +764,13 @@
             window.addEventListener('resize', onResize);
             window.addEventListener('click', onClick);
             window.addEventListener('keydown', onKeyDown);
-            window.addEventListener('keyup', onKeyUp);
-            window.addEventListener('mousedown', onMouseDown);
-            window.addEventListener('mouseup', onMouseUp);
             window.addEventListener('mousemove', onMouseMove);
         }
 
-        function updateCleaningUI(progress) {
-            const percent = Math.floor(progress * 100);
-            document.getElementById('progressText').textContent = percent + '%';
-            document.getElementById('progressFill').style.width = percent + '%';
-        }
-
-        function showCleanedNotice() {
-            const notice = document.getElementById('cleanedNotice');
-            notice.classList.add('show');
-            playCompleteSound();
-            cleanedCount++;
-            
-            setTimeout(() => {
-                notice.classList.remove('show');
-                generateNextBill();
-            }, 2000);
-            
-            console.log(`Bill cleaned! Total: ${cleanedCount}`);
-        }
-
-        function generateNextBill() {
-            if (!currentBill) return;
-            
-            // Dispose old bill
-            disposeBill(currentBill);
-            bills = bills.filter(b => b !== currentBill);
-            scene.remove(currentBill);
-            currentBill = null;
-            
-            // Create new bill
-            const billGeo = new THREE.PlaneGeometry(0.15, 0.065);
-            const baseColor = [0x85c97f, 0x7abf73, 0x9acd92][Math.floor(Math.random() * 3)];
-            
-            const maskData = createMaskCanvas();
-            const maskTexture = new THREE.CanvasTexture(maskData.canvas);
-            maskTexture.needsUpdate = true;
-
-            const billMat = new THREE.MeshStandardMaterial({
-                color: baseColor,
-                roughness: 0.5,
-                metalness: 0.1,
-                side: THREE.DoubleSide
-            });
-
-            billMat.onBeforeCompile = (shader) => {
-                shader.uniforms.maskTexture = { value: maskTexture };
-                shader.uniforms.dirtColor = { value: new THREE.Color(0x3a2a1a) };
-                
-                shader.fragmentShader = shader.fragmentShader.replace(
-                    '#include <color_fragment>',
-                    `
-                    #include <color_fragment>
-                    uniform sampler2D maskTexture;
-                    uniform vec3 dirtColor;
-                    vec4 maskSample = texture2D(maskTexture, vUv);
-                    float cleanAmount = maskSample.r;
-                    diffuseColor.rgb = mix(dirtColor, diffuseColor.rgb, cleanAmount);
-                    `
-                );
-            };
-
-            const bill = new THREE.Mesh(billGeo, billMat);
-            bill.position.set(
-                (Math.random() - 0.5) * 2.4,
-                1.05 + Math.random() * 0.1,
-                (Math.random() - 0.5) * 1.6
-            );
-            bill.rotation.set(
-                (Math.random() - 0.5) * 0.2,
-                Math.random() * Math.PI * 2,
-                (Math.random() - 0.5) * 0.3
-            );
-            bill.castShadow = true;
-            bill.receiveShadow = true;
-            bill.userData = {
-                id: Date.now(),
-                cleanProgress: 0,
-                isDirty: true,
-                maskData: maskData,
-                maskTexture: maskTexture
-            };
-            
-            bills.push(bill);
-            scene.add(bill);
-            
-            // Reset progress UI
-            updateCleaningUI(0);
-        }
-
-        function disposeBill(bill) {
-            if (!bill) return;
-            
-            // Dispose geometry
-            if (bill.geometry) {
-                bill.geometry.dispose();
-            }
-            
-            // Dispose material and textures
-            if (bill.material) {
-                if (bill.material.map) bill.material.map.dispose();
-                bill.material.dispose();
-            }
-            
-            // Dispose mask texture
-            if (bill.userData.maskTexture) {
-                bill.userData.maskTexture.dispose();
-            }
-            
-            // Clear canvas context
-            if (bill.userData.maskData && bill.userData.maskData.canvas) {
-                bill.userData.maskData.canvas.width = 1;
-                bill.userData.maskData.canvas.height = 1;
-            }
-        }
-
-        function onMouseDown(event) {
-            if (event.button === 0) {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects(bills);
-                
-                if (intersects.length > 0) {
-                    isCleaning = true;
-                    currentBill = intersects[0].object;
-                    cleanAtPoint(intersects[0]);
-                    startCleaningSound();
-                    // Disable orbit while cleaning
-                    controls.enabled = false;
-                } else {
-                    isDragging = true;
-                }
-            }
-        }
-
-        function onMouseUp() {
-            if (isCleaning) {
-                stopCleaningSound();
-                controls.enabled = true; // Re-enable orbit after cleaning
-            }
-            isCleaning = false;
-            currentBill = null;
-            isDragging = false;
-        }
-
         function onMouseMove(event) {
-            // Continue cleaning if mouse is down
-            if (isCleaning && currentBill) {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects([currentBill]);
-                if (intersects.length > 0) {
-                    cleanAtPoint(intersects[0]);
-                }
-            }
+            // Update mouse coordinates for raycasting
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         }
 
         // ===== Camera Clamping =====
@@ -947,41 +822,15 @@
             }
         }
 
-        function cleanAtPoint(intersection) {
-            const bill = intersection.object;
-            const uv = intersection.uv;
-            const userData = bill.userData;
-            
-            if (!uv || !userData.maskData) return;
-
-            const x = Math.floor(uv.x * maskResolution);
-            const y = Math.floor((1 - uv.y) * maskResolution);
-            
-            const effectiveBrushSize = isFineBrush ? brushSize * 0.5 : brushSize;
-            const effectiveIntensity = isFineBrush ? brushIntensity * 0.6 : brushIntensity;
-            
-            drawCleanBrush(userData.maskData.ctx, x, y, effectiveBrushSize, effectiveIntensity);
-            needsTextureUpdate = true;
-            
-            // Update progress
-            userData.cleanProgress = calculateCleanProgress(userData.maskData.canvas);
-            updateCleaningUI(userData.cleanProgress);
-            
-            if (userData.cleanProgress >= 0.85 && userData.isDirty) {
-                userData.isDirty = false;
-                showCleanedNotice();
-            }
-        }
-
         function onClick(event) {
-            // Keep for compatibility
+            // Collect hovered bill on click
+            if (hoveredBill) {
+                collectBill(hoveredBill);
+                hoveredBill = null;
+            }
         }
 
         function onKeyDown(event) {
-            if (event.key === 'Shift') {
-                isFineBrush = true;
-            }
-            
             switch(event.key.toLowerCase()) {
                 case 'h':
                     toggleSEO();
@@ -997,20 +846,6 @@
                 case 'r':
                     resetCamera();
                     break;
-                case '[':
-                    brushSize = Math.max(10, brushSize - 5);
-                    updateHUD();
-                    break;
-                case ']':
-                    brushSize = Math.min(50, brushSize + 5);
-                    updateHUD();
-                    break;
-            }
-        }
-
-        function onKeyUp(event) {
-            if (event.key === 'Shift') {
-                isFineBrush = false;
             }
         }
 
@@ -1042,11 +877,8 @@
                 fpsTime = 0;
             }
 
-            // Update mask textures (throttled)
-            if (needsTextureUpdate && currentBill) {
-                currentBill.userData.maskTexture.needsUpdate = true;
-                needsTextureUpdate = false;
-            }
+            // Update interaction system
+            updateInteraction();
 
             controls.update();
             clampCamera(); // Prevent camera clipping through objects
@@ -1060,10 +892,7 @@
             document.getElementById('camPos').textContent = 
                 `${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}`;
             document.getElementById('exposure').textContent = 
-                renderer.toneMappingExposure.toFixed(1);
-            document.getElementById('brushSize').textContent = 
-                isFineBrush ? Math.floor(brushSize * 0.5) : brushSize;
-            document.getElementById('cleanedCount').textContent = cleanedCount;
+                renderer.toneMappingExposure.toFixed(2);
         }
 
         // ===== SEO Toggle =====
