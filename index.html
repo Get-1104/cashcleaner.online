@@ -31,173 +31,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            touch-action: pan-y;
         }
 
-        #gameContainer {
+        #game3d {
             width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            height: 100vh;
             position: relative;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
+            display: block;
         }
 
-        #header {
-            position: absolute;
-            top: 20px;
-            width: 90%;
-            max-width: 600px;
-            z-index: 100;
-        }
-
-        #title {
-            text-align: center;
-            font-size: clamp(20px, 5vw, 32px);
-            font-weight: bold;
-            color: #00ff88;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-
-        #progressContainer {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 255, 136, 0.3);
-        }
-
-        #progressLabel {
-            text-align: center;
-            font-size: 14px;
-            color: #00ff88;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        #progressBar {
-            width: 100%;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid rgba(0, 255, 136, 0.5);
-        }
-
-        #progressFill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00ff88, #00cc66);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
-        }
-
-        #progressText {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: bold;
-            font-size: 16px;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-        }
-
-        #canvasContainer {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto;
-        }
-
-        #billCanvas {
-            position: absolute;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-        }
-
-        #dirtCanvas {
-            position: absolute;
-            cursor: crosshair;
-            border-radius: 10px;
-        }
-
-        #particleCanvas {
-            position: absolute;
-            pointer-events: none;
-            border-radius: 10px;
-        }
-
-        #winPopup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #00ff88, #00cc66);
-            padding: 40px 60px;
-            border-radius: 20px;
-            box-shadow: 0 0 100px rgba(0, 255, 136, 0.8);
-            z-index: 1000;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            text-align: center;
-        }
-
-        #winPopup.show {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        #winPopup h2 {
-            font-size: clamp(28px, 6vw, 48px);
-            color: #111111;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        #winPopup p {
-            font-size: clamp(20px, 4vw, 32px);
-            color: #111111;
-            font-weight: bold;
-        }
-
-        #instructions {
-            position: absolute;
-            bottom: 20px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            #header {
-                top: 10px;
-            }
-
-            #progressContainer {
-                padding: 10px;
-            }
-
-            #instructions {
-                bottom: 10px;
-                font-size: 12px;
-            }
-        }
-
-        #confettiCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
+        #game3d canvas {
+            display: block;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 999;
         }
 
         #content {
@@ -246,470 +92,96 @@
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="header">
-            <div id="title">💰 CASH CLEANER ONLINE 💰</div>
-            <div id="progressContainer">
-                <div id="progressLabel">CLEANING PROGRESS</div>
-                <div id="progressBar">
-                    <div id="progressFill"></div>
-                    <div id="progressText">0%</div>
-                </div>
-            </div>
-        </div>
+    <div id="game3d"></div>
 
-        <div id="canvasContainer">
-            <canvas id="billCanvas"></canvas>
-            <canvas id="dirtCanvas"></canvas>
-            <canvas id="particleCanvas"></canvas>
-        </div>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+        }
+    }
+    </script>
 
-        <div id="instructions">
-            🖱️ Drag to clean • 📱 Swipe to wash • 💦 High-Pressure Action!
-        </div>
+    <script type="module">
+        import * as THREE from 'three';
 
-        <div id="winPopup">
-            <h2>SATISFACTION! ✨</h2>
-            <p id="rewardText">+$100</p>
-        </div>
+        // ===== Scene Setup =====
+        let scene, camera, renderer, cube;
 
-        <canvas id="confettiCanvas"></canvas>
-    </div>
+        function initScene() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x808080); // Gray background
 
-    <script>
-        // Canvas Setup
-        const billCanvas = document.getElementById('billCanvas');
-        const dirtCanvas = document.getElementById('dirtCanvas');
-        const particleCanvas = document.getElementById('particleCanvas');
-        const confettiCanvas = document.getElementById('confettiCanvas');
-        
-        const billCtx = billCanvas.getContext('2d');
-        const dirtCtx = dirtCanvas.getContext('2d');
-        const particleCtx = particleCanvas.getContext('2d');
-        const confettiCtx = confettiCanvas.getContext('2d');
+            // Create camera
+            const aspect = window.innerWidth / window.innerHeight;
+            camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+            camera.position.z = 5;
 
-        // Game State
-        let currentItem = 'dollar';
-        let isCleaning = false;
-        let particles = [];
-        let confettiParticles = [];
-        let cleanedPixels = 0;
-        let totalPixels = 0;
+            // Create renderer
+            const container = document.getElementById('game3d');
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Renderer settings as per requirements
+            renderer.physicallyCorrectLights = true;
+            renderer.outputColorSpace = THREE.SRGBColorSpace;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.0;
+            
+            container.appendChild(renderer.domElement);
 
-        // Canvas Dimensions
-        const canvasWidth = Math.min(600, window.innerWidth * 0.9);
-        const canvasHeight = Math.min(280, canvasWidth * 0.47);
-
-        function setupCanvases() {
-            // Set canvas sizes
-            [billCanvas, dirtCanvas, particleCanvas].forEach(canvas => {
-                canvas.width = canvasWidth;
-                canvas.height = canvasHeight;
+            // Create a rotating cube (placeholder)
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0x00ff88,
+                metalness: 0.3,
+                roughness: 0.4
             });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
 
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
         }
 
-        // Draw Dollar Bill
-        function drawDollarBill() {
-            billCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            // Main bill background with gradient
-            const gradient = billCtx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-            gradient.addColorStop(0, '#7ac943');
-            gradient.addColorStop(0.5, '#85d251');
-            gradient.addColorStop(1, '#6fb83a');
-            
-            billCtx.fillStyle = gradient;
-            billCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+        // ===== Animation Loop =====
+        function animate() {
+            requestAnimationFrame(animate);
 
-            // Border
-            billCtx.strokeStyle = '#2d5016';
-            billCtx.lineWidth = 8;
-            billCtx.strokeRect(10, 10, canvasWidth - 20, canvasHeight - 20);
+            // Rotate cube
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
 
-            // Inner decorative border
-            billCtx.strokeStyle = '#5a8f2f';
-            billCtx.lineWidth = 3;
-            billCtx.strokeRect(20, 20, canvasWidth - 40, canvasHeight - 40);
-
-            // Draw "$100" text
-            billCtx.fillStyle = '#1a3d0a';
-            billCtx.font = `bold ${canvasHeight * 0.3}px serif`;
-            billCtx.textAlign = 'center';
-            billCtx.textBaseline = 'middle';
-            billCtx.fillText('$100', canvasWidth / 2, canvasHeight / 2);
-
-            // Add decorative elements
-            billCtx.font = `${canvasHeight * 0.08}px serif`;
-            billCtx.fillText('UNITED STATES', canvasWidth / 2, canvasHeight * 0.25);
-            billCtx.fillText('OF AMERICA', canvasWidth / 2, canvasHeight * 0.75);
-
-            // Corner decorations
-            drawCornerCircles();
+            renderer.render(scene, camera);
         }
 
-        function drawCornerCircles() {
-            const radius = 30;
-            const positions = [
-                [40, 40], [canvasWidth - 40, 40],
-                [40, canvasHeight - 40], [canvasWidth - 40, canvasHeight - 40]
-            ];
+        // ===== Resize Handler =====
+        function handleResize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
 
-            positions.forEach(([x, y]) => {
-                billCtx.beginPath();
-                billCtx.arc(x, y, radius, 0, Math.PI * 2);
-                billCtx.fillStyle = '#5a8f2f';
-                billCtx.fill();
-                billCtx.strokeStyle = '#2d5016';
-                billCtx.lineWidth = 3;
-                billCtx.stroke();
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
 
-                billCtx.fillStyle = '#1a3d0a';
-                billCtx.font = 'bold 20px serif';
-                billCtx.textAlign = 'center';
-                billCtx.textBaseline = 'middle';
-                billCtx.fillText('$', x, y);
-            });
+            renderer.setSize(width, height);
         }
 
-        // Draw Gold Bar
-        function drawGoldBar() {
-            billCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            const gradient = billCtx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-            gradient.addColorStop(0, '#ffd700');
-            gradient.addColorStop(0.5, '#ffed4e');
-            gradient.addColorStop(1, '#ffaa00');
-            
-            billCtx.fillStyle = gradient;
-            billCtx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            billCtx.strokeStyle = '#cc8800';
-            billCtx.lineWidth = 8;
-            billCtx.strokeRect(10, 10, canvasWidth - 20, canvasHeight - 20);
-
-            billCtx.fillStyle = '#8b6914';
-            billCtx.font = `bold ${canvasHeight * 0.25}px serif`;
-            billCtx.textAlign = 'center';
-            billCtx.textBaseline = 'middle';
-            billCtx.fillText('GOLD', canvasWidth / 2, canvasHeight / 2 - 20);
-            
-            billCtx.font = `bold ${canvasHeight * 0.15}px serif`;
-            billCtx.fillText('999.9', canvasWidth / 2, canvasHeight / 2 + 30);
-        }
-
-        // Draw Credit Card
-        function drawCreditCard() {
-            billCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            const gradient = billCtx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-            gradient.addColorStop(0, '#1e3a8a');
-            gradient.addColorStop(0.5, '#3b82f6');
-            gradient.addColorStop(1, '#1e40af');
-            
-            billCtx.fillStyle = gradient;
-            billCtx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            // Magnetic stripe
-            billCtx.fillStyle = '#000000';
-            billCtx.fillRect(0, canvasHeight * 0.2, canvasWidth, canvasHeight * 0.15);
-
-            // Chip
-            billCtx.fillStyle = '#ffd700';
-            const chipX = 50;
-            const chipY = canvasHeight * 0.45;
-            billCtx.fillRect(chipX, chipY, 60, 45);
-            billCtx.strokeStyle = '#cc8800';
-            billCtx.lineWidth = 2;
-            billCtx.strokeRect(chipX, chipY, 60, 45);
-
-            // Card number
-            billCtx.fillStyle = '#ffffff';
-            billCtx.font = `bold ${canvasHeight * 0.12}px monospace`;
-            billCtx.textAlign = 'center';
-            billCtx.fillText('**** **** **** 8888', canvasWidth / 2, canvasHeight * 0.7);
-
-            // Logo
-            billCtx.font = `bold ${canvasHeight * 0.15}px sans-serif`;
-            billCtx.fillText('PLATINUM', canvasWidth / 2, canvasHeight * 0.15);
-        }
-
-        // Generate Dirt Layer
-        function generateDirt() {
-            dirtCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            // Create dark muddy texture
-            const imageData = dirtCtx.createImageData(canvasWidth, canvasHeight);
-            const data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                const noise = Math.random() * 60;
-                const baseColor = 30 + noise;
-                
-                data[i] = baseColor;     // R
-                data[i + 1] = baseColor * 0.7; // G
-                data[i + 2] = baseColor * 0.5; // B
-                data[i + 3] = 220 + Math.random() * 35; // A
-            }
-
-            dirtCtx.putImageData(imageData, 0, 0);
-
-            // Add darker patches for variation
-            for (let i = 0; i < 20; i++) {
-                const x = Math.random() * canvasWidth;
-                const y = Math.random() * canvasHeight;
-                const radius = 30 + Math.random() * 80;
-                
-                const gradient = dirtCtx.createRadialGradient(x, y, 0, x, y, radius);
-                gradient.addColorStop(0, 'rgba(20, 15, 10, 0.7)');
-                gradient.addColorStop(1, 'rgba(20, 15, 10, 0)');
-                
-                dirtCtx.fillStyle = gradient;
-                dirtCtx.fillRect(0, 0, canvasWidth, canvasHeight);
-            }
-
-            // Calculate total pixels for progress
-            calculateTotalPixels();
-        }
-
-        function calculateTotalPixels() {
-            const imageData = dirtCtx.getImageData(0, 0, canvasWidth, canvasHeight);
-            const data = imageData.data;
-            let count = 0;
-
-            for (let i = 3; i < data.length; i += 4) {
-                if (data[i] > 50) count++;
-            }
-
-            totalPixels = count;
-            cleanedPixels = 0;
-            updateProgress();
-        }
-
-        // Cleaning Mechanics
-        function cleanArea(x, y) {
-            dirtCtx.globalCompositeOperation = 'destination-out';
-            
-            const gradient = dirtCtx.createRadialGradient(x, y, 0, x, y, 40);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            
-            dirtCtx.fillStyle = gradient;
-            dirtCtx.beginPath();
-            dirtCtx.arc(x, y, 40, 0, Math.PI * 2);
-            dirtCtx.fill();
-            
-            dirtCtx.globalCompositeOperation = 'source-over';
-
-            // Create water particles
-            for (let i = 0; i < 8; i++) {
-                particles.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6,
-                    life: 1,
-                    size: 3 + Math.random() * 4
-                });
-            }
-
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const imageData = dirtCtx.getImageData(0, 0, canvasWidth, canvasHeight);
-            const data = imageData.data;
-            let remaining = 0;
-
-            for (let i = 3; i < data.length; i += 4) {
-                if (data[i] > 50) remaining++;
-            }
-
-            const cleaned = totalPixels - remaining;
-            const percentage = Math.round((cleaned / totalPixels) * 100);
-
-            document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = percentage + '%';
-
-            if (percentage >= 95 && totalPixels > 0) {
-                winLevel();
-            }
-        }
-
-        // Particle System
-        function updateParticles() {
-            particleCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-            particles = particles.filter(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.2; // Gravity
-                p.life -= 0.02;
-
-                if (p.life > 0) {
-                    particleCtx.fillStyle = `rgba(100, 200, 255, ${p.life})`;
-                    particleCtx.beginPath();
-                    particleCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    particleCtx.fill();
-                    return true;
-                }
-                return false;
-            });
-
-            requestAnimationFrame(updateParticles);
-        }
-
-        // Confetti System
-        function createConfetti() {
-            for (let i = 0; i < 150; i++) {
-                confettiParticles.push({
-                    x: window.innerWidth / 2,
-                    y: window.innerHeight / 2,
-                    vx: (Math.random() - 0.5) * 20,
-                    vy: (Math.random() - 0.5) * 20 - 5,
-                    color: ['#FFD700', '#00ff88', '#ff6b6b', '#4ecdc4', '#45b7d1'][Math.floor(Math.random() * 5)],
-                    size: 8 + Math.random() * 8,
-                    rotation: Math.random() * 360,
-                    rotationSpeed: (Math.random() - 0.5) * 10
-                });
-            }
-            animateConfetti();
-        }
-
-        function animateConfetti() {
-            confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-            confettiParticles = confettiParticles.filter(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.5; // Gravity
-                p.vx *= 0.99;
-                p.rotation += p.rotationSpeed;
-
-                if (p.y < window.innerHeight + 50) {
-                    confettiCtx.save();
-                    confettiCtx.translate(p.x, p.y);
-                    confettiCtx.rotate(p.rotation * Math.PI / 180);
-                    confettiCtx.fillStyle = p.color;
-                    confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-                    confettiCtx.restore();
-                    return true;
-                }
-                return false;
-            });
-
-            if (confettiParticles.length > 0) {
-                requestAnimationFrame(animateConfetti);
-            }
-        }
-
-        // Win Condition
-        function winLevel() {
-            totalPixels = 0; // Prevent multiple triggers
-
-            const popup = document.getElementById('winPopup');
-            const items = [
-                { name: 'dollar', reward: '+$100', next: 'gold' },
-                { name: 'gold', reward: '+$500', next: 'card' },
-                { name: 'card', reward: '+$1000', next: 'dollar' }
-            ];
-
-            const current = items.find(item => item.name === currentItem);
-            document.getElementById('rewardText').textContent = current.reward;
-            
-            popup.classList.add('show');
-            createConfetti();
-
-            setTimeout(() => {
-                popup.classList.remove('show');
-                currentItem = current.next;
-                resetGame();
-            }, 2500);
-        }
-
-        // Game Reset
-        function resetGame() {
-            particles = [];
-            confettiParticles = [];
-
-            if (currentItem === 'dollar') drawDollarBill();
-            else if (currentItem === 'gold') drawGoldBar();
-            else if (currentItem === 'card') drawCreditCard();
-
-            generateDirt();
-        }
-
-        // Event Handlers
-        function getCoordinates(e) {
-            const rect = dirtCanvas.getBoundingClientRect();
-            const scaleX = canvasWidth / rect.width;
-            const scaleY = canvasHeight / rect.height;
-
-            if (e.touches && e.touches[0]) {
-                return {
-                    x: (e.touches[0].clientX - rect.left) * scaleX,
-                    y: (e.touches[0].clientY - rect.top) * scaleY
-                };
-            }
-            return {
-                x: (e.clientX - rect.left) * scaleX,
-                y: (e.clientY - rect.top) * scaleY
-            };
-        }
-
-        function startCleaning(e) {
-            e.preventDefault();
-            isCleaning = true;
-            const coords = getCoordinates(e);
-            cleanArea(coords.x, coords.y);
-        }
-
-        function stopCleaning() {
-            isCleaning = false;
-        }
-
-        function continueCleaning(e) {
-            if (!isCleaning) return;
-            e.preventDefault();
-            const coords = getCoordinates(e);
-            cleanArea(coords.x, coords.y);
-        }
-
-        // Initialize
+        // ===== Initialize =====
         function init() {
-            setupCanvases();
-            drawDollarBill();
-            generateDirt();
-            updateParticles();
+            initScene();
+            animate();
 
-            // Mouse events
-            dirtCanvas.addEventListener('mousedown', startCleaning);
-            dirtCanvas.addEventListener('mouseup', stopCleaning);
-            dirtCanvas.addEventListener('mouseleave', stopCleaning);
-            dirtCanvas.addEventListener('mousemove', continueCleaning);
-
-            // Touch events
-            dirtCanvas.addEventListener('touchstart', startCleaning);
-            dirtCanvas.addEventListener('touchend', stopCleaning);
-            dirtCanvas.addEventListener('touchcancel', stopCleaning);
-            dirtCanvas.addEventListener('touchmove', continueCleaning);
-
-            // Prevent scrolling on mobile
-            document.body.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-            }, { passive: false });
+            window.addEventListener('resize', handleResize);
         }
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
-        });
-
-        // Start the game
+        // Start the application
         init();
     </script>
 
