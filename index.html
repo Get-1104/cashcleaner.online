@@ -97,19 +97,17 @@
     <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
         }
     }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        let scene, camera, renderer;
-        let mouseX = 0, mouseY = 0;
-        const targetX = { value: 0 };
-        const targetY = { value: 0 };
-        let isDragging = false;
+        let scene, camera, renderer, controls;
         
         // Money bills array and interaction
         const bills = [];
@@ -259,25 +257,23 @@
             const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
             fillLight.position.set(-3, 3, 3);
             scene.add(fillLight);
-        }
 
-        function onMouseMove(event) {
-            if (!isDragging) return;
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            // OrbitControls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+            controls.enablePan = false;
+            controls.minDistance = 2.5;
+            controls.maxDistance = 6;
+            controls.minPolarAngle = Math.PI * 0.25;
+            controls.maxPolarAngle = Math.PI * 0.55;
+            controls.rotateSpeed = 0.9;
         }
 
         function animate() {
             requestAnimationFrame(animate);
 
-            // LERP smooth camera sway (first-person breathing effect)
-            targetX.value += (mouseX * 0.25 - targetX.value) * 0.08;
-            targetY.value += (mouseY * 0.15 - targetY.value) * 0.08;
-
-            camera.position.x = targetX.value;
-            camera.position.y = 2.5 + targetY.value * 0.3;
-            camera.position.z = 6 + targetY.value * 0.2;
-            camera.lookAt(0, 1, 0);
+            controls.update();
 
             renderer.render(scene, camera);
         }
@@ -309,18 +305,11 @@
         }
 
         function onMouseDown(event) {
-            isDragging = true;
             isMouseDown = true;
             onMouseClick(event);
         }
 
         function onMouseUp() {
-            isDragging = false;
-            isMouseDown = false;
-        }
-
-        function onPointerLeave() {
-            isDragging = false;
             isMouseDown = false;
         }
 
@@ -328,10 +317,8 @@
             initScene();
             animate();
             window.addEventListener('resize', handleResize);
-            window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
-            window.addEventListener('mouseleave', onPointerLeave);
             window.addEventListener('click', onMouseClick);
         }
 
