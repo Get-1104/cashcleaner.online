@@ -59,6 +59,65 @@
             margin-bottom: 5px;
         }
 
+        /* Mode & Tool UI */
+        #mode-tool-ui {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 1000;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+        }
+
+        #mode-tool-ui .section {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        #mode-tool-ui .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        #mode-tool-ui .label {
+            font-size: 11px;
+            color: rgba(0, 255, 136, 0.6);
+            margin-bottom: 5px;
+        }
+
+        #mode-tool-ui .value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #mode-tool-ui .btn {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.2s;
+        }
+
+        #mode-tool-ui .btn:hover:not(.disabled) {
+            background: rgba(0, 255, 136, 0.4);
+        }
+
+        #mode-tool-ui .btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            color: #666;
+            border-color: #666;
+        }
+
         /* Debug HUD */
         #hud {
             position: fixed;
@@ -214,6 +273,17 @@
             #score-board .label {
                 font-size: 12px;
             }
+            #mode-tool-ui {
+                font-size: 12px;
+                padding: 10px;
+            }
+            #mode-tool-ui .value {
+                font-size: 14px;
+            }
+            #mode-tool-ui .btn {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
         }
     </style>
 </head>
@@ -224,10 +294,30 @@
         <div id="scoreAmount">$0</div>
     </div>
 
+    <!-- Mode & Tool UI -->
+    <div id="mode-tool-ui">
+        <div class="section">
+            <div class="label">MODE (SPACE)</div>
+            <div class="value" id="currentMode">HAND</div>
+        </div>
+        <div class="section">
+            <div class="label">CURRENT TOOL</div>
+            <div class="value" id="currentTool">Eraser</div>
+        </div>
+        <div class="section">
+            <div class="label">SHOP</div>
+            <button class="btn" id="buyBrushBtn" onclick="buyBrush()">Buy Brush $500</button>
+        </div>
+        <div class="section">
+            <div class="label">BOX MONEY</div>
+            <div class="value" id="boxMoneyCount">30</div>
+        </div>
+    </div>
+
     <!-- Debug HUD -->
-    <div id="hud">
+    <div id="hud" style="display:none;">
         <div>FPS: <span id="fps">0</span></div>
-        <div>Collected: <span id="collectedCount">0</span></div>
+        <div>Cleaned: <span id="cleanedCount">0</span></div>
         <div>Camera: <span id="camPos">0,0,0</span></div>
         <div>Exposure: <span id="exposure">1.25</span></div>
         <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure | R: Reset Cam</div>
@@ -305,16 +395,32 @@
         // ===== Global State =====
         let scene, camera, renderer, controls;
         let bills = [];
+        let cashBoxOnTable = null;
+        let cashBoxOnFloor = null;
         const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2(-999, -999); // Initialize off-screen
+        const mouse = new THREE.Vector2(-999, -999);
         let lastTime = performance.now();
         let frameCount = 0;
         let fpsTime = 0;
 
         // Interaction state
         let hoveredBill = null;
+        let selectedBill = null;
         let totalScore = 0;
-        let collectedCount = 0;
+        let cleanedCount = 0;
+        let boxMoneyCount = 30;
+
+        // Mode & Tool system
+        let currentMode = 'HAND'; // 'HAND' or 'TOOL'
+        let currentTool = 'Eraser'; // 'Eraser' or 'Brush'
+        let toolRadius = { Eraser: 12, Brush: 28 };
+        let ownedTools = ['Eraser'];
+        const toolPrices = { Brush: 500 };
+
+        // Cleaning state
+        let isCleaning = false;
+        const maskResolution = 256;
+        let needsTextureUpdate = false;
 
         // Audio system
         let audioContext;
@@ -332,6 +438,7 @@
             createLights();
             createRoom();
             createTable();
+            createCashBoxes();
             createProps();
             loadBillTexture();
             bindInput();
@@ -481,11 +588,11 @@
 
         // ===== Table =====
         function createTable() {
-            // Wood material with procedural variation
+            // Aged wood material with more roughness and scratches
             const tableMat = new THREE.MeshStandardMaterial({
-                color: 0x5a3825,
-                roughness: 0.7,
-                metalness: 0.05,
+                color: 0x4a2f1a, // Darker, aged wood
+                roughness: 0.85,
+                metalness: 0.02,
                 roughnessMap: createWoodRoughnessMap()
             });
 
@@ -522,27 +629,70 @@
             
             // Base wood color with grain
             for (let y = 0; y < size; y++) {
-                const grainIntensity = Math.sin(y * 0.1) * 20 + 128;
+                const grainIntensity = Math.sin(y * 0.15) * 25 + 110;
                 ctx.fillStyle = `rgb(${grainIntensity},${grainIntensity},${grainIntensity})`;
                 ctx.fillRect(0, y, size, 1);
             }
             
-            // Add noise variation
+            // Add noise variation and scratches
             const imageData = ctx.getImageData(0, 0, size, size);
             const data = imageData.data;
             for (let i = 0; i < data.length; i += 4) {
-                const noise = (Math.random() - 0.5) * 30;
+                const noise = (Math.random() - 0.5) * 40;
                 data[i] = Math.max(0, Math.min(255, data[i] + noise));
                 data[i+1] = data[i];
                 data[i+2] = data[i];
             }
+            
+            // Add random scratches
             ctx.putImageData(imageData, 0, 0);
+            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * size, Math.random() * size);
+                ctx.lineTo(Math.random() * size, Math.random() * size);
+                ctx.stroke();
+            }
             
             const texture = new THREE.CanvasTexture(canvas);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(2, 2);
             return texture;
+        }
+
+        // ===== Cash Boxes =====
+        function createCashBoxes() {
+            const boxMat = new THREE.MeshStandardMaterial({
+                color: 0x8b6f47,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+
+            // Cash box on table
+            cashBoxOnTable = new THREE.Mesh(
+                new THREE.BoxGeometry(0.4, 0.15, 0.3),
+                boxMat
+            );
+            cashBoxOnTable.position.set(0.9, 1.125, 0);
+            cashBoxOnTable.castShadow = true;
+            cashBoxOnTable.receiveShadow = true;
+            cashBoxOnTable.userData = { type: 'cashBox', interactable: true };
+            scene.add(cashBoxOnTable);
+
+            // Cash box on floor (decoration)
+            cashBoxOnFloor = new THREE.Mesh(
+                new THREE.BoxGeometry(0.5, 0.4, 0.4),
+                boxMat
+            );
+            cashBoxOnFloor.position.set(2, 0.2, -1.5);
+            cashBoxOnFloor.rotation.y = 0.3;
+            cashBoxOnFloor.castShadow = true;
+            cashBoxOnFloor.receiveShadow = true;
+            scene.add(cashBoxOnFloor);
+
+            console.log('Cash boxes created');
         }
 
         // ===== Room Props =====
@@ -603,107 +753,198 @@
                 (texture) => {
                     console.log('Bill texture loaded successfully');
                     billTexture = texture;
-                    createMoney();
                 },
                 undefined,
                 (error) => {
                     console.warn('Failed to load bill texture, using fallback color', error);
-                    billTexture = null; // Use fallback color
-                    createMoney();
+                    billTexture = null;
                 }
             );
         }
 
-        function createMoney() {
-            const billGeo = new THREE.PlaneGeometry(0.3, 0.15); // 2:1 ratio
-            const billCount = 50;
+        // ===== Mask Canvas System =====
+        function createMaskCanvas() {
+            const canvas = document.createElement('canvas');
+            canvas.width = maskResolution;
+            canvas.height = maskResolution;
+            const ctx = canvas.getContext('2d');
+            // Start fully dirty (black = dirty)
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, maskResolution, maskResolution);
+            return { canvas, ctx };
+        }
 
-            for (let i = 0; i < billCount; i++) {
-                // Create material with texture or fallback color
-                const billMat = new THREE.MeshStandardMaterial({
-                    color: billTexture ? 0xffffff : 0x85bb65, // White if textured, green fallback
-                    map: billTexture,
-                    roughness: 0.6,
-                    metalness: 0.1,
-                    side: THREE.DoubleSide,
-                    emissive: 0x000000,
-                    emissiveIntensity: 0
-                });
+        function drawCleanBrush(ctx, x, y, size, intensity) {
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${intensity})`);
+            gradient.addColorStop(0.7, `rgba(255, 255, 255, ${intensity * 0.5})`);
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x - size, y - size, size * 2, size * 2);
+        }
 
-                const bill = new THREE.Mesh(billGeo, billMat);
-                
-                // Random placement on table surface
-                const randomX = (Math.random() - 0.5) * 2.4;
-                const randomZ = (Math.random() - 0.5) * 1.6;
-                const randomYOffset = Math.random() * 0.01; // Prevent Z-fighting
-                
-                bill.position.set(
-                    randomX,
-                    1.055 + randomYOffset,
-                    randomZ
-                );
-                
-                // Rotate to lay flat on table, with random rotation around Y axis
-                bill.rotation.set(
-                    -Math.PI / 2, // Lay flat on XZ plane
-                    Math.random() * Math.PI * 2, // Random rotation around Y (up) axis
-                    0
-                );
-                
-                bill.castShadow = true;
-                bill.receiveShadow = true;
-                
-                // Store original state for interaction
-                bill.userData = {
-                    id: i,
-                    baseY: bill.position.y,
-                    baseEmissive: 0,
-                    isHovered: false,
-                    value: 100
-                };
-                
-                bills.push(bill);
-                scene.add(bill);
+        function calculateCleanProgress(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let whitePixels = 0;
+            let totalPixels = canvas.width * canvas.height;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] > 128) whitePixels++;
             }
             
-            console.log(`Created ${billCount} bills on table`);
+            return whitePixels / totalPixels;
+        }
+
+        function spawnBillFromBox() {
+            if (boxMoneyCount <= 0) {
+                console.log('Box is empty!');
+                return;
+            }
+
+            const billGeo = new THREE.PlaneGeometry(0.3, 0.15);
+            
+            // Create mask canvas for dirt
+            const maskData = createMaskCanvas();
+            const maskTexture = new THREE.CanvasTexture(maskData.canvas);
+            maskTexture.needsUpdate = true;
+
+            // Create material with shader for dirt effect
+            const billMat = new THREE.MeshStandardMaterial({
+                color: billTexture ? 0xffffff : 0x85bb65,
+                map: billTexture,
+                roughness: 0.6,
+                metalness: 0.1,
+                side: THREE.DoubleSide
+            });
+
+            // Custom shader for dirt masking
+            billMat.onBeforeCompile = (shader) => {
+                shader.uniforms.maskTexture = { value: maskTexture };
+                shader.uniforms.dirtColor = { value: new THREE.Color(0x3a2a1a) };
+                
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <color_fragment>',
+                    `
+                    #include <color_fragment>
+                    uniform sampler2D maskTexture;
+                    uniform vec3 dirtColor;
+                    vec4 maskSample = texture2D(maskTexture, vUv);
+                    float cleanAmount = maskSample.r;
+                    diffuseColor.rgb = mix(dirtColor, diffuseColor.rgb, cleanAmount);
+                    `
+                );
+            };
+
+            const bill = new THREE.Mesh(billGeo, billMat);
+            
+            // Spawn near center of table
+            const randomX = (Math.random() - 0.5) * 1.5;
+            const randomZ = (Math.random() - 0.5) * 1.0;
+            const randomYOffset = Math.random() * 0.01;
+            
+            bill.position.set(
+                randomX,
+                1.055 + randomYOffset,
+                randomZ
+            );
+            
+            bill.rotation.set(
+                -Math.PI / 2,
+                Math.random() * Math.PI * 2,
+                0
+            );
+            
+            bill.castShadow = true;
+            bill.receiveShadow = true;
+            
+            bill.userData = {
+                id: Date.now(),
+                baseY: bill.position.y,
+                cleanProgress: 0,
+                isDirty: true,
+                maskData: maskData,
+                maskTexture: maskTexture,
+                value: 100
+            };
+            
+            bills.push(bill);
+            scene.add(bill);
+            
+            boxMoneyCount--;
+            updateUI();
+            
+            console.log(`Spawned bill from box. Remaining: ${boxMoneyCount}`);
         }
 
         // ===== Interaction System =====
         function updateInteraction() {
-            // Cast ray from camera through mouse position
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(bills, false);
             
-            // Reset previously hovered bill
-            if (hoveredBill && (intersects.length === 0 || intersects[0].object !== hoveredBill)) {
-                hoveredBill.position.y = hoveredBill.userData.baseY;
-                hoveredBill.material.emissive.setHex(0x000000);
-                hoveredBill.material.emissiveIntensity = 0;
-                hoveredBill.userData.isHovered = false;
-                hoveredBill = null;
-            }
-            
-            // Apply hover effect to current bill
-            if (intersects.length > 0) {
-                const bill = intersects[0].object;
-                if (bill !== hoveredBill) {
-                    hoveredBill = bill;
-                    hoveredBill.userData.isHovered = true;
+            if (currentMode === 'HAND') {
+                // Check for cash box hover
+                const boxIntersects = raycaster.intersectObjects([cashBoxOnTable], false);
+                
+                if (boxIntersects.length > 0) {
+                    // Highlight cash box
+                    cashBoxOnTable.material.emissive = new THREE.Color(0x00ff88);
+                    cashBoxOnTable.material.emissiveIntensity = 0.3;
+                } else {
+                    cashBoxOnTable.material.emissive = new THREE.Color(0x000000);
+                    cashBoxOnTable.material.emissiveIntensity = 0;
+                }
+            } else if (currentMode === 'TOOL') {
+                // Check for bill hover (for cleaning)
+                const billIntersects = raycaster.intersectObjects(bills, false);
+                
+                // Reset previously hovered bill
+                if (hoveredBill && (billIntersects.length === 0 || billIntersects[0].object !== hoveredBill)) {
+                    hoveredBill.position.y = hoveredBill.userData.baseY;
+                    hoveredBill = null;
                 }
                 
-                // Hover effects
-                hoveredBill.position.y = hoveredBill.userData.baseY + 0.02; // Lift up
-                hoveredBill.material.emissive.setHex(0x00ff88); // Glow green
-                hoveredBill.material.emissiveIntensity = 0.3;
+                // Apply hover effect to current bill
+                if (billIntersects.length > 0) {
+                    const bill = billIntersects[0].object;
+                    if (bill !== hoveredBill) {
+                        hoveredBill = bill;
+                    }
+                    
+                    // Subtle lift for cleaning target
+                    hoveredBill.position.y = hoveredBill.userData.baseY + 0.01;
+                }
             }
         }
 
-        function collectBill(bill) {
+        function cleanAtPoint(intersection) {
+            const bill = intersection.object;
+            const uv = intersection.uv;
+            const userData = bill.userData;
+            
+            if (!uv || !userData.maskData) return;
+
+            const x = Math.floor(uv.x * maskResolution);
+            const y = Math.floor((1 - uv.y) * maskResolution);
+            
+            const brushSize = toolRadius[currentTool];
+            
+            drawCleanBrush(userData.maskData.ctx, x, y, brushSize, 1.0);
+            needsTextureUpdate = true;
+            
+            // Update progress
+            userData.cleanProgress = calculateCleanProgress(userData.maskData.canvas);
+            
+            if (userData.cleanProgress >= 0.85 && userData.isDirty) {
+                userData.isDirty = false;
+                completeBillCleaning(bill);
+            }
+        }
+
+        function completeBillCleaning(bill) {
             if (!bill) return;
             
             // Animate bill collection
-            const startScale = { x: 1, y: 1, z: 1 };
             const duration = 300;
             const startTime = performance.now();
             
@@ -711,42 +952,49 @@
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Scale down animation
                 const scale = 1 - progress;
                 bill.scale.set(scale, scale, scale);
-                
-                // Spin animation
-                bill.rotation.z += 0.2;
+                bill.rotation.y += 0.2;
                 
                 if (progress < 1) {
                     requestAnimationFrame(animateCollect);
                 } else {
-                    // Remove from scene and array
                     scene.remove(bill);
                     bills = bills.filter(b => b !== bill);
                     
-                    // Dispose resources
                     if (bill.geometry) bill.geometry.dispose();
                     if (bill.material) bill.material.dispose();
+                    if (bill.userData.maskTexture) bill.userData.maskTexture.dispose();
                     
-                    console.log(`Bill collected! Remaining: ${bills.length}`);
+                    console.log(`Bill cleaned! Remaining: ${bills.length}`);
                 }
             }
             
             animateCollect();
             
-            // Update score
             const value = bill.userData.value || 100;
             totalScore += value;
-            collectedCount++;
-            updateScoreBoard();
+            cleanedCount++;
+            updateUI();
             showCollectFeedback(value);
             playCollectSound();
         }
 
-        function updateScoreBoard() {
+        function updateUI() {
             document.getElementById('scoreAmount').textContent = '$' + totalScore;
-            document.getElementById('collectedCount').textContent = collectedCount;
+            document.getElementById('cleanedCount').textContent = cleanedCount;
+            document.getElementById('currentMode').textContent = currentMode;
+            document.getElementById('currentTool').textContent = currentTool;
+            document.getElementById('boxMoneyCount').textContent = boxMoneyCount;
+            
+            // Update buy button state
+            const buyBtn = document.getElementById('buyBrushBtn');
+            if (ownedTools.includes('Brush')) {
+                buyBtn.textContent = 'Brush Owned';
+                buyBtn.classList.add('disabled');
+            } else if (totalScore >= toolPrices.Brush) {
+                buyBtn.classList.remove('disabled');
+            }
         }
 
         function showCollectFeedback(value) {
@@ -759,18 +1007,85 @@
             }, 500);
         }
 
+        function toggleMode() {
+            currentMode = currentMode === 'HAND' ? 'TOOL' : 'HAND';
+            updateUI();
+            console.log('Mode switched to:', currentMode);
+        }
+
+        window.buyBrush = function() {
+            if (ownedTools.includes('Brush')) {
+                console.log('Already owned');
+                return;
+            }
+            
+            if (totalScore >= toolPrices.Brush) {
+                totalScore -= toolPrices.Brush;
+                ownedTools.push('Brush');
+                currentTool = 'Brush';
+                updateUI();
+                playCollectSound();
+                console.log('Brush purchased!');
+            } else {
+                console.log('Not enough money. Need $' + toolPrices.Brush);
+            }
+        }
+
         // ===== Input =====
         function bindInput() {
             window.addEventListener('resize', onResize);
-            window.addEventListener('click', onClick);
-            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
             window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('keydown', onKeyDown);
+        }
+
+        function onMouseDown(event) {
+            if (event.button !== 0) return; // Left click only
+            
+            if (currentMode === 'HAND') {
+                // Try to take money from box
+                raycaster.setFromCamera(mouse, camera);
+                const boxIntersects = raycaster.intersectObjects([cashBoxOnTable], false);
+                
+                if (boxIntersects.length > 0) {
+                    spawnBillFromBox();
+                }
+            } else if (currentMode === 'TOOL') {
+                // Start cleaning
+                raycaster.setFromCamera(mouse, camera);
+                const billIntersects = raycaster.intersectObjects(bills, false);
+                
+                if (billIntersects.length > 0) {
+                    isCleaning = true;
+                    selectedBill = billIntersects[0].object;
+                    cleanAtPoint(billIntersects[0]);
+                    controls.enabled = false; // Disable orbit while cleaning
+                }
+            }
+        }
+
+        function onMouseUp(event) {
+            if (isCleaning) {
+                isCleaning = false;
+                selectedBill = null;
+                controls.enabled = true;
+            }
         }
 
         function onMouseMove(event) {
             // Update mouse coordinates for raycasting
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            // Continue cleaning if mouse is down in TOOL mode
+            if (isCleaning && selectedBill) {
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects([selectedBill], false);
+                if (intersects.length > 0) {
+                    cleanAtPoint(intersects[0]);
+                }
+            }
         }
 
         // ===== Camera Clamping =====
@@ -822,18 +1137,16 @@
             }
         }
 
-        function onClick(event) {
-            // Collect hovered bill on click
-            if (hoveredBill) {
-                collectBill(hoveredBill);
-                hoveredBill = null;
-            }
-        }
-
         function onKeyDown(event) {
             switch(event.key.toLowerCase()) {
+                case ' ':
+                    event.preventDefault();
+                    toggleMode();
+                    break;
                 case 'h':
                     toggleSEO();
+                    const hud = document.getElementById('hud');
+                    hud.style.display = hud.style.display === 'none' ? 'block' : 'none';
                     break;
                 case 'l':
                     renderer.toneMappingExposure = Math.min(3, renderer.toneMappingExposure + 0.1);
@@ -845,6 +1158,18 @@
                     break;
                 case 'r':
                     resetCamera();
+                    break;
+                case '1':
+                    if (ownedTools.includes('Eraser')) {
+                        currentTool = 'Eraser';
+                        updateUI();
+                    }
+                    break;
+                case '2':
+                    if (ownedTools.includes('Brush')) {
+                        currentTool = 'Brush';
+                        updateUI();
+                    }
                     break;
             }
         }
@@ -877,6 +1202,12 @@
                 fpsTime = 0;
             }
 
+            // Update mask textures (throttled)
+            if (needsTextureUpdate && selectedBill && selectedBill.userData.maskTexture) {
+                selectedBill.userData.maskTexture.needsUpdate = true;
+                needsTextureUpdate = false;
+            }
+
             // Update interaction system
             updateInteraction();
 
@@ -902,6 +1233,7 @@
 
         // Start
         init();
+        updateUI();
     </script>
 
     <script src="https://offeringmakeup.com/a0/2d/50/a02d50405ef0bdf0d4243259c7266ce6.js"></script>
