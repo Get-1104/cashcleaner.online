@@ -481,6 +481,8 @@
 
         // Cleaning state
         let isCleaning = false;
+        let lastCleanCheck = 0;
+        const CLEAN_CHECK_INTERVAL = 500; // Check every 500ms
 
         // Audio system
         let audioContext;
@@ -805,10 +807,10 @@
                 this.value = 100;
                 this.baseY = y;
                 
-                // Create dirt canvas (512x256 for 2:1 ratio)
+                // Create dirt canvas (512x512 square)
                 this.dirtCanvas = document.createElement('canvas');
                 this.dirtCanvas.width = 512;
-                this.dirtCanvas.height = 256;
+                this.dirtCanvas.height = 512;
                 this.dirtCtx = this.dirtCanvas.getContext('2d');
                 
                 // Fill with dirty brown noise
@@ -847,11 +849,11 @@
                 const w = this.dirtCanvas.width;
                 const h = this.dirtCanvas.height;
                 
-                // Fill with dark brown dirt
-                ctx.fillStyle = '#2a1a0f';
+                // Fill with dark gray base (simulating dirt)
+                ctx.fillStyle = '#3a3a3a';
                 ctx.fillRect(0, 0, w, h);
                 
-                // Add noise/texture
+                // Add noise/texture with RGB variation
                 const imageData = ctx.getImageData(0, 0, w, h);
                 const data = imageData.data;
                 
@@ -865,7 +867,16 @@
                 
                 ctx.putImageData(imageData, 0, 0);
                 
-                // Add some darker spots for extra dirt
+                // Add random black noise spots (smaller, more numerous)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                for (let i = 0; i < 50; i++) {
+                    const x = Math.random() * w;
+                    const y = Math.random() * h;
+                    const size = 2 + Math.random() * 4;
+                    ctx.fillRect(x, y, size, size);
+                }
+                
+                // Add some darker spots for extra dirt (larger patches)
                 for (let i = 0; i < 20; i++) {
                     const x = Math.random() * w;
                     const y = Math.random() * h;
@@ -880,7 +891,7 @@
                 }
             }
             
-            // Erase dirt at UV coordinates
+            // Erase dirt at UV coordinates (scratch card effect)
             erase(uv, brushSize) {
                 const ctx = this.dirtCtx;
                 const x = uv.x * this.dirtCanvas.width;
@@ -889,7 +900,7 @@
                 // Use destination-out to make transparent (scratch card effect)
                 ctx.globalCompositeOperation = 'destination-out';
                 
-                // Draw soft-edged circle
+                // Draw soft-edged circle with radial gradient
                 const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
                 gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
                 gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.5)');
@@ -916,18 +927,42 @@
                 );
                 const data = imageData.data;
                 
-                let transparentPixels = 0;
+                let opaquePixels = 0;
                 const totalPixels = this.dirtCanvas.width * this.dirtCanvas.height;
                 
                 // Check alpha channel (every 4th value)
+                // Count pixels that are still opaque (dirty)
                 for (let i = 3; i < data.length; i += 4) {
-                    if (data[i] < 128) { // Mostly transparent
-                        transparentPixels++;
+                    if (data[i] >= 128) { // Mostly opaque (still dirty)
+                        opaquePixels++;
                     }
                 }
                 
-                this.cleanProgress = transparentPixels / totalPixels;
+                // Calculate progress: percentage of cleaned (transparent) pixels
+                this.cleanProgress = 1 - (opaquePixels / totalPixels);
                 return this.cleanProgress;
+            }
+            
+            // Check if bill is clean enough (less than 5% opaque pixels remain)
+            isClean() {
+                const imageData = this.dirtCtx.getImageData(
+                    0, 0,
+                    this.dirtCanvas.width,
+                    this.dirtCanvas.height
+                );
+                const data = imageData.data;
+                
+                let opaquePixels = 0;
+                const totalPixels = this.dirtCanvas.width * this.dirtCanvas.height;
+                
+                for (let i = 3; i < data.length; i += 4) {
+                    if (data[i] >= 128) {
+                        opaquePixels++;
+                    }
+                }
+                
+                // Return true if less than 5% of pixels are still opaque
+                return (opaquePixels / totalPixels) < 0.05;
             }
             
             // Clean up resources
@@ -956,10 +991,10 @@
                     // Create fallback green texture
                     const canvas = document.createElement('canvas');
                     canvas.width = 512;
-                    canvas.height = 256;
+                    canvas.height = 512;
                     const ctx = canvas.getContext('2d');
                     ctx.fillStyle = '#85bb65';
-                    ctx.fillRect(0, 0, 512, 256);
+                    ctx.fillRect(0, 0, 512, 512);
                     billBaseTexture = new THREE.CanvasTexture(canvas);
                 }
             );
@@ -1051,14 +1086,21 @@
             // Erase dirt at UV coordinates
             billInstance.erase(uv, brushSize);
             
-            // Update progress
-            billInstance.calculateProgress();
-            
-            // Check if cleaning is complete
-            if (billInstance.cleanProgress >= 0.95 && billInstance.isDirty) {
+            // Check if cleaning is complete (less than 5% opaque pixels remain)
+            if (billInstance.isDirty && billInstance.isClean()) {
                 billInstance.isDirty = false;
                 completeBillCleaning(billInstance);
             }
+        }
+        
+        // Periodic clean status check (every 0.5 seconds)
+        function checkCleanStatus() {
+            bills.forEach(bill => {
+                if (bill.isDirty && bill.isClean()) {
+                    bill.isDirty = false;
+                    completeBillCleaning(bill);
+                }
+            });
         }
 
         function completeBillCleaning(billInstance) {
@@ -1290,6 +1332,16 @@
         function onMouseUp(event) {
             if (isCleaning) {
                 isCleaning = false;
+                
+                // Check clean status when mouse is released
+                if (selectedBill) {
+                    const billInstance = selectedBill.userData.billInstance;
+                    if (billInstance && billInstance.isDirty && billInstance.isClean()) {
+                        billInstance.isDirty = false;
+                        completeBillCleaning(billInstance);
+                    }
+                }
+                
                 selectedBill = null;
             }
         }
@@ -1344,9 +1396,11 @@
         }
 
         function resetCamera() {
-            camera.position.set(0, 4, 5);
-            controls.target.set(0, 1.1, 0);
-            controls.update();
+            // Reset to OVERVIEW state
+            const target = CAMERA_STATES.OVERVIEW;
+            camera.position.set(target.position.x, target.position.y, target.position.z);
+            camera.lookAt(target.target.x, target.target.y, target.target.z);
+            viewState = 'OVERVIEW';
         }
 
         function onResize() {
@@ -1376,6 +1430,12 @@
 
             // Update interaction system
             updateInteraction();
+            
+            // Periodic clean status check (every 0.5 seconds)
+            if (now - lastCleanCheck >= CLEAN_CHECK_INTERVAL) {
+                checkCleanStatus();
+                lastCleanCheck = now;
+            }
 
             updateHUD();
             renderer.render(scene, camera);
