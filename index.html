@@ -146,6 +146,76 @@
             text-decoration: underline;
         }
 
+        /* Cleaning Progress UI */
+        #cleaningUI {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 1000;
+            width: 180px;
+        }
+
+        #cleaningUI h3 {
+            color: #00ff88;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        #progressFill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff88, #00cc66);
+            transition: width 0.2s;
+        }
+
+        #progressText {
+            text-align: center;
+            color: #00ff88;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #brushInfo {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+        }
+
+        #cleanedNotice {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #111;
+            z-index: 2000;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        #cleanedNotice.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
         @media (max-width: 768px) {
             #content {
                 padding: 30px 15px;
@@ -160,6 +230,10 @@
                 font-size: 10px;
                 padding: 8px;
             }
+            #cleaningUI {
+                width: 140px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -170,8 +244,22 @@
         <div>Camera: <span id="camPos">0,0,0</span></div>
         <div>Exposure: <span id="exposure">1.25</span></div>
         <div>Mode: <span id="mode">ORBIT</span></div>
-        <div style="margin-top:8px;color:#888">H: Info | L/K: Exposure | R: Reset | B: View</div>
+        <div>Brush: <span id="brushSize">25</span>px</div>
+        <div style="margin-top:8px;color:#888">H: Info | [/]: Brush | Shift: Fine</div>
     </div>
+
+    <!-- Cleaning Progress UI -->
+    <div id="cleaningUI">
+        <h3>CLEANING PROGRESS</h3>
+        <div id="progressText">0%</div>
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+        <div id="brushInfo">Hold & Drag to Clean</div>
+    </div>
+
+    <!-- Cleaned Notice -->
+    <div id="cleanedNotice">CLEANED! ✨</div>
 
     <!-- SEO Overlay Toggle -->
     <div id="seoToggle" onclick="toggleSEO()">Press H for Info</div>
@@ -251,7 +339,7 @@
         // Camera control state
         let mouseX = 0, mouseY = 0;
         let isDragging = false;
-        let currentCameraMode = 'overview'; // 'overview' or 'close'
+        let currentCameraMode = 'overview';
         let targetCamPos = new THREE.Vector3(0, 4, 5);
         let targetCamLookAt = new THREE.Vector3(0, 1, 0);
         let camTransitionSpeed = 0.05;
@@ -267,6 +355,16 @@
                 lookAt: new THREE.Vector3(0, 1.05, 0)
             }
         };
+
+        // Cleaning system state
+        let isCleaning = false;
+        let currentBill = null;
+        let brushSize = 25;
+        let brushIntensity = 1.0;
+        let isFineBrush = false;
+        const maskResolution = 256;
+        let totalCleanProgress = 0;
+        let needsTextureUpdate = false;
 
         // ===== Init =====
         function init() {
