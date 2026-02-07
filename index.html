@@ -726,11 +726,11 @@
             'JonhGillessen', // workbench.glb
             'Silver Shield', // metal_tray.glb
             'Artieee',      // some_eraser.glb
-            'plaggy',       // cc0_-_spray_cleaner_siffie.glb (CC0 - Spray Cleaner Siffie)
-            'ap-school',    // 2-sided_100_us_dollar_bill_circa_2009_1.glb
+            'plaggy',       // cleaner.glb (CC0 - Spray Cleaner Siffie)
+            'ap-school',    // bill.glb
             'dusan.lamos',  // vintage_desk_lamp.glb
             'Smile',        // old_safe.glb
-            'TampaJoey',    // briefcase_with_money_low_poly_game_ready.glb
+            'TampaJoey',    // briefcase.glb
             'Mostafa',      // wooden_box.glb
             'loxfear'       // hospital_bed.glb (Hospital Bed)
         ];
@@ -770,7 +770,7 @@
 
         function loadBillModel() {
             const loader = new GLTFLoader();
-            loader.load('./2-sided_100_us_dollar_bill_circa_2009_1.glb', (gltf) => {
+            loader.load('./bill.glb', (gltf) => {
                 preloadedBillModel = gltf.scene;
             }, undefined, (err) => {
                 console.warn('Bill GLB load failed, using canvas bill:', err);
@@ -1587,7 +1587,7 @@
 
         function createSprayCleaner() {
             const loader = new GLTFLoader();
-            loader.load('./cc0_-_spray_cleaner_siffie.glb', (gltf) => {
+            loader.load('./cleaner.glb', (gltf) => {
                 const model = gltf.scene;
                 sprayCleanerModel = model;
                 model.scale.set(2.5, 2.5, 2.5);
@@ -1694,7 +1694,7 @@
         const SAFE_TOP_Y = 1.21;  // 保险柜顶面高度，公文包底面贴在此处
         function createBriefcase() {
             const loader = new GLTFLoader();
-            loader.load('./briefcase_with_money_low_poly_game_ready.glb', (gltf) => {
+            loader.load('./briefcase.glb', (gltf) => {
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
