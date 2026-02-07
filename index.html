@@ -813,7 +813,20 @@
             if (el) el.textContent = CREDITS_3D.join(', ');
         }
 
-        // Loading screen: 11 GLB models must finish before we hide the overlay
+        // Loading screen: show only once per tab session (sessionStorage), or when ?forceLoad=1
+        const params = new URLSearchParams(location.search);
+        const forceLoad = params.get('forceLoad') === '1';
+        const hasLoadedOnce = sessionStorage.getItem('cco_hasLoadedOnce') === '1';
+        const shouldShowLoader = forceLoad || !hasLoadedOnce;
+
+        function hideLoaderUIImmediately() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
+            }
+        }
+
         const LOADING_MODEL_COUNT = 11;
         let loadingModelsDone = 0;
         function updateLoadingProgress() {
@@ -829,6 +842,7 @@
                     overlay.classList.add('hidden');
                     setTimeout(() => { overlay.style.display = 'none'; }, 450);
                 }
+                sessionStorage.setItem('cco_hasLoadedOnce', '1');
             }
         }
 
@@ -3226,7 +3240,11 @@
             renderer.render(scene, camera);
         }
         
-        // Start the application
+        // Start the application (skip loader UI when already loaded once in this tab, unless ?forceLoad=1)
+        if (!shouldShowLoader) {
+            hideLoaderUIImmediately();
+            sessionStorage.setItem('cco_hasLoadedOnce', '1');
+        }
         init();
         animate(); // Start the render loop
     </script>
