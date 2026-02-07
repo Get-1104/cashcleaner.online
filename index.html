@@ -841,7 +841,9 @@
         }
 
         function loadBillModel() {
-            gltfLoader.load('./bill.glb', (gltf) => {
+            const path = './bill.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 preloadedBillModel = gltf.scene;
             }, undefined, (err) => {
                 console.warn('Bill GLB load failed, using canvas bill:', err);
@@ -1480,6 +1482,7 @@
             console.log('Current location:', window.location.href);
             
             gltfLoader.load(modelPath, (gltf) => {
+                console.log('Successfully loaded: ' + modelPath);
                 console.log('GLTF file loaded successfully', gltf);
                 
                 // Check parser for textures (GLB embeds textures in parser)
@@ -1586,7 +1589,9 @@
         }
 
         function createCashBoxes() {
-            gltfLoader.load('./bag_of_money.glb', (gltf) => {
+            const path = './bag_of_money.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 cashBoxOnTable = model;
                 
@@ -1609,7 +1614,9 @@
         }
 
         function createTray() {
-            gltfLoader.load('./metal_tray.glb', (gltf) => {
+            const path = './metal_tray.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 // 盘子：缩放与位置（可改大小/位置）
                 model.scale.set(3, 3, 3);           // 缩放 x,y,z
@@ -1630,7 +1637,9 @@
         }
 
         function createEraser() {
-            gltfLoader.load('./some_eraser.glb', (gltf) => {
+            const path = './some_eraser.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 eraserModel = model;
                 model.scale.set(5.5, 5.5, 6.5);
@@ -1653,7 +1662,9 @@
         }
 
         function createSprayCleaner() {
-            gltfLoader.load('./cleaner.glb', (gltf) => {
+            const path = './cleaner.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 sprayCleanerModel = model;
                 model.scale.set(2.5, 2.5, 2.5);
@@ -1676,9 +1687,9 @@
         }
 
         function createDeskLamp() {
-            const url = './vintage_desk_lamp.glb?v=' + Date.now();
-            gltfLoader.load(url, (gltf) => {
-                console.log('[vintage_desk_lamp.glb] Loaded successfully', gltf);
+            const path = './vintage_desk_lamp.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 model.scale.set(3.8, 3.8, 3.8);
                 const box = new THREE.Box3().setFromObject(model);
@@ -1729,7 +1740,9 @@
         }
 
         function createOldSafe() {
-            gltfLoader.load('./old_safe.glb', (gltf) => {
+            const path = './old_safe.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
@@ -1757,7 +1770,9 @@
         const SAFE_POS = { x: 3.4, z: -1.6 };
         const SAFE_TOP_Y = 1.21;  // 保险柜顶面高度，公文包底面贴在此处
         function createBriefcase() {
-            gltfLoader.load('./briefcase.glb', (gltf) => {
+            const path = './briefcase.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
@@ -1783,7 +1798,9 @@
         }
 
         function createWoodenBox() {
-            gltfLoader.load('./wooden_box.glb', (gltf) => {
+            const path = './wooden_box.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const src = gltf.scene;
                 const box = new THREE.Box3().setFromObject(src);
                 const size = new THREE.Vector3();
@@ -1819,7 +1836,9 @@
         }
 
         function createHospitalBed() {
-            gltfLoader.load('./hospital_bed.glb', (gltf) => {
+            const path = './hospital_bed.glb';
+            gltfLoader.load(path, (gltf) => {
+                console.log('Successfully loaded: ' + path);
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
