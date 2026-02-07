@@ -4,16 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Cash Cleaner Online - Realistic 3D Money Washing Simulator</title>
-    <meta name="description" content="Experience the ultimate ASMR money washing simulator. Clean dirty bills in a realistic 3D basement environment. Play Cash Cleaner Online for free now!">
-    <meta name="keywords" content="cash cleaner, money washing game, asmr simulator, unblocked games, cash cleaner online, money cleaner, satisfying game, asmr game, 3d cleaning simulator">
+    <title>Cash Cleaner Online | Relaxing ASMR Money Cleaning Simulation Game</title>
+    <meta name="description" content="Play the most satisfying money cleaning game online. Use realistic tools like erasers and spray cleaners to restore dirty cash. Free browser 3D simulation with ASMR vibes.">
+    <meta name="keywords" content="money cleaning game, ASMR game, cleaning simulator, wash money game, stress relief, browser 3D game">
     <meta name="author" content="Cash Cleaner Online">
     <link rel="canonical" href="https://cashcleaner.online/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-    <meta property="og:title" content="Cash Cleaner Online - Realistic 3D Money Washing Simulator">
-    <meta property="og:description" content="Experience the ultimate ASMR money washing simulator. Clean dirty bills in a realistic 3D basement environment. Play for free now!">
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cashcleaner.online/">
+    <meta property="og:title" content="Cash Cleaner Online | Relaxing ASMR Money Cleaning Simulation Game">
+    <meta property="og:description" content="Play the most satisfying money cleaning game online. Use realistic tools like erasers and spray cleaners to restore dirty cash. Free browser 3D simulation with ASMR vibes.">
+    <meta property="og:image" content="https://cashcleaner.online/preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Cash Cleaner Online">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://cashcleaner.online/">
+    <meta name="twitter:title" content="Cash Cleaner Online | Relaxing ASMR Money Cleaning Simulation Game">
+    <meta name="twitter:description" content="Play the most satisfying money cleaning game online. Use realistic tools like erasers and spray cleaners to restore dirty cash. Free browser 3D simulation with ASMR vibes.">
+    <meta name="twitter:image" content="https://cashcleaner.online/preview.jpg">
+    <meta name="twitter:image:alt" content="Cash Cleaner Online - 3D money cleaning game screenshot">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.0/tween.umd.js"></script>
     
@@ -498,10 +513,47 @@
             z-index: 999;
             transition: none;
         }
+
+        /* SEO content block - bottom of page, visible to search engines, minimal visual impact */
+        #seoContent {
+            position: relative;
+            max-width: 720px;
+            margin: 32px auto 24px;
+            padding: 20px 24px;
+            color: #4a4a4a;
+            background: rgba(30, 30, 30, 0.4);
+            font-size: 14px;
+            line-height: 1.65;
+            z-index: 10;
+        }
+        #seoContent h1 {
+            font-size: 1.35rem;
+            margin: 0 0 12px 0;
+            color: #5a5a5a;
+            font-weight: 600;
+        }
+        #seoContent h2 {
+            font-size: 1.1rem;
+            margin: 18px 0 10px 0;
+            color: #555;
+            font-weight: 600;
+        }
+        #seoContent p {
+            margin: 0 0 10px 0;
+            color: #4a4a4a;
+        }
+        #seoContent ol {
+            margin: 8px 0 0 0;
+            padding-left: 22px;
+        }
+        #seoContent li {
+            margin-bottom: 6px;
+            color: #4a4a4a;
+        }
     </style>
 </head>
 <body>
-    <h1 id="seo-h1">Cash Cleaner Online - The Best 3D Cleaning Simulator</h1>
+    <h1 id="seo-h1">Cash Cleaner - Ultimate ASMR Money Cleaning Simulator</h1>
 
     <div id="score-board">
         <div class="label">CLEANED</div>
@@ -591,6 +643,18 @@
         </footer>
     </div>
 
+    <section id="seoContent" aria-label="About Cash Cleaner">
+        <h1>Cash Cleaner - Ultimate ASMR Money Cleaning Simulator</h1>
+        <p>Cash Cleaner is the ultimate ASMR money cleaning simulator and stress relief game you can play right in your browser. This free-to-play browser game lets you clean dirty money step by step in a satisfying simulation game experience. Use the eraser for light dust and the spray cleaner for stubborn stains, then check each bill under UV light. Perfect for fans of ASMR and relaxation games, Cash Cleaner offers a simple yet addictive loop: clean, verify, and stack your cash. No download required—just open the page and start playing. Whether you want a quick stress relief game or a longer session, this simulation game fits your pace. Clean dirty money, spot counterfeits, and build your stack in this unique browser game. Free to play, no sign-up needed. The ASMR-style sounds and methodical cleaning make it an ideal browser game for unwinding. Stack your cash, spot fakes, and build your empire one clean bill at a time in this money cleaning simulator.</p>
+        <h2>How to Play</h2>
+        <ol>
+            <li>Step 1: Use the Eraser for light dust.</li>
+            <li>Step 2: Use the Spray Cleaner for stubborn oil stains.</li>
+            <li>Step 3: Check with UV Light for counterfeit bills.</li>
+            <li>Step 4: Stack your cash and build your empire.</li>
+        </ol>
+    </section>
+
     <script type="importmap">
     {
         "imports": {
@@ -603,6 +667,14 @@
     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+        // Shared GLTFLoader with Draco decompression (smaller .glb files, faster load)
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+        dracoLoader.setDecoderConfig({ type: 'wasm' });
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.setDRACOLoader(dracoLoader);
 
         // ===== Global State =====
         let scene, camera, renderer;
@@ -769,8 +841,7 @@
         }
 
         function loadBillModel() {
-            const loader = new GLTFLoader();
-            loader.load('./bill.glb', (gltf) => {
+            gltfLoader.load('./bill.glb', (gltf) => {
                 preloadedBillModel = gltf.scene;
             }, undefined, (err) => {
                 console.warn('Bill GLB load failed, using canvas bill:', err);
@@ -1400,7 +1471,6 @@
         }
 
         function createTable() {
-            const loader = new GLTFLoader();
             
             console.log('Loading table model: ./workbench.glb');
             
@@ -1409,7 +1479,7 @@
             console.log('Attempting to load model from:', modelPath);
             console.log('Current location:', window.location.href);
             
-            loader.load(modelPath, (gltf) => {
+            gltfLoader.load(modelPath, (gltf) => {
                 console.log('GLTF file loaded successfully', gltf);
                 
                 // Check parser for textures (GLB embeds textures in parser)
@@ -1516,8 +1586,7 @@
         }
 
         function createCashBoxes() {
-            const loader = new GLTFLoader();
-            loader.load('./bag_of_money.glb', (gltf) => {
+            gltfLoader.load('./bag_of_money.glb', (gltf) => {
                 const model = gltf.scene;
                 cashBoxOnTable = model;
                 
@@ -1540,8 +1609,7 @@
         }
 
         function createTray() {
-            const loader = new GLTFLoader();
-            loader.load('./metal_tray.glb', (gltf) => {
+            gltfLoader.load('./metal_tray.glb', (gltf) => {
                 const model = gltf.scene;
                 // 盘子：缩放与位置（可改大小/位置）
                 model.scale.set(3, 3, 3);           // 缩放 x,y,z
@@ -1562,8 +1630,7 @@
         }
 
         function createEraser() {
-            const loader = new GLTFLoader();
-            loader.load('./some_eraser.glb', (gltf) => {
+            gltfLoader.load('./some_eraser.glb', (gltf) => {
                 const model = gltf.scene;
                 eraserModel = model;
                 model.scale.set(5.5, 5.5, 6.5);
@@ -1586,8 +1653,7 @@
         }
 
         function createSprayCleaner() {
-            const loader = new GLTFLoader();
-            loader.load('./cleaner.glb', (gltf) => {
+            gltfLoader.load('./cleaner.glb', (gltf) => {
                 const model = gltf.scene;
                 sprayCleanerModel = model;
                 model.scale.set(2.5, 2.5, 2.5);
@@ -1610,9 +1676,8 @@
         }
 
         function createDeskLamp() {
-            const loader = new GLTFLoader();
             const url = './vintage_desk_lamp.glb?v=' + Date.now();
-            loader.load(url, (gltf) => {
+            gltfLoader.load(url, (gltf) => {
                 console.log('[vintage_desk_lamp.glb] Loaded successfully', gltf);
                 const model = gltf.scene;
                 model.scale.set(3.8, 3.8, 3.8);
@@ -1664,8 +1729,7 @@
         }
 
         function createOldSafe() {
-            const loader = new GLTFLoader();
-            loader.load('./old_safe.glb', (gltf) => {
+            gltfLoader.load('./old_safe.glb', (gltf) => {
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
@@ -1693,8 +1757,7 @@
         const SAFE_POS = { x: 3.4, z: -1.6 };
         const SAFE_TOP_Y = 1.21;  // 保险柜顶面高度，公文包底面贴在此处
         function createBriefcase() {
-            const loader = new GLTFLoader();
-            loader.load('./briefcase.glb', (gltf) => {
+            gltfLoader.load('./briefcase.glb', (gltf) => {
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
@@ -1720,8 +1783,7 @@
         }
 
         function createWoodenBox() {
-            const loader = new GLTFLoader();
-            loader.load('./wooden_box.glb', (gltf) => {
+            gltfLoader.load('./wooden_box.glb', (gltf) => {
                 const src = gltf.scene;
                 const box = new THREE.Box3().setFromObject(src);
                 const size = new THREE.Vector3();
@@ -1757,8 +1819,7 @@
         }
 
         function createHospitalBed() {
-            const loader = new GLTFLoader();
-            loader.load('./hospital_bed.glb', (gltf) => {
+            gltfLoader.load('./hospital_bed.glb', (gltf) => {
                 const model = gltf.scene;
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
