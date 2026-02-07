@@ -63,43 +63,55 @@
             margin-bottom: 5px;
         }
 
-        /* Mode & Tool UI */
-        #mode-tool-ui {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(0, 255, 136, 0.5);
-            border-radius: 8px;
-            padding: 15px;
-            z-index: 1000;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
+        #score-board .shop-section {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 255, 136, 0.3);
         }
-
-        #mode-tool-ui .section {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        #score-board .shop-toggle {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px 0;
         }
-
-        #mode-tool-ui .section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
+        #score-board .shop-toggle:hover {
+            color: #00ffcc;
         }
-
-        #mode-tool-ui .label {
+        #score-board .shop-toggle .arrow {
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+        #score-board .shop-body {
+            overflow: hidden;
+            max-height: 200px;
+            transition: max-height 0.25s ease-out;
+        }
+        #score-board .shop-section.collapsed .shop-body {
+            max-height: 0;
+        }
+        #score-board .shop-section.collapsed .shop-toggle .arrow {
+            transform: rotate(-90deg);
+        }
+        #score-board .shop-item {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
             font-size: 11px;
-            color: rgba(0, 255, 136, 0.6);
-            margin-bottom: 5px;
+            color: rgba(0, 255, 136, 0.9);
+        }
+        #score-board .shop-item .shop-btn {
+            flex-shrink: 0;
+            width: 56px;
+            padding: 4px 6px;
+            font-size: 11px;
+            text-align: center;
         }
 
-        #mode-tool-ui .value {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        #mode-tool-ui .btn {
+        #score-board .btn {
             background: rgba(0, 255, 136, 0.2);
             border: 1px solid #00ff88;
             color: #00ff88;
@@ -109,17 +121,63 @@
             font-size: 12px;
             margin-top: 5px;
             transition: all 0.2s;
+            display: block;
+            width: 100%;
+            font-family: inherit;
         }
 
-        #mode-tool-ui .btn:hover:not(.disabled) {
+        #score-board .btn:hover:not(.disabled) {
             background: rgba(0, 255, 136, 0.4);
         }
 
-        #mode-tool-ui .btn.disabled {
+        #score-board .btn.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             color: #666;
             border-color: #666;
+        }
+
+        /* 清洗进度（上方居中） */
+        #clean-progress-wrap {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            border-radius: 8px;
+            color: #00ff88;
+            font-size: 12px;
+            z-index: 1000;
+            user-select: none;
+            display: none;
+        }
+        #clean-progress-wrap.show {
+            display: block;
+        }
+        #clean-progress-wrap .label {
+            margin-bottom: 6px;
+            color: rgba(0, 255, 136, 0.9);
+        }
+        #clean-progress-bar-bg {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        #clean-progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00aa55, #00ff88);
+            border-radius: 5px;
+            transition: width 0.15s ease;
+        }
+        #clean-progress-pct {
+            font-size: 14px;
+            font-weight: bold;
         }
 
         /* Debug HUD */
@@ -256,12 +314,112 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
-        /* Back Button (Focus View) */
+        #needDetergentToast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(200, 80, 60, 0.95);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        #needDetergentToast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #needEraserToast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(80, 120, 200, 0.95);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        #needEraserToast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 紫光灯检查 / 假钞选择 */
+        #uvCheckPanel, #fakeBillPanel, #realBillPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            padding: 24px 32px;
+            border-radius: 16px;
+            font-size: 18px;
+            z-index: 2100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        #uvCheckPanel.show, #fakeBillPanel.show, #realBillPanel.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+        #uvCheckPanel .title, #fakeBillPanel .title, #realBillPanel .title {
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+        #uvCheckPanel .btn, #fakeBillPanel .btn, #realBillPanel .btn {
+            background: rgba(0, 255, 136, 0.25);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 6px;
+        }
+        #uvCheckPanel .btn:hover, #fakeBillPanel .btn:hover, #realBillPanel .btn:hover {
+            background: rgba(0, 255, 136, 0.4);
+        }
+        #fakeBillPanel .fake { color: #ff6666; border-color: #ff6666; }
+        #fakeBillPanel .btn.destroy { border-color: #ff6666; color: #ff6666; background: rgba(255, 100, 100, 0.2); }
+        #uvResultToast {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #111;
+            z-index: 2050;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        #uvResultToast.show { opacity: 1; }
+
+        /* Back Button (Focus View) - 左上角 */
         #backButton {
             position: fixed;
             top: 20px;
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%);
+            left: 20px;
             background: rgba(0, 0, 0, 0.8);
             border: 2px solid #00ff88;
             color: #00ff88;
@@ -296,6 +454,11 @@
             overflow: hidden;
         }
 
+        /* 3D 模型致谢（在 Press H for Info 折叠板块内） */
+        .credits-block { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(0, 255, 136, 0.3); }
+        .credits-block .label { color: rgba(0, 255, 136, 0.7); font-size: 14px; margin-bottom: 8px; }
+        .credits-block .names { color: #b8e0c3; font-size: 15px; }
+
         @media (max-width: 768px) {
             #content {
                 padding: 30px 15px;
@@ -317,17 +480,23 @@
             #score-board .label {
                 font-size: 12px;
             }
-            #mode-tool-ui {
-                font-size: 12px;
-                padding: 10px;
-            }
-            #mode-tool-ui .value {
-                font-size: 14px;
-            }
-            #mode-tool-ui .btn {
+            #score-board .btn {
                 font-size: 11px;
                 padding: 5px 10px;
             }
+        }
+
+        /* 金币飞入钱包动画 */
+        .coin-fly {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #daa520 40%, #b8860b);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 999;
+            transition: none;
         }
     </style>
 </head>
@@ -337,26 +506,29 @@
     <div id="score-board">
         <div class="label">CLEANED</div>
         <div id="scoreAmount">$0</div>
+        <div class="shop-section collapsed" id="shopSection">
+            <div class="shop-toggle" id="shopToggle" title="Expand / collapse shop">
+                <span class="label">SHOP</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="shop-body">
+                <div class="shop-item"><span id="eraserRangeLabel">Eraser +20% Lv.0</span><button class="btn shop-btn" id="buyEraserRangeBtn" onclick="buyEraserRange()">$1500</button></div>
+                <div class="shop-item"><span id="solventRangeLabel">Solvent +20% Lv.0</span><button class="btn shop-btn" id="buySolventRangeBtn" onclick="buySolventRange()">$2000</button></div>
+                <div class="shop-item"><span id="fakeReduceLabel">Guarantee -1% fake Lv.0</span><button class="btn shop-btn" id="buyFakeReduceBtn" onclick="buyFakeReduce()">$10000</button></div>
+            </div>
+        </div>
     </div>
 
-    <div id="mode-tool-ui">
-        <div class="section">
-            <div class="label">MODE (SPACE)</div>
-            <div class="value" id="currentMode">HAND</div>
+    <div id="clean-progress-wrap">
+        <div class="label">Progress</div>
+        <div id="clean-progress-bar-bg">
+            <div id="clean-progress-bar-fill"></div>
         </div>
-        <div class="section">
-            <div class="label">CURRENT TOOL</div>
-            <div class="value" id="currentTool">Eraser</div>
-        </div>
-        <div class="section">
-            <div class="label">SHOP</div>
-            <button class="btn" id="buyBrushBtn" onclick="buyBrush()">Buy Brush $500</button>
-        </div>
-        <div class="section">
-            <div class="label">BOX MONEY</div>
-            <div class="value" id="boxMoneyCount">30</div>
-        </div>
+        <span id="clean-progress-pct">0%</span>
     </div>
+
+    <div id="needDetergentToast">Detergent required</div>
+    <div id="needEraserToast">Eraser required</div>
 
     <div id="hud" style="display:none;">
         <div>FPS: <span id="fps">0</span></div>
@@ -368,7 +540,22 @@
 
     <div id="collectFeedback">+$100</div>
 
-    <button id="backButton" onclick="returnToGlobalView()">← BACK TO OVERVIEW</button>
+    <div id="uvCheckPanel">
+        <div class="title">Next: Check under UV light</div>
+        <button class="btn" id="uvCheckBtn">Check &amp; Continue</button>
+    </div>
+    <div id="uvResultToast"></div>
+    <div id="realBillPanel">
+        <div class="title">Real! Fluorescent strip visible</div>
+        <button class="btn" id="realBillCollectBtn">Collect</button>
+    </div>
+    <div id="fakeBillPanel">
+        <div class="title fake">Fake! No watermark</div>
+        <button class="btn destroy" id="fakeBillDestroyBtn">Destroy</button>
+        <button class="btn" id="fakeBillRetainBtn">Keep (cannot collect)</button>
+    </div>
+
+    <button id="backButton" onclick="returnToGlobalView()">← Back</button>
 
     <div id="seoToggle" onclick="toggleSEO()">Press H for Info</div>
 
@@ -376,7 +563,12 @@
         <section id="content">
             <h2>What is Cash Cleaner Online?</h2>
             <p>Cash Cleaner Online is a free-to-play browser-based cleaning simulator...</p>
-            </section>
+
+            <div class="credits-block">
+                <div class="label">3D Credits</div>
+                <div class="names" id="creditsNames">—</div>
+            </div>
+        </section>
 
         <div id="adBottom">
             <script>
@@ -410,10 +602,12 @@
 
     <script type="module">
         import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
         // ===== Global State =====
         let scene, camera, renderer;
         let bills = [];
+        let trayBillSpawned = false; // 点钱袋只生成一张在盘子里，之后不再生成
         let cashBoxOnTable = null;
         let cashBoxOnFloor = null;
         const raycaster = new THREE.Raycaster();
@@ -421,6 +615,8 @@
         let lastTime = performance.now();
         let frameCount = 0;
         let fpsTime = 0;
+        let tableSurfaceY = 1.26; // Will be updated after model loads
+        let tableMeshes = []; // Store table meshes for raycasting
 
         // Interaction state
         let hoveredBill = null;
@@ -431,24 +627,80 @@
 
         // Mode & Tool system
         let currentMode = 'HAND'; // 'HAND' or 'TOOL'
-        let currentTool = 'Eraser'; // 'Eraser' or 'Brush'
-        let toolRadius = { Eraser: 30, Brush: 60 }; // Increased Eraser size slightly
+        let currentTool = 'Eraser'; // 'Eraser' | 'Brush' | 'ERASER' | 'CLEANER' (后两者由点击 3D 工具装备)
+        let toolRadius = { Eraser: 30, Brush: 60, ERASER: 30, CLEANER: 30 };
+        function applyToolRadiusUpgrades() {
+            const eraserR = ERASER_BASE_RADIUS * (1 + 0.2 * eraserRangeLevel);
+            const cleanerR = CLEANER_BASE_RADIUS * (1 + 0.2 * solventRangeLevel);
+            toolRadius.Eraser = eraserR;
+            toolRadius.ERASER = eraserR;
+            toolRadius.CLEANER = cleanerR;
+        }
+        function getFakeProbability() {
+            return Math.max(0, 0.15 - 0.01 * fakeReduceLevel);
+        }
+        let eraserModel = null;
+        let sprayCleanerModel = null;
+        let selectedToolModel = null;
+        let deskLampModel = null;
+        let lampPurpleOn = false;
+        let lampPurpleLight = null;
+        let lampPurpleAutoOffTimer = null;
+        const UV_REVEAL_RADIUS = 1.0;
+        const UV_LAMP_AUTO_OFF_MS = 6000;
+        let uvRevealPlane = null;
+        const uvRevealIntersect = new THREE.Vector3();
+        const uvLightWorldPos = new THREE.Vector3();
+        const stripWorldPos = new THREE.Vector3();
+        let pendingUVCheck = null;
         let ownedTools = ['Eraser'];
         const toolPrices = { Brush: 500 };
+        let eraserRangeLevel = 0;
+        let solventRangeLevel = 0;
+        let fakeReduceLevel = 0;
+        const ERASER_RANGE_COST = 1500;
+        const SOLVENT_RANGE_COST = 2000;
+        const FAKE_REDUCE_COST = 10000;
+        const ERASER_BASE_RADIUS = 30;
+        const CLEANER_BASE_RADIUS = 30;
 
-        // View State Machine
         let viewState = 'OVERVIEW'; // 'OVERVIEW' | 'FOCUS'
+
+        // 物理堆叠：洗好的钞票飞到桌子右下角堆叠
+        let moneyStackGroup = null;
+        let stackBillCount = 0;
+        let stackBills = []; // { group, bill } 用于 100 张时 dispose
+        const STACK_BASE_X = 0.78;   // 桌子右下角
+        const STACK_BASE_Z = -0.26;
+        const BILL_STACK_THICKNESS = 0.0022;
+        const STACK_BILLS_PER_BRICK = 5;
+        let safeMesh = null; // 砖飞入目标（无实体时用）
+        let oldSafeModel = null;     // 墙边保险箱模型，砖飞入此处
+        let briefcaseModel = null;   // 公文包模型，可点击拉近
+        let frontWoodenBoxModel = null;  // 最前面木箱，可点击拉近
+        let exhaustFanGroup = null;  // 排风扇（缓慢旋转）
+        let ceilingBulbLight = null;
+        let ceilingBulbMesh = null;
+        let dustPoints = null;      // 台灯光束中的漂浮尘埃
+        let shelfGroup = null;      // 工作台背后置物架
+        let ashtrayMesh = null;
+        let whiskeyBottleMesh = null;
+        
         const CAMERA_STATES = {
             OVERVIEW: {
-                position: { x: 0, y: 2.0, z: 4.0 },
+                position: { x: 0, y: 1.7, z: 4.8 },
                 target: { x: 0, y: 1.2, z: 0 }
             },
             FOCUS: {
-                position: { x: 0, y: 2.2, z: 1.8 },
-                target: { x: 0, y: 1.0, z: 0 }
-            }
+                position: { x: 0, y: 3.0, z: 0 },
+                target: { x: 0, y: 0.85, z: 0 }
+            },
+            FOCUS_BRIEFCASE: { position: { x: 3.4, y: 1.5, z: -0.6 }, target: { x: 3.4, y: 1.2, z: -1.9 } },
+            FOCUS_SAFE: { position: { x: 3.4, y: 1.2, z: -0.5 }, target: { x: 3.4, y: 0.5, z: -1.6 } },
+            FOCUS_WOODEN_BOX: { position: { x: 2.3, y: 1.0, z: -0.4 }, target: { x: 2.3, y: 0.3, z: -1.5 } }
         };
         let workTableLight = null;
+        let mainSpotLight = null;
         let tableTop = null;
 
         // Cleaning state
@@ -460,18 +712,102 @@
         let audioContext;
         let isAudioInitialized = false;
 
+        // 纸币 3D 模型预加载（替代 Canvas 贴图）
+        let preloadedBillModel = null;
+
+        // 污渍配置与图片：1,2,3,4,16,17,18,21 仅橡皮可擦；其余仅清洁剂可擦
+        let stainConfig = null;
+        let stainImages = {};
+        let useDetergent = false;
+
+        // ===== 3D 模型署名（可追加更多作者） =====
+        const CREDITS_3D = [
+            'Glowbox 3D',   // bag_of_money.glb
+            'JonhGillessen', // workbench.glb
+            'Silver Shield', // metal_tray.glb
+            'Artieee',      // some_eraser.glb
+            'plaggy',       // cc0_-_spray_cleaner_siffie.glb (CC0 - Spray Cleaner Siffie)
+            'ap-school',    // 2-sided_100_us_dollar_bill_circa_2009_1.glb
+            'dusan.lamos',  // vintage_desk_lamp.glb
+            'Smile',        // old_safe.glb
+            'TampaJoey',    // briefcase_with_money_low_poly_game_ready.glb
+            'Mostafa',      // wooden_box.glb
+            'loxfear'       // hospital_bed.glb (Hospital Bed)
+        ];
+
+        function updateCredits() {
+            const el = document.getElementById('creditsNames');
+            if (el) el.textContent = CREDITS_3D.join(', ');
+        }
+
         // ===== Init =====
         function init() {
             createScene();
+            initParticles();
+            initDustParticles();
             createLights();
             createRoom();
             createTable();
             createCashBoxes();
+            createTray();
+            createEraser();
+            createSprayCleaner();
+            createDeskLamp();
+            createOldSafe();
+            createBriefcase();
+            createWoodenBox();
+            createHospitalBed();
             createProps();
+            loadBillModel(); // 预加载纸币 GLB，生成时优先使用
+            loadStainConfigAndImages(); // 污渍配置（普通/油污）与图片
             bindInput();
             initAudio();
+            applyToolRadiusUpgrades();
             updateUI();
+            updateCredits();
             // animate() will be called at script end
+        }
+
+        function loadBillModel() {
+            const loader = new GLTFLoader();
+            loader.load('./2-sided_100_us_dollar_bill_circa_2009_1.glb', (gltf) => {
+                preloadedBillModel = gltf.scene;
+            }, undefined, (err) => {
+                console.warn('Bill GLB load failed, using canvas bill:', err);
+            });
+        }
+
+        const STAIN_BASE = './stain/';
+        function loadStainConfigAndImages() {
+            fetch('./stain/stain-config.json')
+                .then(r => r.json())
+                .then(config => {
+                    stainConfig = config;
+                    if (!config.stains || config.stains.length === 0) return;
+                    config.stains.forEach(({ file }) => {
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = () => { stainImages[file] = img; };
+                        img.onerror = () => {};
+                        img.src = STAIN_BASE + file;
+                    });
+                })
+                .catch(err => console.warn('Stain config load failed:', err));
+        }
+
+        function ensureStainImagesLoaded(files) {
+            const base = STAIN_BASE;
+            const promises = files.map(file => {
+                if (stainImages[file]) return Promise.resolve();
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => { stainImages[file] = img; resolve(); };
+                    img.onerror = () => resolve();
+                    img.src = base + file;
+                });
+            });
+            return Promise.all(promises);
         }
 
         // ===== Audio System =====
@@ -486,105 +822,984 @@
 
         function playCollectSound() {
             if (!isAudioInitialized) return;
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.2);
+            const t = audioContext.currentTime;
+            const osc1 = audioContext.createOscillator();
+            const osc2 = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc1.type = 'sine';
+            osc2.type = 'sine';
+            osc1.frequency.setValueAtTime(1800, t);
+            osc1.frequency.exponentialRampToValueAtTime(2400, t + 0.06);
+            osc2.frequency.setValueAtTime(2800, t);
+            osc2.frequency.exponentialRampToValueAtTime(3200, t + 0.04);
+            gain.gain.setValueAtTime(0.22, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioContext.destination);
+            osc1.start(t);
+            osc2.start(t);
+            osc1.stop(t + 0.18);
+            osc2.stop(t + 0.18);
+        }
+
+        function playEquipToolSound() {
+            if (!isAudioInitialized) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.1);
+        }
+
+        // 清洗钞票时的纸张摩擦音效（节流播放）- 更接近真实摩擦纸张的沙沙/刮擦声
+        let lastScrubSoundTime = 0;
+        const SCRUB_SOUND_INTERVAL = 85; // ms
+        function playPaperScrubSound() {
+            if (!isAudioInitialized) return;
+            const now = Date.now();
+            if (now - lastScrubSoundTime < SCRUB_SOUND_INTERVAL) return;
+            lastScrubSoundTime = now;
+            const sr = audioContext.sampleRate;
+            const duration = 0.06; // 60ms 一段摩擦
+            const len = Math.floor(sr * duration);
+            const buffer = audioContext.createBuffer(1, len, sr);
+            const data = buffer.getChannelData(0);
+            // 带一点“沙粒感”的噪声（类似纸张表面刮擦，不是纯白噪）
+            let v = 0;
+            for (let i = 0; i < len; i++) {
+                v = v * 0.92 + (Math.random() * 2 - 1) * 0.35;
+                data[i] = v * (1 - i / len * 0.85); // 衰减
+            }
+            const src = audioContext.createBufferSource();
+            src.buffer = buffer;
+            const gain = audioContext.createGain();
+            const t = audioContext.currentTime;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.18, t + 0.008); // 快起
+            gain.gain.exponentialRampToValueAtTime(0.002, t + duration);
+            // 纸张摩擦主要在 1.2k–3k 的沙沙感
+            const bandpass = audioContext.createBiquadFilter();
+            bandpass.type = 'bandpass';
+            bandpass.frequency.value = 2000;
+            bandpass.Q.value = 2.5;
+            src.connect(bandpass);
+            bandpass.connect(gain);
+            gain.connect(audioContext.destination);
+            src.start();
+            src.stop(t + duration);
+        }
+
+        let lastSpraySoundTime = 0;
+        const SPRAY_SOUND_INTERVAL = 100;
+        function playSpraySound() {
+            if (!isAudioInitialized) return;
+            const now = Date.now();
+            if (now - lastSpraySoundTime < SPRAY_SOUND_INTERVAL) return;
+            lastSpraySoundTime = now;
+            const sr = audioContext.sampleRate;
+            const duration = 0.08;
+            const len = Math.floor(sr * duration);
+            const buffer = audioContext.createBuffer(1, len, sr);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < len; i++) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / len) * 0.25;
+            }
+            const src = audioContext.createBufferSource();
+            src.buffer = buffer;
+            const gain = audioContext.createGain();
+            const hp = audioContext.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 2000;
+            const t = audioContext.currentTime;
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            src.connect(hp);
+            hp.connect(gain);
+            gain.connect(audioContext.destination);
+            src.start(t);
+            src.stop(t + duration);
+        }
+
+        let lastWetScrubSoundTime = 0;
+        const WET_SCRUB_INTERVAL = 90;
+        function playWetScrubSound() {
+            if (!isAudioInitialized) return;
+            const now = Date.now();
+            if (now - lastWetScrubSoundTime < WET_SCRUB_INTERVAL) return;
+            lastWetScrubSoundTime = now;
+            const sr = audioContext.sampleRate;
+            const duration = 0.07;
+            const len = Math.floor(sr * duration);
+            const buffer = audioContext.createBuffer(1, len, sr);
+            const data = buffer.getChannelData(0);
+            let v = 0;
+            for (let i = 0; i < len; i++) {
+                v = v * 0.88 + (Math.random() * 2 - 1) * 0.4;
+                data[i] = v * (1 - i / len * 0.8);
+            }
+            const src = audioContext.createBufferSource();
+            src.buffer = buffer;
+            const gain = audioContext.createGain();
+            const lp = audioContext.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.value = 1400;
+            lp.Q.value = 0.5;
+            const t = audioContext.currentTime;
+            gain.gain.setValueAtTime(0.15, t);
+            gain.gain.exponentialRampToValueAtTime(0.002, t + duration);
+            src.connect(lp);
+            lp.connect(gain);
+            gain.connect(audioContext.destination);
+            src.start(t);
+            src.stop(t + duration);
+        }
+
+        function playWrongToolSound() {
+            if (!isAudioInitialized) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(120, audioContext.currentTime);
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.15);
+        }
+
+        // ===== Particle System (灰尘/金色碎屑) =====
+        const MAX_PARTICLES = 320;
+        let particles = [];
+        let particlePoints = null;
+        let lastFrameTime = performance.now();
+
+        function initParticles() {
+            const geo = new THREE.BufferGeometry();
+            const positions = new Float32Array(MAX_PARTICLES * 3);
+            const colors = new Float32Array(MAX_PARTICLES * 3);
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            const mat = new THREE.PointsMaterial({
+                size: 0.025,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9,
+                sizeAttenuation: true,
+                depthWrite: false
+            });
+            particlePoints = new THREE.Points(geo, mat);
+            scene.add(particlePoints);
+        }
+
+        function spawnParticles(worldPos, count, type) {
+            const isGold = type === 'golden';
+            for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
+                const speed = isGold ? 0.8 + Math.random() * 0.6 : 0.15 + Math.random() * 0.2;
+                const angle = Math.random() * Math.PI * 2;
+                const vy = isGold ? 0.4 + Math.random() * 0.5 : 0.1 + Math.random() * 0.2;
+                const life = isGold ? 0.5 + Math.random() * 0.3 : 0.25 + Math.random() * 0.2;
+                particles.push({
+                    x: worldPos.x, y: worldPos.y, z: worldPos.z,
+                    vx: Math.cos(angle) * speed * (0.3 + Math.random() * 0.7),
+                    vy,
+                    vz: Math.sin(angle) * speed * (0.3 + Math.random() * 0.7),
+                    life,
+                    maxLife: life,
+                    r: isGold ? 1 : 0.6 + Math.random() * 0.2,
+                    g: isGold ? 0.85 : 0.5 + Math.random() * 0.2,
+                    b: isGold ? 0.25 : 0.4 + Math.random() * 0.2
+                });
+            }
+        }
+
+        function updateParticles(dt) {
+            const posAttr = particlePoints.geometry.attributes.position;
+            const colAttr = particlePoints.geometry.attributes.color;
+            let n = 0;
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+                p.vy -= 0.3 * dt;
+                p.life -= dt;
+                if (p.life <= 0) continue;
+                const t = 1 - p.life / p.maxLife;
+                posAttr.setXYZ(n, p.x, p.y, p.z);
+                colAttr.setXYZ(n, p.r * (1 - t * 0.5), p.g * (1 - t * 0.5), p.b * (1 - t * 0.5));
+                n++;
+            }
+            particles = particles.filter(p => p.life > 0);
+            posAttr.count = n;
+            colAttr.count = n;
+            particlePoints.geometry.setDrawRange(0, n);
+            particlePoints.geometry.attributes.position.needsUpdate = true;
+            particlePoints.geometry.attributes.color.needsUpdate = true;
+        }
+
+        // ===== 台灯光束漂浮尘埃（丁达尔效应） =====
+        const DUST_COUNT = 80;
+        let dustParticles = [];
+        function initDustParticles() {
+            const geo = new THREE.BufferGeometry();
+            const positions = new Float32Array(DUST_COUNT * 3);
+            const colors = new Float32Array(DUST_COUNT * 3);
+            for (let i = 0; i < DUST_COUNT; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 1.2;
+                positions[i * 3 + 1] = 1.2 + Math.random() * 0.8;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+                const g = 0.75 + Math.random() * 0.2;
+                colors[i * 3] = g;
+                colors[i * 3 + 1] = g;
+                colors[i * 3 + 2] = 0.85 + Math.random() * 0.15;
+            }
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            const mat = new THREE.PointsMaterial({
+                size: 0.018,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                sizeAttenuation: true,
+                depthWrite: false
+            });
+            dustPoints = new THREE.Points(geo, mat);
+            dustPoints.position.set(0.5, 0, 0);
+            dustPoints.renderOrder = 5;
+            scene.add(dustPoints);
+            for (let i = 0; i < DUST_COUNT; i++) {
+                dustParticles.push({
+                    vx: (Math.random() - 0.5) * 0.02,
+                    vy: 0.01 + Math.random() * 0.02,
+                    vz: (Math.random() - 0.5) * 0.02
+                });
+            }
+        }
+        function updateDustParticles(dt) {
+            if (!dustPoints) return;
+            const pos = dustPoints.geometry.attributes.position;
+            for (let i = 0; i < DUST_COUNT; i++) {
+                const p = dustParticles[i];
+                pos.array[i * 3] += p.vx * dt;
+                pos.array[i * 3 + 1] += p.vy * dt;
+                pos.array[i * 3 + 2] += p.vz * dt;
+                if (pos.array[i * 3 + 1] > 2.2) pos.array[i * 3 + 1] = 1.2;
+                if (pos.array[i * 3 + 1] < 1.2) pos.array[i * 3 + 1] = 2.2;
+            }
+            pos.needsUpdate = true;
         }
 
         // ===== Scene Setup =====
         function createScene() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a1a1a);
-            scene.fog = new THREE.Fog(0x1a1a1a, 8, 20);
+            scene.background = new THREE.Color(0x2a2826);
+            scene.fog = new THREE.Fog(0x2a2826, 10, 22);
 
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 2, 4); // OVERVIEW mode position
-            camera.lookAt(0, 1.2, 0);
+            camera.position.set(CAMERA_STATES.OVERVIEW.position.x, CAMERA_STATES.OVERVIEW.position.y, CAMERA_STATES.OVERVIEW.position.z);
+            camera.lookAt(CAMERA_STATES.OVERVIEW.target.x, CAMERA_STATES.OVERVIEW.target.y, CAMERA_STATES.OVERVIEW.target.z);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0x050505, 1); // Deep gray background
+            renderer.setClearColor(0x050505, 1);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.15;
             document.body.appendChild(renderer.domElement);
         }
 
         // ===== Lights =====
         function createLights() {
-            // Base ambient light (fallback to prevent black screen)
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
             scene.add(ambientLight);
-            
-            // Additional colored ambient light
-            const coloredAmbient = new THREE.AmbientLight(0x6688bb, 0.3);
+            const coloredAmbient = new THREE.AmbientLight(0x99aacc, 0.35);
             scene.add(coloredAmbient);
-            
-            const hemiLight = new THREE.HemisphereLight(0x5577cc, 0x664422, 0.5);
+            const hemiLight = new THREE.HemisphereLight(0x88aadd, 0x665544, 0.75);
             scene.add(hemiLight);
 
-            const spotLight = new THREE.SpotLight(0xfffff0, 120);
-            spotLight.position.set(0, 5.5, 0.5);
-            spotLight.target.position.set(0, 1, 0);
-            spotLight.castShadow = true;
-            scene.add(spotLight);
-            scene.add(spotLight.target);
+            mainSpotLight = new THREE.SpotLight(0xfffff0, 95);
+            mainSpotLight.position.set(0, 6, 0.5);
+            mainSpotLight.target.position.set(0, 1, 0);
+            mainSpotLight.castShadow = true;
+            mainSpotLight.shadow.bias = -0.0005;
+            mainSpotLight.shadow.normalBias = 0.05;
+            mainSpotLight.shadow.camera.near = 0.5;
+            mainSpotLight.shadow.camera.far = 15;
+            scene.add(mainSpotLight);
+            scene.add(mainSpotLight.target);
 
-            workTableLight = new THREE.PointLight(0xffffff, 0, 5);
-            workTableLight.position.set(0, 2, 0);
+            // 工作台用平行光带（斜向照射），避免正上方点光造成钞票/托盘强烈反光
+            workTableLight = new THREE.DirectionalLight(0xfff8ee, 0);
+            workTableLight.position.set(1.8, 3.2, 2.5);
+            workTableLight.target.position.set(0, 1, 0);
             scene.add(workTableLight);
+            scene.add(workTableLight.target);
         }
 
-        // ===== Room & Props =====
+        // ===== Room & Props (地下室风格：破旧墙壁与地板) =====
+        function createBasementWallTexture() {
+            const w = 512, h = 512;
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            const base = { r: 98, g: 92, b: 86 };
+            ctx.fillStyle = `rgb(${base.r}, ${base.g}, ${base.b})`;
+            ctx.fillRect(0, 0, w, h);
+            const id = ctx.getImageData(0, 0, w, h);
+            const d = id.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const n = (Math.random() - 0.5) * 22;
+                const damp = Math.random() < 0.08 ? -12 : 0;
+                const green = Math.random() < 0.05 ? 6 : 0;
+                d[i] = Math.max(0, Math.min(255, base.r + n + damp));
+                d[i + 1] = Math.max(0, Math.min(255, base.g + n + green + damp * 0.5));
+                d[i + 2] = Math.max(0, Math.min(255, base.b + n + damp));
+                d[i + 3] = 255;
+            }
+            ctx.putImageData(id, 0, 0);
+            for (let k = 0; k < 12; k++) {
+                const x = Math.random() * w, y = Math.random() * h;
+                const r = 25 + Math.random() * 50;
+                const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+                gr.addColorStop(0, 'rgba(70, 65, 60, 0.4)');
+                gr.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gr;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            // 墙角渗水污渍（左右两侧竖向条带）
+            for (let side = 0; side < 2; side++) {
+                const x0 = side === 0 ? 0 : w - 90;
+                const lg = ctx.createLinearGradient(x0, 0, x0 + 90, 0);
+                lg.addColorStop(0, 'rgba(60, 56, 52, 0.45)');
+                lg.addColorStop(0.5, 'rgba(70, 65, 60, 0.2)');
+                lg.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = lg;
+                ctx.fillRect(x0, 0, 90, h);
+            }
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(3, 2);
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            return tex;
+        }
+        function createBasementFloorTexture() {
+            const w = 512, h = 512;
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            const base = { r: 78, g: 72, b: 66 };
+            ctx.fillStyle = `rgb(${base.r}, ${base.g}, ${base.b})`;
+            ctx.fillRect(0, 0, w, h);
+            const id = ctx.getImageData(0, 0, w, h);
+            const d = id.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const n = (Math.random() - 0.5) * 28;
+                const stain = Math.random() < 0.06 ? -14 : 0;
+                d[i] = Math.max(0, Math.min(255, base.r + n + stain));
+                d[i + 1] = Math.max(0, Math.min(255, base.g + n + stain * 0.8));
+                d[i + 2] = Math.max(0, Math.min(255, base.b + n + stain));
+                d[i + 3] = 255;
+            }
+            ctx.putImageData(id, 0, 0);
+            for (let k = 0; k < 15; k++) {
+                const x = Math.random() * w, y = Math.random() * h;
+                const r = 30 + Math.random() * 60;
+                const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+                gr.addColorStop(0, 'rgba(55, 50, 46, 0.45)');
+                gr.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gr;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(4, 4);
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            return tex;
+        }
         function createRoom() {
             const roomGeo = new THREE.BoxGeometry(12, 6, 12);
-            const roomMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, side: THREE.BackSide });
+            const roomMat = new THREE.MeshStandardMaterial({
+                map: createBasementWallTexture(),
+                side: THREE.BackSide,
+                roughness: 0.92,
+                metalness: 0.02,
+                color: 0x6a655e
+            });
             const room = new THREE.Mesh(roomGeo, roomMat);
             room.position.y = 3;
             room.receiveShadow = true;
             scene.add(room);
 
             const floorGeo = new THREE.PlaneGeometry(12, 12);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x424242 });
+            const floorMat = new THREE.MeshStandardMaterial({
+                map: createBasementFloorTexture(),
+                roughness: 0.9,
+                metalness: 0,
+                color: 0x524d46
+            });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
             scene.add(floor);
+
+            moneyStackGroup = new THREE.Group();
+            moneyStackGroup.position.set(0, 0, 0);
+            scene.add(moneyStackGroup);
+
+            // 工业管道：天花附近横向锈蚀金属管
+            const pipeMat = new THREE.MeshStandardMaterial({
+                color: 0x4a4035,
+                roughness: 0.9,
+                metalness: 0.4
+            });
+            const pipeGeo = new THREE.CylinderGeometry(0.06, 0.06, 5, 12);
+            for (let i = 0; i < 3; i++) {
+                const pipe = new THREE.Mesh(pipeGeo, pipeMat);
+                pipe.rotation.z = Math.PI / 2;
+                pipe.position.set(0, 5.4 - i * 0.25, -4.5 + i * 0.5);
+                pipe.castShadow = true;
+                scene.add(pipe);
+            }
+
+            // 排风扇：侧墙缓慢旋转 + 微弱漏光（扇面朝向房间内）
+            exhaustFanGroup = new THREE.Group();
+            exhaustFanGroup.position.set(-4.8, 3.2, -1.5);
+            const fanFrameGeo = new THREE.RingGeometry(0.35, 0.42, 32);
+            const fanFrameMat = new THREE.MeshStandardMaterial({ color: 0x3a3530, roughness: 0.8, metalness: 0.5, side: THREE.DoubleSide });
+            const fanFrame = new THREE.Mesh(fanFrameGeo, fanFrameMat);
+            fanFrame.rotation.y = Math.PI / 2;
+            exhaustFanGroup.add(fanFrame);
+            const bladeMat = new THREE.MeshStandardMaterial({ color: 0x2a2520, side: THREE.DoubleSide });
+            for (let b = 0; b < 5; b++) {
+                const blade = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.7), bladeMat);
+                blade.rotation.y = Math.PI / 2;
+                blade.position.y = 0.02;
+                blade.rotation.z = (b / 5) * Math.PI * 2;
+                exhaustFanGroup.add(blade);
+            }
+            const fanBackLight = new THREE.PointLight(0x8899aa, 0.15, 3);
+            fanBackLight.position.set(0.5, 0, 0);
+            exhaustFanGroup.add(fanBackLight);
+            scene.add(exhaustFanGroup);
+
+            // 保险箱占位：砖飞入的目标点，不显示实体（避免桌面上出现黑方框）
+            safeMesh = new THREE.Object3D();
+            safeMesh.position.set(1.2, tableSurfaceY + 0.35, 0.22);
+            scene.add(safeMesh);
+        }
+
+        // ===== GLTF Material Utilities =====
+        function createWoodTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // Old wood: darker, worn brown (no stripes, no lines)
+            const baseColor = { r: 139, g: 110, b: 78 }; // #8b6e4e darker worn wood
+            
+            // Single solid fill - no stripes
+            ctx.fillStyle = `rgb(${baseColor.r}, ${baseColor.g}, ${baseColor.b})`;
+            ctx.fillRect(0, 0, 256, 256);
+            
+            // Very soft random patches (worn/faded spots), no lines
+            const imageData = ctx.getImageData(0, 0, 256, 256);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const noise = (Math.random() - 0.5) * 12;
+                data[i] = Math.max(0, Math.min(255, baseColor.r + noise));
+                data[i + 1] = Math.max(0, Math.min(255, baseColor.g + noise));
+                data[i + 2] = Math.max(0, Math.min(255, baseColor.b + noise));
+                data[i + 3] = 255;
+            }
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Old look: a few faded/dirty patches (blobs only)
+            for (let i = 0; i < 6; i++) {
+                const x = Math.random() * 256;
+                const y = Math.random() * 256;
+                const radius = 20 + Math.random() * 35;
+                const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                const darker = { r: baseColor.r - 25, g: baseColor.g - 25, b: baseColor.b - 25 };
+                g.addColorStop(0, `rgba(${darker.r}, ${darker.g}, ${darker.b}, 0.4)`);
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = g;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+            texture.repeat.set(1, 1);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.needsUpdate = true;
+            
+            return texture;
+        }
+
+        function logGLTFMaterials(model) {
+            console.log('=== GLTF 材质调试信息 ===');
+            const out = [];
+            let meshCount = 0;
+            model.traverse((child) => {
+                if (!child.isMesh) return;
+                meshCount++;
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach((m, idx) => {
+                    if (!m) return;
+                    out.push({
+                        mesh: child.name || '(unnamed)',
+                        matIndex: idx,
+                        matType: m.type,
+                        matName: m.name || '',
+                        hasMap: !!m.map,
+                        mapImage: m.map?.image ? `${m.map.image.width}x${m.map.image.height}` : null,
+                        hasEmissive: !!m.emissive,
+                        color: m.color ? `#${m.color.getHexString()}` : null,
+                        roughness: m.roughness ?? null,
+                        metalness: m.metalness ?? null,
+                        vertexColors: m.vertexColors ?? null
+                    });
+                });
+            });
+            console.log(`找到 ${meshCount} 个 Mesh，${out.length} 个材质`);
+            if (out.length > 0) {
+                console.table(out);
+            } else {
+                console.warn('⚠️ 没有找到任何材质！');
+            }
+            console.log('=== 材质调试信息结束 ===');
+        }
+
+        function setEmissive(mesh, hex, intensity) {
+            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            mats.forEach(m => {
+                if (!m || !m.emissive) return;
+                m.emissive.setHex(hex);
+                m.emissiveIntensity = intensity;
+                m.needsUpdate = true;
+            });
         }
 
         function createTable() {
-            const tableMat = new THREE.MeshStandardMaterial({ color: 0x3d2817 });
-            tableTop = new THREE.Mesh(new THREE.BoxGeometry(3, 0.1, 2), tableMat);
-            tableTop.position.set(0, 1, 0);
-            tableTop.castShadow = true;
-            tableTop.receiveShadow = true;
-            tableTop.userData.type = 'table';
-            scene.add(tableTop);
-
-            const legGeo = new THREE.BoxGeometry(0.1, 0.9, 0.1);
-            [[-1.3,0.45,-0.85], [1.3,0.45,-0.85], [-1.3,0.45,0.85], [1.3,0.45,0.85]].forEach(pos => {
-                const leg = new THREE.Mesh(legGeo, tableMat);
-                leg.position.set(...pos);
-                leg.castShadow = true;
-                scene.add(leg);
+            const loader = new GLTFLoader();
+            
+            console.log('Loading table model: ./workbench.glb');
+            
+            // Load model - use relative path
+            const modelPath = './workbench.glb';
+            console.log('Attempting to load model from:', modelPath);
+            console.log('Current location:', window.location.href);
+            
+            loader.load(modelPath, (gltf) => {
+                console.log('GLTF file loaded successfully', gltf);
+                
+                // Check parser for textures (GLB embeds textures in parser)
+                const parser = gltf.parser;
+                console.log('GLTF Parser:', parser);
+                console.log('Parser json:', parser.json);
+                
+                // Check for textures in JSON
+                if (parser.json && parser.json.textures) {
+                    console.log('Found textures in JSON:', parser.json.textures);
+                    console.log('Texture count:', parser.json.textures.length);
+                }
+                if (parser.json && parser.json.images) {
+                    console.log('Found images in JSON:', parser.json.images);
+                    console.log('Image count:', parser.json.images.length);
+                }
+                if (parser.json && parser.json.materials) {
+                    console.log('Found materials in JSON:', parser.json.materials);
+                    parser.json.materials.forEach((mat, idx) => {
+                        console.log(`Material ${idx}:`, mat);
+                        if (mat.pbrMetallicRoughness) {
+                            console.log(`  PBR baseColorTexture:`, mat.pbrMetallicRoughness.baseColorTexture);
+                        }
+                        if (mat.extensions && mat.extensions.KHR_materials_pbrSpecularGlossiness) {
+                            console.log(`  KHR specularGlossiness:`, mat.extensions.KHR_materials_pbrSpecularGlossiness);
+                        }
+                    });
+                }
+                
+                const model = gltf.scene;
+                tableTop = model;
+                
+                // Log all materials for debugging
+                logGLTFMaterials(model);
+                
+                // Calculate bounding box BEFORE scaling to understand original size
+                const originalBox = new THREE.Box3().setFromObject(model);
+                console.log('Original model bounding box:', originalBox);
+                console.log('Original model size:', {
+                    width: originalBox.max.x - originalBox.min.x,
+                    height: originalBox.max.y - originalBox.min.y,
+                    depth: originalBox.max.z - originalBox.min.z
+                });
+                
+                // Scale so table fits scene
+                model.scale.set(1.3, 1.3, 1.3);
+                
+                // Rotate 90° so table is horizontal (long axis along X)
+                model.rotation.y = Math.PI / 2;
+                
+                model.position.set(0, 0, 0);
+                
+                // Use model's original materials/textures (no override)
+                tableMeshes = [];
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.type = 'table';
+                        tableMeshes.push(child);
+                    }
+                });
+                
+                console.log('Total meshes found:', tableMeshes.length);
+                
+                scene.add(model);
+                
+                // Bounding box after scale + rotation
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                const maxY = box.max.y;
+                
+                // Sit on ground; X a bit right so table nears money bag at x≈0.9
+                model.position.y = -minY;
+                model.position.x = 0.9 - box.max.x + 0.6; // table left 0.1
+                model.position.z = -(box.min.z + box.max.z) / 2;
+                
+                tableSurfaceY = maxY - minY + 0.001; // Table top height
+                if (safeMesh) safeMesh.position.y = tableSurfaceY + 0.35;
+                if (shelfGroup) shelfGroup.position.y = tableSurfaceY + 0.15;
+                if (ashtrayMesh) ashtrayMesh.position.y = tableSurfaceY + 0.01;
+                if (whiskeyBottleMesh) whiskeyBottleMesh.position.y = tableSurfaceY + 0.07;
+                console.log('Table model loaded successfully!');
+                console.log('Scaled bounding box:', box);
+                console.log('Table surface Y:', tableSurfaceY);
+                console.log('Model position:', model.position);
+                console.log('Model scale:', model.scale);
+            }, (progress) => {
+                if (progress.lengthComputable) {
+                    const percentComplete = (progress.loaded / progress.total * 100);
+                    console.log('Loading progress:', percentComplete.toFixed(2) + '%');
+                }
+            }, (error) => {
+                console.error('❌ Error loading table model:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    url: './workbench.glb'
+                });
+                // Don't create fallback table - let user know model failed to load
+                alert('警告：桌子模型加载失败！请检查控制台查看详细信息。\n\nWarning: Table model failed to load! Check console for details.');
+                tableSurfaceY = 1.26;
+                tableMeshes = [];
             });
         }
 
         function createCashBoxes() {
-            const boxMat = new THREE.MeshStandardMaterial({ color: 0x8b6f47 });
-            cashBoxOnTable = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.15, 0.3), boxMat);
-            cashBoxOnTable.position.set(0.9, 1.125, 0);
-            cashBoxOnTable.castShadow = true;
-            cashBoxOnTable.receiveShadow = true;
-            scene.add(cashBoxOnTable);
+            const loader = new GLTFLoader();
+            loader.load('./bag_of_money.glb', (gltf) => {
+                const model = gltf.scene;
+                cashBoxOnTable = model;
+                
+                model.scale.set(8.5, 8.5, 8.5);
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                model.position.set(1.1, tableSurfaceY - minY + 0.02, -0.4);
+                
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                
+                scene.add(cashBoxOnTable);
+            }, undefined, (err) => {
+                console.error('Money bag model load failed:', err);
+            });
+        }
+
+        function createTray() {
+            const loader = new GLTFLoader();
+            loader.load('./metal_tray.glb', (gltf) => {
+                const model = gltf.scene;
+                // 盘子：缩放与位置（可改大小/位置）
+                model.scale.set(3, 3, 3);           // 缩放 x,y,z
+                model.rotation.y = Math.PI / 2;     // 横向
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                model.position.set(-0.2, tableSurfaceY - minY + 0.03, 0.15);  // 位置 x, 桌面y, z
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Metal tray model load failed:', err);
+            });
+        }
+
+        function createEraser() {
+            const loader = new GLTFLoader();
+            loader.load('./some_eraser.glb', (gltf) => {
+                const model = gltf.scene;
+                eraserModel = model;
+                model.scale.set(5.5, 5.5, 6.5);
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                model.position.set(-0.9, tableSurfaceY - minY + 0.05, 0.35); // 桌子左边
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.isEraser = true;
+                        child.userData.isTool = true;
+                        child.userData.toolType = 'ERASER';
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Eraser model load failed:', err);
+            });
+        }
+
+        function createSprayCleaner() {
+            const loader = new GLTFLoader();
+            loader.load('./cc0_-_spray_cleaner_siffie.glb', (gltf) => {
+                const model = gltf.scene;
+                sprayCleanerModel = model;
+                model.scale.set(2.5, 2.5, 2.5);
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                model.position.set(-0.85, tableSurfaceY - minY + 0.04, -0.2); // 桌子左边，橡皮与托盘之间
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.isCleaner = true;
+                        child.userData.isTool = true;
+                        child.userData.toolType = 'CLEANER';
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Spray cleaner model load failed:', err);
+            });
+        }
+
+        function createDeskLamp() {
+            const loader = new GLTFLoader();
+            const url = './vintage_desk_lamp.glb?v=' + Date.now();
+            loader.load(url, (gltf) => {
+                console.log('[vintage_desk_lamp.glb] Loaded successfully', gltf);
+                const model = gltf.scene;
+                model.scale.set(3.8, 3.8, 3.8);
+                const box = new THREE.Box3().setFromObject(model);
+                const minY = box.min.y;
+                model.position.set(-0.05, tableSurfaceY - minY + 0.02, -0.45);
+                model.rotation.set(0,Math.PI / -2, 0);  // 台灯横向
+                deskLampModel = model;
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.isDeskLamp = true;
+                        const origMat = Array.isArray(child.material) ? child.material[0] : child.material;
+                        const isDark = origMat && origMat.color && typeof origMat.color.getHex === 'function' && origMat.color.getHex() < 0x222222;
+                        const isMissing = !origMat;
+                        if (isDark || isMissing) {
+                            const fallbackMat = new THREE.MeshStandardMaterial({
+                                color: 0xcccccc,
+                                roughness: 0.7,
+                                metalness: 0.2,
+                                side: THREE.DoubleSide
+                            });
+                            child.material = fallbackMat;
+                            console.log('[vintage_desk_lamp.glb] Applied temporary MeshStandardMaterial (was dark or missing)', child);
+                        } else {
+                            const mats = Array.isArray(child.material) ? child.material : [child.material];
+                            mats.forEach((m) => {
+                                if (!m) return;
+                                m.side = THREE.DoubleSide;
+                                if (m.emissive) {
+                                    m.emissive.setHex(0x1a1a2e);
+                                    m.emissiveIntensity = 0.15;
+                                }
+                            });
+                        }
+                    }
+                });
+                scene.add(model);
+            }, (progress) => {
+                if (progress.lengthComputable) {
+                    console.log('[vintage_desk_lamp.glb] Progress:', (progress.loaded / progress.total * 100).toFixed(1) + '%');
+                } else {
+                    console.log('[vintage_desk_lamp.glb] Loading...', progress.loaded, 'bytes');
+                }
+            }, (err) => {
+                console.error('[vintage_desk_lamp.glb] Load failed:', err);
+            });
+        }
+
+        function createOldSafe() {
+            const loader = new GLTFLoader();
+            loader.load('./old_safe.glb', (gltf) => {
+                const model = gltf.scene;
+                const box = new THREE.Box3().setFromObject(model);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+                const scale = 1.2 / maxDim;
+                model.scale.set(scale, scale, scale);
+                const box2 = new THREE.Box3().setFromObject(model);
+                model.position.set(3.4, 0.0 - box2.min.y, -1.6);  // 墙边（右侧靠后）
+                model.rotation.y = Math.PI * 1.5;  // 左转 270 度（原 90 + 180）
+                oldSafeModel = model;  // 砖飞入此保险箱
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.isOldSafe = true;
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Old safe model load failed:', err);
+            });
+        }
+
+        const SAFE_POS = { x: 3.4, z: -1.6 };
+        const SAFE_TOP_Y = 1.21;  // 保险柜顶面高度，公文包底面贴在此处
+        function createBriefcase() {
+            const loader = new GLTFLoader();
+            loader.load('./briefcase_with_money_low_poly_game_ready.glb', (gltf) => {
+                const model = gltf.scene;
+                const box = new THREE.Box3().setFromObject(model);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+                const scale = 0.8 / maxDim;  // 放大一倍（原 0.4 → 0.8）
+                model.scale.set(scale, scale, scale);
+                const box2 = new THREE.Box3().setFromObject(model);
+                model.position.set(SAFE_POS.x, SAFE_TOP_Y - box2.min.y, -1.9);  // 放保险柜上面，z 移到 -1.9
+                model.rotation.y = Math.PI * 0.12 - Math.PI / 4;  // 左转 45 度
+                briefcaseModel = model;
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData.isBriefcase = true;
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Briefcase model load failed:', err);
+            });
+        }
+
+        function createWoodenBox() {
+            const loader = new GLTFLoader();
+            loader.load('./wooden_box.glb', (gltf) => {
+                const src = gltf.scene;
+                const box = new THREE.Box3().setFromObject(src);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+                const scale = 0.7 / maxDim;  // 放大一倍（原 0.35 → 0.7）
+                src.scale.set(scale, scale, scale);
+                const box2 = new THREE.Box3().setFromObject(src);
+                const floorY = 0;  // 挨着地
+                const positions = [
+                    { x: 2.2, z: -2.2, ry: Math.PI * -0.1 },
+                    { x: 2.4, z: -1.8, ry: Math.PI * 0.08 },
+                    { x: 2.1, z: -2.5, ry: Math.PI * -0.15 },
+                    { x: 2.3, z: -1.5, ry: Math.PI * 0.05 }
+                ];
+                positions.forEach((pos, i) => {
+                    const model = i === 0 ? src : src.clone();
+                    model.position.set(pos.x, floorY - box2.min.y, pos.z);
+                    model.rotation.y = pos.ry;
+                    if (i === 3) frontWoodenBoxModel = model;  // 最前面木箱 (z=-1.5)
+                    model.traverse((child) => {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            if (i === 3) child.userData.isFrontWoodenBox = true;
+                        }
+                    });
+                    scene.add(model);
+                });
+            }, undefined, (err) => {
+                console.error('Wooden box model load failed:', err);
+            });
+        }
+
+        function createHospitalBed() {
+            const loader = new GLTFLoader();
+            loader.load('./hospital_bed.glb', (gltf) => {
+                const model = gltf.scene;
+                const box = new THREE.Box3().setFromObject(model);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+                const scale = 3.5 / maxDim;  // 放大
+                model.scale.set(scale, scale, scale);
+                const box2 = new THREE.Box3().setFromObject(model);
+                const floorY = 0;
+                model.position.set(-4.75, floorY - box2.min.y, -3.2);  // 靠左边墙
+                model.rotation.y = Math.PI * 0.05 + Math.PI * 1.5;  // 俯视右转 270 度（原 90 + 180）
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(model);
+            }, undefined, (err) => {
+                console.error('Hospital bed model load failed:', err);
+            });
+        }
+
+        function equipTool(toolType) {
+            currentTool = toolType;
+            useDetergent = (toolType === 'CLEANER');
+            if (eraserModel) setGroupEmissive(eraserModel, 0x000000, 0);
+            if (sprayCleanerModel) setGroupEmissive(sprayCleanerModel, 0x000000, 0);
+            selectedToolModel = (toolType === 'ERASER' ? eraserModel : sprayCleanerModel);
+            if (selectedToolModel) {
+                setGroupEmissive(selectedToolModel, 0x00ff88, 0.45);
+                const sx = selectedToolModel.scale.x, sy = selectedToolModel.scale.y, sz = selectedToolModel.scale.z;
+                new TWEEN.Tween(selectedToolModel.scale)
+                    .to({ x: sx * 1.15, y: sy * 1.15, z: sz * 1.15 }, 80)
+                    .easing(TWEEN.Easing.Quad.Out)
+                    .chain(new TWEEN.Tween(selectedToolModel.scale).to({ x: sx, y: sy, z: sz }, 120).easing(TWEEN.Easing.Quad.InOut))
+                    .start();
+            }
+            playEquipToolSound();
+            updateCursor();
+            updateUI();
         }
 
         function createProps() {
@@ -592,154 +1807,682 @@
             const neonGeo = new THREE.BoxGeometry(2, 0.05, 0.05);
             const neonMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 2 });
             const neon = new THREE.Mesh(neonGeo, neonMat);
-            neon.position.set(0, 2.5, -3); // Moved closer to be visible
+            neon.position.set(0, 2.5, -3);
             scene.add(neon);
+
+            // 坏掉的顶灯：裸露灯泡 + 闪烁光源
+            const bulbGeo = new THREE.SphereGeometry(0.08, 12, 8);
+            const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffeed0 });
+            ceilingBulbMesh = new THREE.Mesh(bulbGeo, bulbMat);
+            ceilingBulbMesh.position.set(0, 5.65, 0);
+            scene.add(ceilingBulbMesh);
+            ceilingBulbLight = new THREE.PointLight(0xffeed0, 0.2, 6);
+            ceilingBulbLight.position.set(0, 5.65, 0);
+            scene.add(ceilingBulbLight);
+
+            // 工作台背后置物架 + 备用清洁剂/抹布
+            shelfGroup = new THREE.Group();
+            shelfGroup.position.set(0.5, tableSurfaceY + 0.15, -0.85);
+            const shelfMat = new THREE.MeshStandardMaterial({ color: 0x3a3530, roughness: 0.8, metalness: 0.4 });
+            const barW = 0.02, barH = 0.5, barD = 0.02;
+            const shelfW = 0.6, shelfD = 0.15;
+            for (let i = 0; i < 4; i++) {
+                const bar = new THREE.Mesh(new THREE.BoxGeometry(barW, barH, barD), shelfMat);
+                bar.position.set((i % 2) * 0.56 - 0.28, (i < 2 ? 0.25 : -0.25), 0);
+                shelfGroup.add(bar);
+            }
+            for (let s = 0; s < 3; s++) {
+                const shelf = new THREE.Mesh(new THREE.BoxGeometry(shelfW, 0.02, shelfD), shelfMat);
+                shelf.position.set(0, 0.24 - s * 0.25, 0);
+                shelfGroup.add(shelf);
+            }
+            const bottleMat = new THREE.MeshStandardMaterial({ color: 0xe8e0d0 });
+            for (let b = 0; b < 4; b++) {
+                const bottle = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.025, 0.12, 8), bottleMat);
+                bottle.position.set(-0.2 + b * 0.14, 0.12 - (b % 2) * 0.25, 0.08);
+                bottle.rotation.z = 0.05;
+                shelfGroup.add(bottle);
+            }
+            const clothMat = new THREE.MeshStandardMaterial({ color: 0x8a8070 });
+            const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.06), clothMat);
+            cloth.rotation.x = Math.PI / 2;
+            cloth.position.set(0.15, -0.24, 0.06);
+            shelfGroup.add(cloth);
+            scene.add(shelfGroup);
+
+            // 桌角：烟灰缸 + 廉价威士忌
+            const ashtrayGeo = new THREE.CylinderGeometry(0.055, 0.06, 0.02, 16);
+            const ashtrayMat = new THREE.MeshStandardMaterial({ color: 0x4a4540 });
+            ashtrayMesh = new THREE.Mesh(ashtrayGeo, ashtrayMat);
+            ashtrayMesh.position.set(0.6, tableSurfaceY + 0.01, 0.52);
+            ashtrayMesh.receiveShadow = true;
+            scene.add(ashtrayMesh);
+            const whiskeyGeo = new THREE.CylinderGeometry(0.025, 0.028, 0.14, 8);
+            const whiskeyMat = new THREE.MeshStandardMaterial({ color: 0x8b6914 });
+            whiskeyBottleMesh = new THREE.Mesh(whiskeyGeo, whiskeyMat);
+            whiskeyBottleMesh.position.set(0.55, tableSurfaceY + 0.07, 0.48);
+            whiskeyBottleMesh.rotation.z = 0.03;
+            whiskeyBottleMesh.receiveShadow = true;
+            scene.add(whiskeyBottleMesh);
         }
 
         // ===== Bill Class (The Sandwich Method) =====
         function createBillTexture() {
+            const w = 1024, h = 512;
             const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 256; // 2:1 Ratio
+            canvas.width = w; canvas.height = h;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#2a5a3b';
-            ctx.fillRect(0, 0, 512, 256);
-            ctx.strokeStyle = '#1a3a2b';
-            ctx.lineWidth = 20;
-            ctx.strokeRect(10, 10, 492, 236);
-            ctx.fillStyle = '#b8e0c3';
-            ctx.font = 'bold 100px Arial';
+            // 钞票绿底铺满整张纹理，与污渍层红框对齐（无内边距，钞票=红框大小）
+            ctx.fillStyle = '#2d5a3d';
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = '#1a4028';
+            ctx.lineWidth = 16;
+            ctx.strokeRect(0, 0, w, h);
+            ctx.fillStyle = '#c8e8d0';
+            ctx.font = 'bold 180px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('$100', 256, 128);
+            ctx.fillText('$100', w / 2, h / 2);
+            ctx.fillStyle = 'rgba(0,0,0,0.25)';
+            ctx.font = '28px Arial';
+            ctx.fillText('ONE HUNDRED DOLLARS', w / 2, h / 2 + 120);
             const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
             return texture;
         }
         
         function createDirtTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 256;
+            canvas.width = 512;
+            canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#000000'; // Pure black dirt
-            ctx.fillRect(0, 0, 512, 256);
-            // Noise
-            for(let i=0; i<300; i++) {
-                ctx.clearRect(Math.random()*512, Math.random()*256, 5, 5);
+
+            // Transparent base（透明底，污渍透出纸币底纹）
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Main dirt stains：灰褐色系半透明圆斑（油渍/指纹/渗透感）
+            for (let i = 0; i < 120; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const r = 10 + Math.random() * 40;
+                const alpha = 0.15 + Math.random() * 0.25;
+                ctx.fillStyle = `rgba(80, 60, 40, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
             }
+
+            // Fine grain noise：少量颗粒噪点
+            for (let i = 0; i < 800; i++) {
+                ctx.fillStyle = 'rgba(40, 30, 20, 0.08)';
+                ctx.fillRect(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    1,
+                    1
+                );
+            }
+
             const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
             return { texture, canvas, ctx };
         }
 
+        const DIRT_W = 512, DIRT_H = 256;
+        const STAIN_MARGIN = 0;
+
+        // ---------- 涂层位置（只控制上下，与贴图互不干扰）----------
+        const COATING_VERTICAL_INSET = 0.01;   // 涂层上下留白，贴画可更靠近钞票上下边
+
+        // ---------- 贴图位置（只控制左右与上下，与涂层互不干扰）----------
+        const TEXTURE_HORIZONTAL_INSET = 0.05;  // 左右各收 5%，红框与钞票白边对齐
+        const TEXTURE_VERTICAL_INSET = 0.05;    // 上下各收 5%（约 +3% 校准），红框与钞票白边对齐
+
+        const STAIN_SCALE_MIN = 0.7, STAIN_SCALE_MAX = 1.3;
+        const STAIN_TARGET_W_MIN = DIRT_W * 0.18;
+        const STAIN_TARGET_W_MAX = DIRT_W * 0.35;
+        const STAIN_ALPHA_MIN = 0.85;
+        const STAIN_ALPHA_MAX = 1.0;
+        const BASE_DIRT_ALPHA = 0.92;
+        const ENABLE_STAIN_CONTRAST_BOOST = true;
+        const EASY_MODE_PROB = 0.4;
+        const EASY_COUNT_MIN = 3, EASY_COUNT_MAX = 5;
+        const MIXED_COUNT_MIN = 4, MIXED_COUNT_MAX = 6;
+
+        function getStainFileNum(file) {
+            const n = parseInt(String(file).replace(/\D/g, ''), 10);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function drawStainImage(ctx, img, cx, cy, angleRad, scale) {
+            const dw = img.width * scale;
+            const dh = img.height * scale;
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angleRad);
+            ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+            ctx.restore();
+        }
+
+        function createStainDirtLayers(selectedStains) {
+            const ordCanvas = document.createElement('canvas');
+            ordCanvas.width = DIRT_W;
+            ordCanvas.height = DIRT_H;
+            const ordCtx = ordCanvas.getContext('2d');
+            ordCtx.clearRect(0, 0, DIRT_W, DIRT_H);
+            const oilCanvas = document.createElement('canvas');
+            oilCanvas.width = DIRT_W;
+            oilCanvas.height = DIRT_H;
+            const oilCtx = oilCanvas.getContext('2d');
+            oilCtx.clearRect(0, 0, DIRT_W, DIRT_H);
+
+            // 涂层：只由 COATING_VERTICAL_INSET 决定，控制上下位置与高度
+            const coatingTop = Math.floor(DIRT_H * COATING_VERTICAL_INSET);
+            const coatingBottom = Math.floor(DIRT_H * (1 - COATING_VERTICAL_INSET));
+            const coatingHeight = coatingBottom - coatingTop;
+
+            // 贴图：左右由 TEXTURE_HORIZONTAL_INSET，上下由 TEXTURE_VERTICAL_INSET（在涂层带内收）
+            const textureLeft = Math.floor(DIRT_W * TEXTURE_HORIZONTAL_INSET);
+            const textureRight = Math.floor(DIRT_W * (1 - TEXTURE_HORIZONTAL_INSET));
+            const textureWidth = textureRight - textureLeft;
+            const textureTop = coatingTop + Math.floor(coatingHeight * TEXTURE_VERTICAL_INSET);
+            const textureHeight = coatingHeight - 2 * Math.floor(coatingHeight * TEXTURE_VERTICAL_INSET);
+            const textureBottom = textureTop + textureHeight;
+
+            // 强制裁剪：污渍只允许画在此矩形内，超出部分被切掉
+            ordCtx.save();
+            ordCtx.rect(textureLeft, textureTop, textureWidth, textureHeight);
+            ordCtx.clip();
+            oilCtx.save();
+            oilCtx.rect(textureLeft, textureTop, textureWidth, textureHeight);
+            oilCtx.clip();
+
+            // 仅贴画：无涂层，1～5 块，在钞票上尽量均匀分布
+            const allStains = (stainConfig && stainConfig.stains ? stainConfig.stains : []).filter(s => stainImages[s.file]);
+            const ERASER_ONLY_FILES = [1, 2, 3, 4, 16, 17, 18, 21];
+            const pool = allStains.length > 0 ? allStains : Array.from({ length: 22 }, (_, i) => ({
+                file: (i + 1) + '.png',
+                eraserOnly: ERASER_ONLY_FILES.includes(i + 1)
+            })).filter(s => stainImages[s.file]);
+            pool.forEach(s => {
+                if (s.eraserOnly === undefined) s.eraserOnly = ERASER_ONLY_FILES.includes(getStainFileNum(s.file) || 0);
+            });
+            const n = Math.min(5, Math.max(1, 1 + Math.floor(Math.random() * 5)), pool.length);
+            const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+            const list = shuffled.slice(0, n);
+
+            const textureArea = textureWidth * textureHeight;
+            const TARGET_COVERAGE = 0.52;
+            const targetArea = textureArea * TARGET_COVERAGE;
+            const sizeTiers = [
+                { min: 0.5, max: 0.72 },
+                { min: 0.88, max: 1.12 },
+                { min: 1.15, max: 1.5 }
+            ];
+
+            const stainsData = [];
+            for (let i = 0; i < list.length; i++) {
+                const s = list[i];
+                const img = stainImages[s.file];
+                if (!img || !img.width) continue;
+                const tier = sizeTiers[Math.floor(Math.random() * sizeTiers.length)];
+                const tierMult = tier.min + Math.random() * (tier.max - tier.min);
+                const baseTargetW = STAIN_TARGET_W_MIN + Math.random() * (STAIN_TARGET_W_MAX - STAIN_TARGET_W_MIN);
+                const jitter = 0.9 + Math.random() * 0.2;
+                let scale = (baseTargetW / img.width) * jitter * tierMult;
+                const drawW = img.width * scale;
+                const drawH = img.height * scale;
+                stainsData.push({ s, img, scale, drawW, drawH });
+            }
+
+            let totalArea = stainsData.reduce((sum, d) => sum + d.drawW * d.drawH, 0);
+            if (totalArea < targetArea && totalArea > 0) {
+                const factor = Math.min(1.8, Math.sqrt(targetArea / totalArea));
+                stainsData.forEach(d => {
+                    d.scale *= factor;
+                    d.drawW = d.img.width * d.scale;
+                    d.drawH = d.img.height * d.scale;
+                });
+            }
+
+            const cols = Math.ceil(Math.sqrt(stainsData.length));
+            const rows = Math.ceil(stainsData.length / cols);
+            const cellW = textureWidth / cols;
+            const cellH = textureHeight / rows;
+
+            for (let i = 0; i < stainsData.length; i++) {
+                const d = stainsData[i];
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const angleRad = Math.random() * Math.PI * 2;
+                const radius = Math.sqrt(Math.pow(d.drawW / 2, 2) + Math.pow(d.drawH / 2, 2));
+                const cellLeft = textureLeft + col * cellW;
+                const cellTop = textureTop + row * cellH;
+                const cellRight = cellLeft + cellW;
+                const cellBottom = cellTop + cellH;
+                const safeMinX = cellLeft + radius;
+                const safeMaxX = cellRight - radius;
+                const safeMinY = cellTop + radius;
+                const safeMaxY = cellBottom - radius;
+                const cx = safeMaxX > safeMinX ? safeMinX + Math.random() * (safeMaxX - safeMinX) : (cellLeft + cellRight) / 2;
+                const cy = safeMaxY > safeMinY ? safeMinY + Math.random() * (safeMaxY - safeMinY) : (cellTop + cellBottom) / 2;
+                const ctx = d.s.eraserOnly ? ordCtx : oilCtx;
+                ctx.globalAlpha = STAIN_ALPHA_MIN + Math.random() * (STAIN_ALPHA_MAX - STAIN_ALPHA_MIN);
+                drawStainImage(ctx, d.img, cx, cy, angleRad, d.scale);
+            }
+            ordCtx.restore();
+            oilCtx.restore();
+            ordCtx.globalAlpha = 1;
+            oilCtx.globalAlpha = 1;
+
+            const toTex = c => {
+                const t = new THREE.CanvasTexture(c);
+                t.minFilter = THREE.LinearFilter;
+                t.magFilter = THREE.LinearFilter;
+                return t;
+            };
+            const ordinaryTexture = toTex(ordCanvas);
+            const oilTexture = toTex(oilCanvas);
+            ordinaryTexture.needsUpdate = true;
+            oilTexture.needsUpdate = true;
+            const hasOilStains = list.some(s => !s.eraserOnly);
+            return {
+                ordinaryTexture, ordinaryCanvas: ordCanvas, ordinaryCtx: ordCtx,
+                oilTexture, oilCanvas: oilCanvas, oilCtx: oilCtx,
+                hasOilStains
+            };
+        }
+
         class Bill {
-            constructor(x, y, z) {
+            constructor(x, y, z, index = 0, selectedStains = null) {
                 this.isDirty = true;
                 this.value = 100;
-                this.baseY = y;
-                
-                this.billTexture = createBillTexture();
-                const dirtData = createDirtTexture();
-                this.dirtTexture = dirtData.texture;
-                this.dirtCanvas = dirtData.canvas;
-                this.dirtCtx = dirtData.ctx;
-                
-                const geometry = new THREE.PlaneGeometry(0.6, 0.3);
-                
+                this.usesGLB = !!preloadedBillModel;
+                this.isFake = Math.random() < getFakeProbability();
+                this.retainedFake = false;
+
+                const layers = createStainDirtLayers(selectedStains);
+                this.ordinaryTexture = layers.ordinaryTexture;
+                this.ordinaryCanvas = layers.ordinaryCanvas;
+                this.ordinaryCtx = layers.ordinaryCtx;
+                this.oilTexture = layers.oilTexture;
+                this.oilCanvas = layers.oilCanvas;
+                this.oilCtx = layers.oilCtx;
+                this.hasOilStains = layers.hasOilStains === true;
+
+                const billW = 0.72, billH = 0.36;
+                const geometry = new THREE.PlaneGeometry(billW, billH);
+
                 this.group = new THREE.Group();
-                this.group.position.set(x, y, z);
-                this.group.rotation.set(-Math.PI / 2, Math.random() * Math.PI * 2, 0);
-                
-                // Bottom: Green Bill
-                const billMat = new THREE.MeshStandardMaterial({ map: this.billTexture });
-                this.billMesh = new THREE.Mesh(geometry, billMat);
-                this.group.add(this.billMesh);
-                
-                // Top: Dirt Layer
-                const dirtMat = new THREE.MeshBasicMaterial({ 
-                    map: this.dirtTexture, 
-                    transparent: true, 
-                    opacity: 1.0 
-                });
-                this.dirtMesh = new THREE.Mesh(geometry, dirtMat);
-                this.dirtMesh.position.z = 0.005; // Slightly above (relative to plane Z)
-                this.group.add(this.dirtMesh);
-                
-                // Link for raycasting
-                this.group.userData.billInstance = this;
-                this.dirtMesh.userData.billInstance = this;
-                this.billMesh.userData.billInstance = this;
-                
-                // Crucial for raycaster to find children
-                this.mesh = this.group;
-            }
-            
-            erase(uv, brushSize) {
-                const ctx = this.dirtCtx;
-                const x = uv.x * this.dirtCanvas.width;
-                const y = (1 - uv.y) * this.dirtCanvas.height; // UV Y is inverted
-                
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, brushSize, 0, Math.PI * 2);
-                ctx.fill();
-                
-                this.dirtTexture.needsUpdate = true;
-            }
-            
-            isClean() {
-                // Check every 50th pixel to save performance
-                const w = this.dirtCanvas.width;
-                const h = this.dirtCanvas.height;
-                const imgData = this.dirtCtx.getImageData(0, 0, w, h);
-                let opaque = 0;
-                let totalChecked = 0;
-                
-                for (let i = 3; i < imgData.data.length; i += 4 * 50) {
-                    totalChecked++;
-                    if (imgData.data[i] > 20) opaque++;
+                this.group.rotation.set(-Math.PI / 2, 0, Math.random() * 0.5 - 0.25);
+
+                const fixedY = tableSurfaceY + (index * 0.0005);
+                this.baseY = fixedY;
+                const finalX = x !== undefined ? x : (Math.random() - 0.5) * 4;
+                const finalZ = z !== undefined ? z : (Math.random() - 0.5) * 2.5;
+                this.group.position.set(finalX, fixedY, finalZ);
+                this.group.scale.set(1, 1, 1);
+
+                if (this.usesGLB) {
+                    const clone = preloadedBillModel.clone();
+                    clone.rotation.x = 0;
+                    clone.rotation.y = 0;
+                    clone.rotation.z = 0;
+                    const box = new THREE.Box3().setFromObject(clone);
+                    const size = new THREE.Vector3();
+                    box.getSize(size);
+                    const s = Math.min(billW / Math.max(size.x, 0.001), billH / Math.max(size.z, 0.001));
+                    clone.scale.set(s, s, s);
+                    clone.traverse((child) => {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            child.userData.billInstance = this;
+                        }
+                    });
+                    this.group.add(clone);
+                    this.billMesh = clone;
+                } else {
+                    this.billTexture = createBillTexture();
+                    const billMat = new THREE.MeshStandardMaterial({ map: this.billTexture, roughness: 0.9, metalness: 0 });
+                    this.billMesh = new THREE.Mesh(geometry, billMat);
+                    this.group.add(this.billMesh);
+                    this.billMesh.userData.billInstance = this;
                 }
-                return (opaque / totalChecked) < 0.05; // 95% clean
+                if (this.usesGLB && this.billMesh) {
+                    this.billMesh.traverse((child) => {
+                        if (child.isMesh) {
+                            const mats = Array.isArray(child.material) ? child.material : [child.material];
+                            mats.forEach(m => {
+                                if (m) { m.roughness = Math.max(0.8, m.roughness ?? 0.5); m.metalness = 0; m.needsUpdate = true; }
+                            });
+                        }
+                    });
+                }
+
+                const dirtMat = tex => new THREE.MeshBasicMaterial({
+                    map: tex, transparent: true, opacity: 1,
+                    color: 0xaa8866,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+                this.ordinaryDirtMesh = new THREE.Mesh(geometry, dirtMat(this.ordinaryTexture));
+                this.oilDirtMesh = new THREE.Mesh(geometry.clone(), dirtMat(this.oilTexture));
+                // group 有 rotation.x=-PI/2，+Z 使污渍在钞票上方；略大 z 避免与钞票 mesh 深度冲突（Z-Fighting）
+                this.ordinaryDirtMesh.position.set(0, 0, 0.009);
+                this.ordinaryDirtMesh.renderOrder = 10;
+                this.oilDirtMesh.position.set(0, 0, 0.01);
+                this.oilDirtMesh.renderOrder = 11;
+                this.group.add(this.ordinaryDirtMesh);
+                this.group.add(this.oilDirtMesh);
+
+                this.totalDirtPixels = 0;
+                this.sampleTotalDirtPixels();
+
+                this.group.userData.billInstance = this;
+                this.ordinaryDirtMesh.userData.billInstance = this;
+                this.oilDirtMesh.userData.billInstance = this;
+                this.mesh = this.group;
+
+                this.createSecurityStrip();
+            }
+
+            createSecurityStrip() {
+                if (this.isFake) {
+                    this.fluorescentStrip = null;
+                    return;
+                }
+                const cw = 512, ch = 256;
+                const canvas = document.createElement('canvas');
+                canvas.width = cw;
+                canvas.height = ch;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, cw, ch);
+                ctx.font = 'bold 140px Arial Black, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.fillText('GENUINE', cw / 2, ch / 2);
+                const tex = new THREE.CanvasTexture(canvas);
+                tex.needsUpdate = true;
+                const geo = new THREE.PlaneGeometry(0.58, 0.28);
+                const mat = new THREE.MeshBasicMaterial({
+                    map: tex,
+                    transparent: true,
+                    opacity: 0,
+                    color: 0x00ff88,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+                const strip = new THREE.Mesh(geo, mat);
+                strip.position.set(0, 0, 0.015);
+                strip.renderOrder = 25;
+                strip.raycast = function () {};
+                this.group.add(strip);
+                this.fluorescentStrip = strip;
+            }
+
+            eraseOne(ctx, tex, uv, radius) {
+                const x = uv.x * this.ordinaryCanvas.width;
+                const y = (1 - uv.y) * this.ordinaryCanvas.height;
+                ctx.globalCompositeOperation = 'destination-out';
+                const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                g.addColorStop(0, 'rgba(0,0,0,1)');
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = g;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+                tex.needsUpdate = true;
+            }
+
+            hasOilAt(uv, radius) {
+                const px = Math.floor(uv.x * this.oilCanvas.width);
+                const py = Math.floor((1 - uv.y) * this.oilCanvas.height);
+                const r = Math.ceil(radius);
+                const x0 = Math.max(0, px - r), x1 = Math.min(this.oilCanvas.width, px + r + 1);
+                const y0 = Math.max(0, py - r), y1 = Math.min(this.oilCanvas.height, py + r + 1);
+                const id = this.oilCtx.getImageData(x0, y0, x1 - x0, y1 - y0);
+                for (let i = 3; i < id.data.length; i += 4) {
+                    if (id.data[i] > 25) return true;
+                }
+                return false;
+            }
+
+            hasOrdinaryAt(uv, radius) {
+                const px = Math.floor(uv.x * this.ordinaryCanvas.width);
+                const py = Math.floor((1 - uv.y) * this.ordinaryCanvas.height);
+                const r = Math.ceil(radius);
+                const x0 = Math.max(0, px - r), x1 = Math.min(this.ordinaryCanvas.width, px + r + 1);
+                const y0 = Math.max(0, py - r), y1 = Math.min(this.ordinaryCanvas.height, py + r + 1);
+                const id = this.ordinaryCtx.getImageData(x0, y0, x1 - x0, y1 - y0);
+                for (let i = 3; i < id.data.length; i += 4) {
+                    if (id.data[i] > 25) return true;
+                }
+                return false;
+            }
+
+            erase(uv, brushSize, withDetergent) {
+                const effOrd = brushSize;
+                const effOil = brushSize * 1.2;
+                if (withDetergent) {
+                    this.eraseOne(this.oilCtx, this.oilTexture, uv, effOil);
+                    if (this.hasOrdinaryAt(uv, brushSize * 0.8)) {
+                        showNeedEraserToast();
+                        playWrongToolSound();
+                    } else {
+                        playSpraySound();
+                        playWetScrubSound();
+                    }
+                } else {
+                    this.eraseOne(this.ordinaryCtx, this.ordinaryTexture, uv, effOrd);
+                    if (this.hasOilAt(uv, brushSize * 0.8)) {
+                        showNeedDetergentToast();
+                        playWrongToolSound();
+                    } else {
+                        playPaperScrubSound();
+                    }
+                }
+            }
+            
+            countDirtPixels(ctx, w, h) {
+                const id = ctx.getImageData(0, 0, w, h);
+                let n = 0;
+                for (let i = 3; i < id.data.length; i += 4) {
+                    if (id.data[i] > 0) n++;
+                }
+                return n;
+            }
+
+            sampleTotalDirtPixels() {
+                const w = this.ordinaryCanvas.width, h = this.ordinaryCanvas.height;
+                this.totalDirtPixels = this.countDirtPixels(this.ordinaryCtx, w, h) + this.countDirtPixels(this.oilCtx, w, h);
+            }
+
+
+            getRemainingDirtPixels() {
+                const w = this.ordinaryCanvas.width, h = this.ordinaryCanvas.height;
+                return this.countDirtPixels(this.ordinaryCtx, w, h) + this.countDirtPixels(this.oilCtx, w, h);
+            }
+
+            isClean() {
+                if (this.totalDirtPixels === 0) return true;
+                const remaining = this.getRemainingDirtPixels();
+                return remaining <= Math.ceil(this.totalDirtPixels * 0.40);
+            }
+
+            getCleanPercent() {
+                if (this.totalDirtPixels === 0) return 1;
+                const remaining = this.getRemainingDirtPixels();
+                return Math.max(0, 1 - remaining / this.totalDirtPixels);
+            }
+
+            getDisplayCleanPercent() {
+                const actual = this.getCleanPercent();
+                return Math.min(1, actual / 0.60);
             }
             
             dispose() {
-                this.billTexture.dispose();
-                this.dirtTexture.dispose();
-                this.billMesh.geometry.dispose();
-                this.billMesh.material.dispose();
-                this.dirtMesh.geometry.dispose();
-                this.dirtMesh.material.dispose();
+                if (this.usesGLB && this.billMesh) {
+                    this.billMesh.traverse((child) => {
+                        if (child.isMesh) {
+                            if (child.geometry) child.geometry.dispose();
+                            if (child.material) {
+                                const m = child.material;
+                                if (Array.isArray(m)) m.forEach(mat => mat.dispose());
+                                else m.dispose();
+                            }
+                        }
+                    });
+                } else if (this.billTexture) {
+                    this.billTexture.dispose();
+                    if (this.billMesh.geometry) this.billMesh.geometry.dispose();
+                    if (this.billMesh.material) this.billMesh.material.dispose();
+                }
+                this.ordinaryTexture.dispose();
+                this.oilTexture.dispose();
+                this.ordinaryDirtMesh.geometry.dispose();
+                this.ordinaryDirtMesh.material.dispose();
+                this.oilDirtMesh.geometry.dispose();
+                this.oilDirtMesh.material.dispose();
+                if (this.fluorescentStrip) {
+                    this.fluorescentStrip.geometry.dispose();
+                    this.fluorescentStrip.material.dispose();
+                }
             }
         }
 
         // ===== Spawning =====
-        function spawnBillFromBox() {
-            if (boxMoneyCount <= 0) return;
-            const randomX = (Math.random() - 0.5) * 1.5;
-            const randomZ = (Math.random() - 0.5) * 1.0;
-            const randomY = 1.055 + Math.random() * 0.01;
-            
-            const bill = new Bill(randomX, randomY, randomZ);
-            bills.push(bill);
-            scene.add(bill.mesh);
-            
-            boxMoneyCount--;
-            updateUI();
+        async function spawnBillFromBox() {
+            if (trayBillSpawned) return;
+            trayBillSpawned = true;
+            const trayCenterX = -0.12, trayCenterZ = 0.08;  // 盘子里，略向右
+            const trayRange = 0.18;
+            const trayX = trayCenterX + (Math.random() - 0.5) * trayRange;
+            const trayZ = trayCenterZ + (Math.random() - 0.5) * trayRange;
+
+            let selectedStains = [];
+            if (stainConfig && stainConfig.stains && stainConfig.stains.length > 0) {
+                const isEasyMode = Math.random() < EASY_MODE_PROB;
+                const easyPool = stainConfig.stains.filter(s => {
+                    const num = getStainFileNum(s.file);
+                    return num >= 1 && num <= 10;
+                });
+                const fullPool = stainConfig.stains;
+                let pool, countMin, countMax;
+                if (isEasyMode && easyPool.length > 0) {
+                    pool = easyPool;
+                    countMin = EASY_COUNT_MIN;
+                    countMax = EASY_COUNT_MAX;
+                } else {
+                    pool = fullPool;
+                    countMin = MIXED_COUNT_MIN;
+                    countMax = MIXED_COUNT_MAX;
+                }
+                const n = countMin + Math.floor(Math.random() * (countMax - countMin + 1));
+                const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+                selectedStains = shuffled.slice(0, Math.min(n, shuffled.length));
+                await ensureStainImagesLoaded(selectedStains.map(s => s.file));
+            }
+
+            requestAnimationFrame(() => {
+                const bill = new Bill(trayX, undefined, trayZ, bills.length, selectedStains);
+                const trayTopY = tableSurfaceY + 0.03;  // 略低一点，落在盘子里
+                bill.group.position.y = trayTopY;
+                bill.baseY = trayTopY;
+                bills.push(bill);
+                scene.add(bill.group);
+            });
         }
 
         // ===== Interaction Logic (FIXED) =====
+        function setGroupEmissive(group, hex, intensity) {
+            if (!group) return;
+            group.traverse((child) => {
+                if (child.isMesh) setEmissive(child, hex, intensity);
+            });
+        }
+
+        function updateBillsUVReveal(lightWorldPos) {
+            const forceRevealBill = pendingUVCheck ? pendingUVCheck.bill : null;
+            const setOpacity = (bill, opacity, forceShow) => {
+                if (bill.fluorescentStrip && bill.fluorescentStrip.material) {
+                    const t = forceShow ? 1 : Math.max(0, Math.min(1, opacity));
+                    bill.fluorescentStrip.material.opacity = t > 0.02 ? Math.min(1, 0.65 + t * 0.4) : t * 20;
+                }
+            };
+            if (!lightWorldPos || !lampPurpleOn) {
+                bills.forEach(b => setOpacity(b, 0, false));
+                stackBills.forEach(({ bill }) => setOpacity(bill, 0, false));
+                return;
+            }
+            bills.forEach(bill => {
+                if (!bill.fluorescentStrip) return;
+                const forceShow = bill === forceRevealBill;
+                if (forceShow) { setOpacity(bill, 1, true); return; }
+                bill.fluorescentStrip.getWorldPosition(stripWorldPos);
+                const d = lightWorldPos.distanceTo(stripWorldPos);
+                setOpacity(bill, d < UV_REVEAL_RADIUS ? 1 - d / UV_REVEAL_RADIUS : 0, false);
+            });
+            stackBills.forEach(({ bill }) => {
+                if (!bill.fluorescentStrip) return;
+                const forceShow = bill === forceRevealBill;
+                if (forceShow) { setOpacity(bill, 1, true); return; }
+                bill.fluorescentStrip.getWorldPosition(stripWorldPos);
+                const d = lightWorldPos.distanceTo(stripWorldPos);
+                setOpacity(bill, d < UV_REVEAL_RADIUS ? 1 - d / UV_REVEAL_RADIUS : 0, false);
+            });
+        }
+
         function updateInteraction() {
             raycaster.setFromCamera(mouse, camera);
             
             if (viewState === 'OVERVIEW') {
-                // Only hover table
-                const intersects = raycaster.intersectObjects([tableTop], false);
-                if (intersects.length > 0) {
-                    tableTop.material.emissive.setHex(0x00ff00);
-                    tableTop.material.emissiveIntensity = 0.3;
-                    document.body.style.cursor = 'pointer';
-                } else {
-                    tableTop.material.emissive.setHex(0x000000);
-                    tableTop.material.emissiveIntensity = 0;
-                    document.body.style.cursor = 'default';
+                let pointer = false;
+                if (tableMeshes && tableMeshes.length > 0) {
+                    const intersects = raycaster.intersectObjects(tableMeshes, false);
+                    if (intersects.length > 0) {
+                        tableMeshes.forEach(mesh => { setEmissive(mesh, 0x00ff00, 0.3); });
+                        pointer = true;
+                    } else {
+                        tableMeshes.forEach(mesh => { setEmissive(mesh, 0x000000, 0); });
+                    }
+                } else if (tableTop && tableTop.material) {
+                    const intersects = raycaster.intersectObjects([tableTop], false);
+                    if (intersects.length > 0) {
+                        setEmissive(tableTop, 0x00ff00, 0.3);
+                        pointer = true;
+                    } else {
+                        setEmissive(tableTop, 0x000000, 0);
+                    }
                 }
+                const roomTargets = [briefcaseModel, oldSafeModel, frontWoodenBoxModel].filter(Boolean);
+                if (roomTargets.length > 0) {
+                    const roomHits = raycaster.intersectObjects(roomTargets, true);
+                    const ud = roomHits.length > 0 ? roomHits[0].object.userData : null;
+                    if (briefcaseModel) setGroupEmissive(briefcaseModel, ud && ud.isBriefcase ? 0x00aa88 : 0x000000, ud && ud.isBriefcase ? 0.25 : 0);
+                    if (oldSafeModel) setGroupEmissive(oldSafeModel, ud && ud.isOldSafe ? 0x00aa88 : 0x000000, ud && ud.isOldSafe ? 0.25 : 0);
+                    if (frontWoodenBoxModel) setGroupEmissive(frontWoodenBoxModel, ud && ud.isFrontWoodenBox ? 0x00aa88 : 0x000000, ud && ud.isFrontWoodenBox ? 0.25 : 0);
+                    if (ud && (ud.isBriefcase || ud.isOldSafe || ud.isFrontWoodenBox)) pointer = true;
+                }
+                setCursorStyle(pointer ? 'pointer' : 'default');
+            } else if (viewState === 'FOCUS') {
+                const lampHits = deskLampModel ? raycaster.intersectObjects([deskLampModel], true) : [];
+                const bagHits = cashBoxOnTable ? raycaster.intersectObjects([cashBoxOnTable], true) : [];
+                if (lampHits.length > 0) {
+                    setGroupEmissive(deskLampModel, lampPurpleOn ? 0x8800ff : 0xffdd88, lampPurpleOn ? 0.5 : 0.45);
+                    setCursorStyle('pointer');
+                } else if (deskLampModel) {
+                    if (!lampPurpleOn) setGroupEmissive(deskLampModel, 0x000000, 0);
+                    else setGroupEmissive(deskLampModel, 0x8800ff, 0.35);
+                }
+                if (bagHits.length > 0) {
+                    setGroupEmissive(cashBoxOnTable, 0x00ff88, 0.35);
+                    setCursorStyle('pointer');
+                } else if (cashBoxOnTable) setGroupEmissive(cashBoxOnTable, 0x000000, 0);
+                if (lampHits.length === 0 && bagHits.length === 0) updateCursor();
             }
         }
 
@@ -747,13 +2490,15 @@
             const billInstance = intersection.object.userData.billInstance;
             if (!billInstance) return;
             
-            // Map UV to scratch
+            const before = billInstance.getRemainingDirtPixels();
             const brushSize = toolRadius[currentTool];
-            billInstance.erase(intersection.uv, brushSize);
+            billInstance.erase(intersection.uv, brushSize, useDetergent);
+            const after = billInstance.getRemainingDirtPixels();
+            if (after < before) spawnParticles(intersection.point, 12, 'dust');
             
             if (billInstance.isDirty && billInstance.isClean()) {
                 billInstance.isDirty = false;
-                completeBillCleaning(billInstance);
+                onBillCleaned(billInstance);
             }
         }
 
@@ -761,85 +2506,343 @@
             bills.forEach(bill => {
                 if (bill.isDirty && bill.isClean()) {
                     bill.isDirty = false;
-                    completeBillCleaning(bill);
+                    onBillCleaned(bill);
                 }
             });
         }
 
-        function completeBillCleaning(bill) {
-            const startY = bill.group.position.y;
-            
-            // Fly animation
-            new TWEEN.Tween(bill.group.position)
-                .to({ y: startY + 1.5 }, 800)
-                .start();
-                
-            new TWEEN.Tween(bill.group.scale)
-                .to({ x: 0, y: 0, z: 0 }, 800)
-                .onComplete(() => {
-                    scene.remove(bill.group);
-                    bills = bills.filter(b => b !== bill);
-                    bill.dispose();
-                })
-                .start();
+        function onBillCleaned(bill) {
+            const billCenter = bill.group.position.clone();
+            spawnParticles(billCenter, 30, 'golden');
+            showUVCheckPrompt(bill);
+        }
 
+        function showUVCheckPrompt(bill) {
+            const panel = document.getElementById('uvCheckPanel');
+            const btn = document.getElementById('uvCheckBtn');
+            if (!panel || !btn) return;
+            panel.dataset.billId = bills.indexOf(bill);
+            setTimeout(() => {
+                panel.classList.add('show');
+            }, 350);
+            btn.onclick = () => {
+                panel.classList.remove('show');
+                startUVCheck(bill);
+            };
+        }
+
+        function turnOffUVLamp() {
+            if (lampPurpleAutoOffTimer) {
+                clearTimeout(lampPurpleAutoOffTimer);
+                lampPurpleAutoOffTimer = null;
+            }
+            lampPurpleOn = false;
+            updateBillsUVReveal(null);
+            if (deskLampModel) setGroupEmissive(deskLampModel, 0x000000, 0);
+            if (lampPurpleLight && lampPurpleLight.parent) lampPurpleLight.parent.remove(lampPurpleLight);
+            lampPurpleLight = null;
+        }
+
+        function startUVCheck(bill) {
+            if (!lampPurpleLight) {
+                lampPurpleLight = new THREE.PointLight(0x8800ff, 0.7, 4);
+                lampPurpleLight.position.set(0, tableSurfaceY + 0.5, 0);
+                scene.add(lampPurpleLight);
+            }
+            lampPurpleOn = true;
+            pendingUVCheck = { bill, at: performance.now() };
+            if (lampPurpleAutoOffTimer) clearTimeout(lampPurpleAutoOffTimer);
+            lampPurpleAutoOffTimer = setTimeout(turnOffUVLamp, UV_LAMP_AUTO_OFF_MS);
+        }
+
+        function resolveUVCheck() {
+            if (!pendingUVCheck) return;
+            const { bill } = pendingUVCheck;
+            pendingUVCheck = null;
+            if (bill.isFake) {
+                showFakeBillChoice(bill);
+            } else {
+                showRealBillChoice(bill);
+            }
+        }
+
+        function checkWithUVLight(bill) {
+            if (bill.isFake) {
+                showFakeBillChoice(bill);
+            } else {
+                showRealBillChoice(bill);
+            }
+        }
+
+        function showRealBillToast() {
+            const el = document.getElementById('uvResultToast');
+            if (el) {
+                el.textContent = 'Real! Fluorescent strip visible';
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 1200);
+            }
+        }
+
+        function showRealBillChoice(bill) {
+            const panel = document.getElementById('realBillPanel');
+            const btn = document.getElementById('realBillCollectBtn');
+            if (!panel || !btn) {
+                showRealBillToast();
+                completeBillCleaning(bill);
+                return;
+            }
+            panel.classList.add('show');
+            const billIndex = bills.indexOf(bill);
+            panel.dataset.billId = billIndex >= 0 ? String(billIndex) : '';
+            btn.onclick = () => {
+                panel.classList.remove('show');
+                const idx = parseInt(panel.dataset.billId, 10);
+                const b = (typeof idx === 'number' && !isNaN(idx) && bills[idx]) ? bills[idx] : bill;
+                if (b && b.group) completeBillCleaning(b);
+            };
+        }
+
+        function showFakeBillChoice(bill) {
+            const panel = document.getElementById('fakeBillPanel');
+            const destroyBtn = document.getElementById('fakeBillDestroyBtn');
+            const retainBtn = document.getElementById('fakeBillRetainBtn');
+            if (!panel || !destroyBtn || !retainBtn) return;
+            panel.classList.add('show');
+            destroyBtn.onclick = () => {
+                panel.classList.remove('show');
+                destroyFakeBill(bill);
+            };
+            retainBtn.onclick = () => {
+                panel.classList.remove('show');
+                retainFakeBill(bill);
+            };
+        }
+
+        function destroyFakeBill(bill) {
+            scene.remove(bill.group);
+            bills = bills.filter(b => b !== bill);
+            bill.dispose();
+            trayBillSpawned = false;
+            if (typeof playWrongToolSound === 'function') playWrongToolSound();
+        }
+
+        function retainFakeBill(bill) {
+            totalScore = Math.max(0, totalScore - 100);
+            updateUI();
+            scene.remove(bill.group);
+            bills = bills.filter(b => b !== bill);
+            bill.dispose();
+            trayBillSpawned = false;
+            if (typeof playWrongToolSound === 'function') playWrongToolSound();
+        }
+
+        function completeBillCleaning(bill) {
+            if (!bill || !bill.group) return;
+            if (bill.isFake) {
+                totalScore = Math.max(0, totalScore - 200);
+                updateUI();
+                return;
+            }
+            const billCenter = bill.group.position.clone();
+            scene.remove(bill.group);
+            bills = bills.filter(b => b !== bill);
+            bill.dispose();
+            trayBillSpawned = false;
+
+            spawnParticles(billCenter, 50, 'golden');
             totalScore += 100;
             cleanedCount++;
             updateUI();
+            animateScoreRoll(totalScore - 100, totalScore);
+            flyCoinsToScore(8);
             showCollectFeedback(100);
-            playCollectSound();
+            if (typeof playCollectSound === 'function') playCollectSound();
+        }
+
+        function doBrickAndStore() {
+            const n = STACK_BILLS_PER_BRICK;
+            const toRemove = stackBills.splice(0, n);
+            toRemove.forEach(({ group, bill }) => {
+                moneyStackGroup.remove(group);
+                bill.dispose();
+            });
+            stackBillCount -= n;
+
+            const brickW = 0.35, brickH = 0.08, brickD = 0.22;
+            const brickGeo = new THREE.BoxGeometry(brickW, brickH, brickD);
+            const brickMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.1, roughness: 0.9 });
+            const brick = new THREE.Mesh(brickGeo, brickMat);
+            brick.castShadow = true;
+            brick.position.set(STACK_BASE_X, tableSurfaceY + 0.002 + (n - 1) * BILL_STACK_THICKNESS + brickH / 2, STACK_BASE_Z);
+            scene.add(brick);
+
+            new TWEEN.Tween(brick.scale)
+                .to({ x: 1.08, y: 1.08, z: 1.08 }, 120)
+                .yoyo(true)
+                .repeat(1)
+                .easing(TWEEN.Easing.Quad.InOut)
+                .onComplete(() => {})
+                .start();
+
+            const safeTarget = oldSafeModel
+                ? { x: oldSafeModel.position.x - 0.15, y: oldSafeModel.position.y + 0.35, z: oldSafeModel.position.z + 0.2 }
+                : { x: 1.2, y: (safeMesh ? safeMesh.position.y : tableSurfaceY + 0.35) + 0.1, z: 0.22 };
+            new TWEEN.Tween(brick.position)
+                .to(safeTarget, 800)
+                .delay(280)
+                .easing(TWEEN.Easing.Back.In)
+                .onComplete(() => {
+                    scene.remove(brick);
+                    brickGeo.dispose();
+                    brickMat.dispose();
+                })
+                .start();
+        }
+
+        function animateScoreRoll(from, to) {
+            const el = document.getElementById('scoreAmount');
+            new TWEEN.Tween({ v: from })
+                .to({ v: to }, 700)
+                .easing(TWEEN.Easing.Quad.Out)
+                .onUpdate((o) => { el.textContent = '$' + Math.round(o.v); })
+                .onComplete(() => updateUI())
+                .start();
+        }
+
+        function flyCoinsToScore(count) {
+            const board = document.getElementById('score-board');
+            const rect = board.getBoundingClientRect();
+            const endX = rect.left + rect.width / 2;
+            const endY = rect.top + rect.height / 2;
+            const startX = window.innerWidth / 2;
+            const startY = window.innerHeight / 2;
+            for (let i = 0; i < count; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin-fly';
+                coin.style.left = startX + (Math.random() - 0.5) * 60 + 'px';
+                coin.style.top = startY + (Math.random() - 0.5) * 60 + 'px';
+                coin.style.transform = 'translate(-50%, -50%)';
+                document.body.appendChild(coin);
+                const jitterX = (Math.random() - 0.5) * 30;
+                const jitterY = (Math.random() - 0.5) * 30;
+                const delay = i * 45;
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        coin.style.transition = `left 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms, top 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms, opacity 0.3s ease ${delay + 400}ms`;
+                        coin.style.left = (endX + jitterX) + 'px';
+                        coin.style.top = (endY + jitterY) + 'px';
+                        coin.style.opacity = '0';
+                    });
+                });
+                setTimeout(() => {
+                    if (coin.parentNode) coin.parentNode.removeChild(coin);
+                }, delay + 650);
+            }
         }
 
         function updateUI() {
             document.getElementById('scoreAmount').textContent = '$' + totalScore;
             document.getElementById('cleanedCount').textContent = cleanedCount;
-            document.getElementById('currentMode').textContent = currentMode;
-            document.getElementById('currentTool').textContent = currentTool;
-            document.getElementById('boxMoneyCount').textContent = boxMoneyCount;
-            
-            const buyBtn = document.getElementById('buyBrushBtn');
-            if (ownedTools.includes('Brush')) {
-                buyBtn.textContent = 'Brush Owned';
-                buyBtn.classList.add('disabled');
-            } else if (totalScore >= toolPrices.Brush) {
-                buyBtn.classList.remove('disabled');
-            }
+            const eraserLbl = document.getElementById('eraserRangeLabel');
+            if (eraserLbl) eraserLbl.textContent = 'Eraser +20% Lv.' + eraserRangeLevel;
+            const eraserBuy = document.getElementById('buyEraserRangeBtn');
+            if (eraserBuy) { eraserBuy.textContent = '$1500'; eraserBuy.classList.toggle('disabled', totalScore < ERASER_RANGE_COST); }
+            const solventLbl = document.getElementById('solventRangeLabel');
+            if (solventLbl) solventLbl.textContent = 'Solvent +20% Lv.' + solventRangeLevel;
+            const solventBuy = document.getElementById('buySolventRangeBtn');
+            if (solventBuy) { solventBuy.textContent = '$2000'; solventBuy.classList.toggle('disabled', totalScore < SOLVENT_RANGE_COST); }
+            const fakeLbl = document.getElementById('fakeReduceLabel');
+            if (fakeLbl) fakeLbl.textContent = 'Guarantee -1% fake Lv.' + fakeReduceLevel;
+            const fakeBuy = document.getElementById('buyFakeReduceBtn');
+            if (fakeBuy) { fakeBuy.textContent = '$10000'; fakeBuy.classList.toggle('disabled', totalScore < FAKE_REDUCE_COST); }
         }
 
         function tweenToFocus() {
             if (viewState === 'FOCUS') return;
             viewState = 'FOCUS';
             
-            // Remove highlight
-            tableTop.material.emissive.setHex(0x000000);
-            document.body.style.cursor = 'default';
+            // Remove highlight (supports multi-material)
+            if (tableMeshes && tableMeshes.length > 0) {
+                tableMeshes.forEach(mesh => {
+                    setEmissive(mesh, 0x000000, 0);
+                });
+            } else if (tableTop && tableTop.material) {
+                setEmissive(tableTop, 0x000000, 0);
+            }
+            updateCursor();
 
-            new TWEEN.Tween(camera.position).to(CAMERA_STATES.FOCUS.position, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
+            new TWEEN.Tween(camera.position)
+                .to(CAMERA_STATES.FOCUS.position, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .start();
             
-            // Tween LookAt (simplified for stability)
-            const currentLook = new THREE.Vector3();
-            camera.getWorldDirection(currentLook);
-            const targetLook = new THREE.Vector3(0, 1, 0); // Looking at table center
+            const targetObj = { x: 0, y: 0, z: 0 };
+            new TWEEN.Tween(targetObj)
+                .to(CAMERA_STATES.FOCUS.target, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => {
+                    camera.lookAt(targetObj.x, targetObj.y, targetObj.z);
+                })
+                .start();
             
-            // We just move camera position mostly, and set lookAt in update
-            new TWEEN.Tween(workTableLight).to({ intensity: 3 }, 500).start();
+            new TWEEN.Tween(workTableLight).to({ intensity: 0.35 }, 500).start();
+            if (mainSpotLight) new TWEEN.Tween(mainSpotLight).to({ intensity: 38 }, 500).start();
             
             document.getElementById('backButton').classList.add('show');
-            document.getElementById('mode-tool-ui').style.display = 'none';
             currentMode = 'TOOL';
+            updateUI();
+        }
+
+        function tweenToModelFocus(key) {
+            const stateKey = 'FOCUS_' + key;
+            const state = CAMERA_STATES[stateKey];
+            if (!state) return;
+            if (viewState === stateKey) return;
+            viewState = stateKey;
+            if (briefcaseModel) setGroupEmissive(briefcaseModel, 0x000000, 0);
+            if (oldSafeModel) setGroupEmissive(oldSafeModel, 0x000000, 0);
+            if (frontWoodenBoxModel) setGroupEmissive(frontWoodenBoxModel, 0x000000, 0);
+            setCursorStyle('default');
+
+            const t = state.target;
+            new TWEEN.Tween(camera.position)
+                .to(state.position, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => { camera.lookAt(t.x, t.y, t.z); })
+                .start();
+
+            document.getElementById('backButton').classList.add('show');
+            currentMode = 'HAND';
             updateUI();
         }
 
         function returnToOverview() {
             if (viewState === 'OVERVIEW') return;
             viewState = 'OVERVIEW';
+            updateCursor();
             
-            new TWEEN.Tween(camera.position).to(CAMERA_STATES.OVERVIEW.position, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
+            new TWEEN.Tween(camera.position)
+                .to(CAMERA_STATES.OVERVIEW.position, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .start();
+            
+            const targetObj = { x: 0, y: 0, z: 0 };
+            new TWEEN.Tween(targetObj)
+                .to(CAMERA_STATES.OVERVIEW.target, 1500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => {
+                    camera.lookAt(targetObj.x, targetObj.y, targetObj.z);
+                })
+                .start();
+            
             new TWEEN.Tween(workTableLight).to({ intensity: 0 }, 500).start();
+            if (mainSpotLight) new TWEEN.Tween(mainSpotLight).to({ intensity: 95 }, 500).start();
             
             document.getElementById('backButton').classList.remove('show');
-            document.getElementById('mode-tool-ui').style.display = 'block';
             currentMode = 'HAND';
+            if (eraserModel) setGroupEmissive(eraserModel, 0x000000, 0);
+            if (sprayCleanerModel) setGroupEmissive(sprayCleanerModel, 0x000000, 0);
+            turnOffUVLamp();
             updateUI();
         }
         window.returnToGlobalView = returnToOverview;
@@ -851,14 +2854,61 @@
             setTimeout(() => feedback.classList.remove('show'), 500);
         }
         
-        window.buyBrush = function() {
-            if (ownedTools.includes('Brush')) return;
-            if (totalScore >= toolPrices.Brush) {
-                totalScore -= toolPrices.Brush;
-                ownedTools.push('Brush');
-                currentTool = 'Brush';
+        window.buyEraserRange = function() {
+            if (totalScore >= ERASER_RANGE_COST) {
+                totalScore -= ERASER_RANGE_COST;
+                eraserRangeLevel++;
+                applyToolRadiusUpgrades();
                 updateUI();
                 playCollectSound();
+            }
+        };
+        window.buySolventRange = function() {
+            if (totalScore >= SOLVENT_RANGE_COST) {
+                totalScore -= SOLVENT_RANGE_COST;
+                solventRangeLevel++;
+                applyToolRadiusUpgrades();
+                updateUI();
+                playCollectSound();
+            }
+        };
+        window.buyFakeReduce = function() {
+            if (totalScore >= FAKE_REDUCE_COST) {
+                totalScore -= FAKE_REDUCE_COST;
+                fakeReduceLevel++;
+                updateUI();
+                playCollectSound();
+            }
+        };
+
+        function showNeedDetergentToast() {
+            const el = document.getElementById('needDetergentToast');
+            if (!el) return;
+            el.classList.add('show');
+            clearTimeout(showNeedDetergentToast._tid);
+            showNeedDetergentToast._tid = setTimeout(() => el.classList.remove('show'), 1500);
+        }
+
+        function showNeedEraserToast() {
+            const el = document.getElementById('needEraserToast');
+            if (!el) return;
+            el.classList.add('show');
+            clearTimeout(showNeedEraserToast._tid);
+            showNeedEraserToast._tid = setTimeout(() => el.classList.remove('show'), 1500);
+        }
+
+        // 光标：32x32、描边图标、透明底，避免白块（部分浏览器对 SVG 光标会加白底）
+        const CURSOR_ERASER = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="6" y="14" width="20" height="10" rx="2" fill="none" stroke="#333" stroke-width="2"/></svg>') + '") 16 20, auto';
+        const CURSOR_SPRAY = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M10 6 L10 16 L16 20 L22 16 L22 6 Z" fill="none" stroke="#333" stroke-width="2"/><ellipse cx="16" cy="24" rx="6" ry="3" fill="none" stroke="#333" stroke-width="2"/></svg>') + '") 16 8, auto';
+        function setCursorStyle(value) {
+            document.body.style.cursor = value;
+            if (renderer && renderer.domElement) renderer.domElement.style.cursor = value;
+        }
+        function updateCursor() {
+            if (viewState === 'FOCUS') {
+                setCursorStyle(useDetergent ? CURSOR_SPRAY : CURSOR_ERASER);
+            } else {
+                setCursorStyle('default');
             }
         }
 
@@ -875,25 +2925,79 @@
                 raycaster.setFromCamera(mouse, camera);
                 
                 if (viewState === 'OVERVIEW') {
-                    const hits = raycaster.intersectObjects([tableTop], false);
-                    if (hits.length > 0) tweenToFocus();
+                    if (tableMeshes && tableMeshes.length > 0) {
+                        const hits = raycaster.intersectObjects(tableMeshes, false);
+                        if (hits.length > 0) { tweenToFocus(); return; }
+                    }
+                    if (tableTop) {
+                        const hits = raycaster.intersectObjects([tableTop], false);
+                        if (hits.length > 0) { tweenToFocus(); return; }
+                    }
+                    const roomTargets = [briefcaseModel, oldSafeModel, frontWoodenBoxModel].filter(Boolean);
+                    if (roomTargets.length > 0) {
+                        const roomHits = raycaster.intersectObjects(roomTargets, true);
+                        if (roomHits.length > 0) {
+                            const ud = roomHits[0].object.userData;
+                            if (ud && ud.isBriefcase) tweenToModelFocus('BRIEFCASE');
+                            else if (ud && ud.isOldSafe) tweenToModelFocus('SAFE');
+                            else if (ud && ud.isFrontWoodenBox) tweenToModelFocus('WOODEN_BOX');
+                        }
+                    }
                 } 
                 else if (viewState === 'FOCUS') {
-                    // Check Box
-                    const boxHits = raycaster.intersectObjects([cashBoxOnTable], false);
-                    if (boxHits.length > 0) {
-                        spawnBillFromBox();
-                        return;
-                    }
-                    
-                    // Check Bills (CRITICAL: Recursive = true)
-                    const billMeshes = bills.map(b => b.group);
-                    const billHits = raycaster.intersectObjects(billMeshes, true);
-                    
-                    if (billHits.length > 0) {
-                        isCleaning = true;
-                        selectedBill = billHits[0].object.userData.billInstance;
-                        cleanAtPoint(billHits[0]);
+                    try {
+                        // Desk lamp: 按一下亮，亮一会自动灭（不常亮）
+                        if (deskLampModel) {
+                            const lampHits = raycaster.intersectObjects([deskLampModel], true);
+                            if (lampHits.length > 0 && lampHits[0].object.userData.isDeskLamp) {
+                                if (lampPurpleOn) {
+                                    turnOffUVLamp();
+                                } else {
+                                    lampPurpleLight = new THREE.PointLight(0x8800ff, 0.6, 3);
+                                    lampPurpleLight.position.set(0, tableSurfaceY + 0.5, 0);
+                                    scene.add(lampPurpleLight);
+                                    lampPurpleOn = true;
+                                    if (lampPurpleAutoOffTimer) clearTimeout(lampPurpleAutoOffTimer);
+                                    lampPurpleAutoOffTimer = setTimeout(turnOffUVLamp, UV_LAMP_AUTO_OFF_MS);
+                                }
+                                return;
+                            }
+                        }
+                        // Raycast: eraser / cleaner 3D models (click to equip, no erase)
+                        const toolTargets = [eraserModel, sprayCleanerModel].filter(Boolean);
+                        if (toolTargets.length > 0) {
+                            const toolHits = raycaster.intersectObjects(toolTargets, true);
+                            if (toolHits.length > 0) {
+                                const ud = toolHits[0].object.userData;
+                                if (ud && ud.isEraser) { equipTool('ERASER'); return; }
+                                if (ud && ud.isCleaner) { equipTool('CLEANER'); return; }
+                            }
+                        }
+                        // Check money bag (recursive for GLTF group)
+                        if (cashBoxOnTable) {
+                            const boxHits = raycaster.intersectObjects([cashBoxOnTable], true);
+                            if (boxHits.length > 0) {
+                                spawnBillFromBox();
+                                return;
+                            }
+                        }
+                        // Check bills only when we have bills
+                        if (bills.length > 0) {
+                            const billMeshes = bills.map(b => b && b.group).filter(Boolean);
+                            if (billMeshes.length > 0) {
+                                const billHits = raycaster.intersectObjects(billMeshes, true);
+                                if (billHits.length > 0) {
+                                    const inst = billHits[0].object.userData && billHits[0].object.userData.billInstance;
+                                    if (inst) {
+                                        isCleaning = true;
+                                        selectedBill = inst;
+                                        cleanAtPoint(billHits[0]);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('FOCUS click:', err);
                     }
                 }
             });
@@ -904,11 +3008,18 @@
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
                 
-                if (viewState === 'FOCUS' && isCleaning && selectedBill) {
-                    raycaster.setFromCamera(mouse, camera);
-                    // CRITICAL: Recursive = true
-                    const hits = raycaster.intersectObjects(bills.map(b => b.group), true);
-                    if (hits.length > 0) cleanAtPoint(hits[0]);
+                if (viewState === 'FOCUS' && isCleaning && selectedBill && bills.length > 0) {
+                    try {
+                        raycaster.setFromCamera(mouse, camera);
+                        const billMeshes = bills.map(b => b && b.group).filter(Boolean);
+                        if (billMeshes.length > 0) {
+                            const hits = raycaster.intersectObjects(billMeshes, true);
+                            if (hits.length > 0 && hits[0].object.userData && hits[0].object.userData.billInstance)
+                                cleanAtPoint(hits[0]);
+                        }
+                    } catch (err) {
+                        console.warn('FOCUS mousemove:', err);
+                    }
                 }
             });
             
@@ -919,17 +3030,84 @@
                 }
                 if(e.key.toLowerCase() === 'h') toggleSEO();
             });
+
+            const shopToggle = document.getElementById('shopToggle');
+            const shopSection = document.getElementById('shopSection');
+            if (shopToggle && shopSection) {
+                shopToggle.addEventListener('click', () => shopSection.classList.toggle('collapsed'));
+            }
         }
+
+        function updateCleanProgress() {
+            const wrap = document.getElementById('clean-progress-wrap');
+            const fill = document.getElementById('clean-progress-bar-fill');
+            const pct = document.getElementById('clean-progress-pct');
+            if (!wrap || !fill || !pct) return;
+            const dirtyBill = viewState === 'FOCUS' && bills.length > 0 ? bills.find(b => b.isDirty) : null;
+            if (!dirtyBill) {
+                wrap.classList.remove('show');
+                return;
+            }
+            wrap.classList.add('show');
+            const percent = Math.round(dirtyBill.getDisplayCleanPercent() * 100);
+            fill.style.width = percent + '%';
+            pct.textContent = percent + '%';
+        }
+
+        function toggleSEO() {
+            const overlay = document.getElementById('seoOverlay');
+            if (overlay) overlay.classList.toggle('hidden');
+        }
+        window.toggleSEO = toggleSEO;
 
         function animate() {
             requestAnimationFrame(animate);
             const now = performance.now();
-            TWEEN.update();
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+            TWEEN.update(now);
+            if (particlePoints) updateParticles(delta);
+            
             updateInteraction();
+            if (lampPurpleOn && lampPurpleLight) {
+                if (pendingUVCheck) {
+                    const { bill, at } = pendingUVCheck;
+                    bill.group.getWorldPosition(uvLightWorldPos);
+                    lampPurpleLight.position.copy(uvLightWorldPos);
+                    lampPurpleLight.position.y = tableSurfaceY + 0.5;
+                    lampPurpleLight.getWorldPosition(uvLightWorldPos);
+                    updateBillsUVReveal(uvLightWorldPos);
+                    if (now - at >= 1200) resolveUVCheck();
+                } else if (viewState === 'FOCUS') {
+                    if (!uvRevealPlane) uvRevealPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -tableSurfaceY);
+                    uvRevealPlane.constant = -tableSurfaceY;
+                    raycaster.setFromCamera(mouse, camera);
+                    if (raycaster.ray.intersectPlane(uvRevealPlane, uvRevealIntersect)) {
+                        lampPurpleLight.position.copy(uvRevealIntersect);
+                        lampPurpleLight.position.y = tableSurfaceY + 0.5;
+                    }
+                    lampPurpleLight.getWorldPosition(uvLightWorldPos);
+                    updateBillsUVReveal(uvLightWorldPos);
+                }
+            }
             if (now - lastCleanCheck >= CLEAN_CHECK_INTERVAL) {
                 checkCleanStatus();
                 lastCleanCheck = now;
             }
+            updateCleanProgress();
+            if (exhaustFanGroup) exhaustFanGroup.rotation.y += delta * 0.4;
+            if (ceilingBulbLight) {
+                const flicker = Math.random() > 0.92 ? 0.6 : 1;
+                ceilingBulbLight.intensity = 0.25 * flicker + 0.08 * Math.sin(now * 0.003);
+            }
+            if (viewState === 'FOCUS' && selectedToolModel) {
+                const breath = 0.35 + 0.12 * Math.sin(now * 0.002);
+                setGroupEmissive(selectedToolModel, 0x00ff88, breath);
+            } else if (viewState === 'OVERVIEW') {
+                if (eraserModel) setGroupEmissive(eraserModel, 0x000000, 0);
+                if (sprayCleanerModel) setGroupEmissive(sprayCleanerModel, 0x000000, 0);
+            }
+            updateDustParticles(delta);
             renderer.render(scene, camera);
         }
         
